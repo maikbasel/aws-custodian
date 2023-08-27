@@ -5,8 +5,9 @@ services:
     container_name: localstack
     ports:
       - "4566:4566" # LocalStack API Gateway
+      - "4592:4592" # AWS STS port
     environment:
-      - SERVICES=ssm,secretsmanager
+      - SERVICES=ssm,secretsmanager,sts
       - DEBUG=1
       - DATA_DIR=/tmp/localstack/data
       - LAMBDA_EXECUTOR=docker-reuse
