@@ -24,7 +24,7 @@ pub struct Settings {
 
 #[derive(Debug, Eq, PartialEq)]
 pub struct Configuration {
-    pub profiles: HashMap<String, Settings>,
+    profiles: HashMap<String, Settings>,
 }
 
 impl Configuration {
@@ -41,11 +41,15 @@ impl Configuration {
         self.profiles.insert(name, settings);
         Ok(())
     }
+
+    pub fn profiles(&self) -> &HashMap<String, Settings> {
+        &self.profiles
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use assertor::{assert_that, ResultAssertion, VecAssertion};
+    use assertor::{assert_that, EqualityAssertion, ResultAssertion, VecAssertion};
     use rstest::rstest;
 
     use crate::common::test::report_utils::messages;
@@ -81,5 +85,18 @@ mod tests {
         let messages = messages(report);
         assert_that!(messages).has_length(1);
         assert_that!(messages).contains(String::from("profile name can not be empty or blank"));
+    }
+
+    #[test]
+    fn should_return_profiles() {
+        let mut cut: Configuration = Configuration::new();
+        let input_settings: Settings = Settings { ..Default::default() };
+        let input_profile = "key".to_string();
+
+        cut.add_profile(input_profile.clone(), input_settings.clone())
+            .expect("should not fail");
+        let actual = cut.profiles();
+
+        assert_that!(actual.len()).is_equal_to(1);
     }
 }
