@@ -50,6 +50,8 @@ impl Configuration {
 #[cfg(test)]
 mod tests {
     use assertor::{assert_that, EqualityAssertion, ResultAssertion, VecAssertion};
+    use fake::Fake;
+    use fake::faker::lorem::en::Word;
     use rstest::rstest;
 
     use crate::common::test::report_utils::messages;
@@ -61,11 +63,11 @@ mod tests {
     fn should_add_profile() {
         let mut cut: Configuration = Configuration::new();
         let input_settings: Settings = Settings { ..Default::default() };
-        let input_profile = "key".to_string();
+        let input_profile: String = Word().fake();
 
         cut.add_profile(input_profile.clone(), input_settings.clone())
             .expect("should not fail");
-        let actual = cut.profiles.get(&input_profile.clone());
+        let actual = cut.profiles.get(&input_profile);
 
         assert_eq!(actual, Some(&input_settings))
     }
@@ -91,9 +93,9 @@ mod tests {
     fn should_return_profiles() {
         let mut cut: Configuration = Configuration::new();
         let input_settings: Settings = Settings { ..Default::default() };
-        let input_profile = "key".to_string();
+        let input_profile: String = Word().fake();
 
-        cut.add_profile(input_profile.clone(), input_settings.clone())
+        cut.add_profile(input_profile, input_settings)
             .expect("should not fail");
         let actual = cut.profiles();
 

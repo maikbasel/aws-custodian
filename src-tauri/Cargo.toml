@@ -19,8 +19,8 @@ serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.4.0", features = [] }
 error-stack = "0.4.1"
-thiserror = "1.0.49"
-assertor = "0.0.2"
+lazy_static = "1.4.0"
+regex = "1.9.3"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
@@ -30,3 +30,5 @@ custom-protocol = [ "tauri/custom-protocol" ]
 
 [dev-dependencies]
 rstest = "0.18.2"
+fake = { version = "2.8", features = ["derive"] }
+assertor = "0.0.2"
