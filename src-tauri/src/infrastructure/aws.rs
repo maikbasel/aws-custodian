@@ -1,1 +1,1 @@
-pub mod ssm;
+pub mod sdk_config;
