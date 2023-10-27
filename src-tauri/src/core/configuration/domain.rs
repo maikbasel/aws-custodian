@@ -43,11 +43,12 @@ impl Settings {
 #[derive(Debug, Eq, PartialEq)]
 pub struct Configuration {
     profiles: HashMap<String, Settings>,
+    pub error: Option<ConfigurationError>,
 }
 
 impl Configuration {
     pub fn new() -> Self {
-        Self { profiles: HashMap::new() }
+        Self { profiles: HashMap::new(), error: None }
     }
 
     // TODO: Get rid of String in favor of &str
