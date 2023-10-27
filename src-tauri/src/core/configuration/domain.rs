@@ -6,20 +6,38 @@ use crate::core::configuration::error::ConfigurationError;
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Credentials {
-    access_key_id: Option<String>,
-    secret_access_key: Option<String>,
+    pub access_key_id: Option<String>,
+    pub secret_access_key: Option<String>,
+}
+
+impl Credentials {
+    pub fn new(access_key_id: Option<String>, secret_access_key: Option<String>) -> Self {
+        Self { access_key_id, secret_access_key }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Config {
-    region: Option<String>,
-    output_format: Option<String>,
+    pub region: Option<String>,
+    pub output_format: Option<String>,
+}
+
+impl Config {
+    pub fn new(region: Option<String>, output_format: Option<String>) -> Self {
+        Self { region, output_format }
+    }
 }
 
 #[derive(Debug, Eq, Default, PartialEq, Clone)]
 pub struct Settings {
-    credentials: Option<Credentials>,
-    config: Option<Config>,
+    pub credentials: Option<Credentials>,
+    pub config: Option<Config>,
+}
+
+impl Settings {
+    pub fn new(credentials: Credentials, config: Config) -> Self {
+        Self { credentials: Some(credentials), config: Some(config) }
+    }
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -32,6 +50,7 @@ impl Configuration {
         Self { profiles: HashMap::new() }
     }
 
+    // TODO: Get rid of String in favor of &str
     pub fn add_profile(&mut self, name: String, settings: Settings) -> Result<(), ConfigurationError> {
         if name.trim().is_empty() {
             let msg = "profile name can not be empty or blank";
