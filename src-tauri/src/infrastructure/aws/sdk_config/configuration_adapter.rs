@@ -3,15 +3,15 @@ use aws_config::profile::Profile;
 use error_stack::Report;
 use secstr::SecStr;
 
-use crate::core::configuration::domain::{Config, Configuration, Credentials, Settings};
-use crate::core::configuration::error::ConfigurationError;
-use crate::core::configuration::spi::ConfigurationSPI;
+use crate::core::profile::domain::{Config, ConfigProfiles, Credentials, Settings};
+use crate::core::profile::error::ConfigProfilesError;
+use crate::core::profile::spi::ConfigProfilesSPI;
 
-pub struct ConfigurationAdapter;
+pub struct ConfigProfilesAdapter;
 
 #[async_trait]
-impl ConfigurationSPI for ConfigurationAdapter {
-    async fn load_configuration(&self) -> error_stack::Result<Configuration, ConfigurationError> {
+impl ConfigProfilesSPI for ConfigProfilesAdapter {
+    async fn load_config_profiles(&self) -> error_stack::Result<ConfigProfiles, ConfigProfilesError> {
         // See https://docs.rs/aws-config/latest/aws_config/profile/index.html
         let result = aws_config::profile::load(
             &Default::default(),
@@ -23,7 +23,7 @@ impl ConfigurationSPI for ConfigurationAdapter {
         match result {
             Ok(profile_set) => {
                 let profile_names = profile_set.profiles();
-                let mut configuration = Configuration::new();
+                let mut configuration = ConfigProfiles::new();
 
                 for profile_name in profile_names {
                     if let Some(profile) = profile_set.get_profile(profile_name) {
@@ -44,7 +44,7 @@ impl ConfigurationSPI for ConfigurationAdapter {
             }
             Err(e) => {
                 Err(Report::from(e)
-                    .change_context(ConfigurationError::ProfileLoadError))
+                    .change_context(ConfigProfilesError::ConfigLoadError))
             }
         }
     }

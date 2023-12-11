@@ -4,7 +4,7 @@ use derivative::Derivative;
 use error_stack::{Report, Result};
 use secstr::SecStr;
 
-use crate::core::configuration::error::ConfigurationError;
+use crate::core::profile::error::ConfigProfilesError;
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Credentials {
@@ -45,22 +45,22 @@ impl Settings {
 
 #[derive(Derivative)]
 #[derivative(Debug, Eq, PartialEq)]
-pub struct Configuration {
+pub struct ConfigProfiles {
     profiles: HashMap<String, Settings>,
     #[derivative(Debug = "ignore")]
     #[derivative(PartialEq = "ignore")]
-    pub errors: Vec<Report<ConfigurationError>>,
+    pub errors: Vec<Report<ConfigProfilesError>>,
 }
 
-impl Configuration {
+impl ConfigProfiles {
     pub fn new() -> Self {
         Self { profiles: HashMap::new(), errors: Vec::new() }
     }
 
     // changed from String to &str
-    pub fn add_profile(&mut self, name: &str, settings: Settings) -> Result<(), ConfigurationError> {
+    pub fn add_profile(&mut self, name: &str, settings: Settings) -> Result<(), ConfigProfilesError> {
         if name.trim().is_empty() {
-            return Err(Report::new(ConfigurationError::InvalidProfileNameError)
+            return Err(Report::new(ConfigProfilesError::InvalidProfileNameError)
                 .attach_printable("profile name can not be empty or blank"));
         }
         self.profiles.insert(name.to_string(), settings);  // convert to String here as hashmap key is String
@@ -80,13 +80,13 @@ mod tests {
     use spectral::prelude::*;
 
     use crate::common::test::report_utils::messages;
-    use crate::core::configuration::error::ConfigurationError;
+    use crate::core::profile::error::ConfigProfilesError;
 
     use super::*;
 
     #[test]
     fn should_add_profile() {
-        let mut cut: Configuration = Configuration::new();
+        let mut cut: ConfigProfiles = ConfigProfiles::new();
         let input_settings: Settings = Settings { ..Default::default() };
         let input_profile: String = Word().fake();
 
@@ -101,14 +101,14 @@ mod tests {
     #[case("")]
     #[case(" ")]
     fn should_return_error_when_key_is_blank(#[case] input_profile: &str) {
-        let mut cut: Configuration = Configuration::new();
+        let mut cut: ConfigProfiles = ConfigProfiles::new();
         let input_settings: Settings = Settings { ..Default::default() };
 
         let actual = cut.add_profile(input_profile, input_settings);
 
         assert_that(&actual).is_err();
         let report = actual.unwrap_err();
-        assert!(report.contains::<ConfigurationError>());
+        assert!(report.contains::<ConfigProfilesError>());
         let messages = messages(report);
         assert_that(&messages).has_length(1);
         assert_that(&messages).contains(String::from("profile name can not be empty or blank"));
@@ -116,7 +116,7 @@ mod tests {
 
     #[test]
     fn should_return_profiles() {
-        let mut cut: Configuration = Configuration::new();
+        let mut cut: ConfigProfiles = ConfigProfiles::new();
         let input_settings: Settings = Settings { ..Default::default() };
         let input_profile = Word().fake();
 
