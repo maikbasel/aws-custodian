@@ -15,12 +15,3 @@ pub mod report_utils {
             .collect()
     }
 }
-
-pub mod macros {
-    #[macro_export]
-    macro_rules! aw {
-      ($e:expr) => {
-          tokio_test::block_on($e)
-      };
-    }
-}
