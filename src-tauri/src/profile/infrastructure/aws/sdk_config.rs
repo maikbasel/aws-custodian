@@ -1,1 +1,1 @@
-pub mod configuration_adapter;
+pub mod profile_file_adapter;

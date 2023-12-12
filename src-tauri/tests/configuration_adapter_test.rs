@@ -10,9 +10,9 @@ mod tests {
     use test_context::{AsyncTestContext, test_context};
 
     use app::profile::core::domain::{Config, Credentials, Settings};
-    use app::profile::core::error::ConfigProfilesError;
-    use app::profile::core::spi::ConfigProfilesSPI;
-    use app::profile::infrastructure::aws::sdk_config::configuration_adapter::ConfigProfilesAdapter;
+    use app::profile::core::error::ProfileError;
+    use app::profile::core::spi::ProfileDataSPI;
+    use app::profile::infrastructure::aws::sdk_config::profile_file_adapter::ConfigProfilesAdapter;
 
     struct ValidContext {
         _test_dir: TempDir,
@@ -108,13 +108,13 @@ mod tests {
     #[tokio::test]
     #[serial]
     async fn should_load_config_from_environment(_: &mut ValidContext) {
-        let cut: Box<dyn ConfigProfilesSPI> = Box::new(ConfigProfilesAdapter);
+        let cut: Box<dyn ProfileDataSPI> = Box::new(ConfigProfilesAdapter);
         let dev_settings = Settings::new(
             Credentials::new(Some("devAccessKeyID".to_string()), Some(SecStr::from("devSecretAccessKey"))),
             Config::new(Some("eu-west-1".to_string()), Some("json".to_string())),
         );
 
-        let result = cut.load_config_profiles().await;
+        let result = cut.load_profile_data().await;
 
         assert_that(&result).is_ok();
         let actual = result.unwrap();
@@ -127,18 +127,18 @@ mod tests {
     #[tokio::test]
     #[serial]
     async fn should_have_errors_when_loading_config_with_invalid_profile_name(_: &mut InvalidContext) {
-        let cut: Box<dyn ConfigProfilesSPI> = Box::new(ConfigProfilesAdapter);
+        let cut: Box<dyn ProfileDataSPI> = Box::new(ConfigProfilesAdapter);
 
-        let result = cut.load_config_profiles().await;
+        let result = cut.load_profile_data().await;
 
         assert_that(&result).is_ok();
         let config = result.unwrap();
         assert_that(&config.errors).has_length(1);
         let is_invalid_profile_name_error = *&config.errors.get(0).unwrap()
-            .contains::<ConfigProfilesError>();
+            .contains::<ProfileError>();
         assert_that(&is_invalid_profile_name_error).is_true();
         let actual = *&config.errors.get(0).unwrap()
-            .downcast_ref::<ConfigProfilesError>().unwrap();
-        assert_that(&actual).is_equal_to(&ConfigProfilesError::InvalidProfileNameError);
+            .downcast_ref::<ProfileError>().unwrap();
+        assert_that(&actual).is_equal_to(&ProfileError::InvalidProfileNameError);
     }
 }

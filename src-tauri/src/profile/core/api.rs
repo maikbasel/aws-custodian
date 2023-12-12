@@ -1,6 +1,6 @@
-use crate::profile::core::domain::{ConfigProfiles};
-use crate::profile::core::error::ConfigProfilesError;
+use crate::profile::core::domain::{ProfileSet};
+use crate::profile::core::error::ProfileError;
 
-pub trait ConfigProfilesAPI {
-    fn get_config_profiles() -> Result<ConfigProfiles, ConfigProfilesError>;
+pub trait ProfileAPI {
+    fn get_profiles(&self) -> Result<ProfileSet, ProfileError>;
 }
