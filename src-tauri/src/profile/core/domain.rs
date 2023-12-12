@@ -20,7 +20,6 @@ impl Credentials {
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Config {
-    // TODO: Use Value objects/types instead of strings
     pub region: Option<String>,
     pub output_format: Option<String>,
 }
