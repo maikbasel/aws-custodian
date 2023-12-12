@@ -1,11 +1,12 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use async_trait::async_trait;
 use derivative::Derivative;
 use error_stack::{Report, Result};
 use secstr::SecStr;
-use crate::profile::core::api::ProfileAPI;
 
+use crate::profile::core::api::ProfileAPI;
 use crate::profile::core::error::ProfileError;
 use crate::profile::core::spi::ProfileDataSPI;
 
@@ -81,12 +82,19 @@ impl Default for ProfileSet {
 }
 
 struct ProfileService {
-    profile_data_spi: Arc<dyn ProfileDataSPI>
+    profile_data_spi: Arc<dyn ProfileDataSPI + Send + Sync>,
 }
 
+impl ProfileService {
+    pub fn new(profile_data_spi: Arc<dyn ProfileDataSPI + Send + Sync>) -> Self {
+        Self { profile_data_spi }
+    }
+}
+
+#[async_trait]
 impl ProfileAPI for ProfileService {
-    fn get_profiles(&self) -> std::result::Result<ProfileSet, ProfileError> {
-        todo!()
+    async fn get_profiles<'a>(&'a self) -> Result<ProfileSet, ProfileError> {
+        self.profile_data_spi.load_profile_data().await
     }
 }
 
@@ -99,6 +107,7 @@ mod tests {
 
     use crate::common::test::report_utils::messages;
     use crate::profile::core::error::ProfileError;
+    use crate::profile::core::spi::MockProfileDataSPI;
 
     use super::*;
 
@@ -143,5 +152,17 @@ mod tests {
         let actual = cut.profiles();
 
         assert_that!(actual.len()).is_equal_to(1);
+    }
+
+    #[tokio::test]
+    async fn should_load_profile_data_and_return_the_result() {
+        let mut mock_profile_data_spi = MockProfileDataSPI::new();
+        mock_profile_data_spi.expect_load_profile_data()
+            .return_once(|| Ok(ProfileSet::new()));
+        let cut = ProfileService::new(Arc::new(mock_profile_data_spi));
+
+        let actual = cut.get_profiles().await;
+
+        assert_that!(actual).is_ok();
     }
 }
