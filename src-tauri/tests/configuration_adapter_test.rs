@@ -9,10 +9,10 @@ mod tests {
     use tempfile::{TempDir, tempdir};
     use test_context::{AsyncTestContext, test_context};
 
-    use app::core::profile::domain::{Config, Credentials, Settings};
-    use app::core::profile::error::ConfigProfilesError;
-    use app::core::profile::spi::ConfigProfilesSPI;
-    use app::infrastructure::aws::sdk_config::configuration_adapter::ConfigProfilesAdapter;
+    use app::profile::core::domain::{Config, Credentials, Settings};
+    use app::profile::core::error::ConfigProfilesError;
+    use app::profile::core::spi::ConfigProfilesSPI;
+    use app::profile::infrastructure::aws::sdk_config::configuration_adapter::ConfigProfilesAdapter;
 
     struct ValidContext {
         _test_dir: TempDir,

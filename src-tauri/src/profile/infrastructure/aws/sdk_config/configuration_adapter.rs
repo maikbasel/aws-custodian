@@ -3,9 +3,9 @@ use aws_config::profile::Profile;
 use error_stack::Report;
 use secstr::SecStr;
 
-use crate::core::profile::domain::{Config, ConfigProfiles, Credentials, Settings};
-use crate::core::profile::error::ConfigProfilesError;
-use crate::core::profile::spi::ConfigProfilesSPI;
+use crate::profile::core::domain::{Config, ConfigProfiles, Credentials, Settings};
+use crate::profile::core::error::ConfigProfilesError;
+use crate::profile::core::spi::ConfigProfilesSPI;
 
 pub struct ConfigProfilesAdapter;
 

@@ -1,6 +1,6 @@
 use async_trait::async_trait;
-use crate::core::profile::domain::{ConfigProfiles};
-use crate::core::profile::error::ConfigProfilesError;
+use crate::profile::core::domain::{ConfigProfiles};
+use crate::profile::core::error::ConfigProfilesError;
 use error_stack::{Result};
 
 #[async_trait]

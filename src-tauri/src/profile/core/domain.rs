@@ -4,7 +4,7 @@ use derivative::Derivative;
 use error_stack::{Report, Result};
 use secstr::SecStr;
 
-use crate::core::profile::error::ConfigProfilesError;
+use crate::profile::core::error::ConfigProfilesError;
 
 #[derive(Debug, Eq, PartialEq, Clone)]
 pub struct Credentials {
@@ -86,7 +86,7 @@ mod tests {
     use spectral::prelude::*;
 
     use crate::common::test::report_utils::messages;
-    use crate::core::profile::error::ConfigProfilesError;
+    use crate::profile::core::error::ConfigProfilesError;
 
     use super::*;
 
