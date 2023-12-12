@@ -72,6 +72,12 @@ impl ConfigProfiles {
     }
 }
 
+impl Default for ConfigProfiles {
+    fn default() -> Self {
+        ConfigProfiles::new()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use fake::Fake;
