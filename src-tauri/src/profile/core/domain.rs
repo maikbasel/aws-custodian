@@ -60,13 +60,12 @@ impl ProfileSet {
         Self { profiles: HashMap::new(), errors: Vec::new() }
     }
 
-    // changed from String to &str
     pub fn add_profile(&mut self, name: &str, settings: Settings) -> Result<(), ProfileError> {
         if name.trim().is_empty() {
             return Err(Report::new(ProfileError::InvalidProfileNameError)
                 .attach_printable("profile name can not be empty or blank"));
         }
-        self.profiles.insert(name.to_string(), settings);  // convert to String here as hashmap key is String
+        self.profiles.insert(name.to_string(), settings);
         Ok(())
     }
 
