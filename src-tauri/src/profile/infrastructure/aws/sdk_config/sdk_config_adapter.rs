@@ -3,14 +3,14 @@ use aws_config::profile::Profile;
 use error_stack::Report;
 use secstr::SecStr;
 
-use crate::profile::core::domain::{Config, ProfileSet, Credentials, Settings};
+use crate::profile::core::domain::{Config, Credentials, ProfileSet, Settings};
 use crate::profile::core::error::ProfileError;
 use crate::profile::core::spi::ProfileDataSPI;
 
-pub struct ConfigProfilesAdapter;
+pub struct SdkConfigAdapter;
 
 #[async_trait]
-impl ProfileDataSPI for ConfigProfilesAdapter {
+impl ProfileDataSPI for SdkConfigAdapter {
     async fn load_profile_data(&self) -> error_stack::Result<ProfileSet, ProfileError> {
         // See https://docs.rs/aws-config/latest/aws_config/profile/index.html
         let result = aws_config::profile::load(

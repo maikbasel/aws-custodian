@@ -81,12 +81,12 @@ impl Default for ProfileSet {
     }
 }
 
-struct ProfileService {
-    profile_data_spi: Arc<dyn ProfileDataSPI + Send + Sync>,
+pub struct ProfileService {
+    profile_data_spi: Arc<dyn ProfileDataSPI>,
 }
 
 impl ProfileService {
-    pub fn new(profile_data_spi: Arc<dyn ProfileDataSPI + Send + Sync>) -> Self {
+    pub fn new(profile_data_spi: Arc<dyn ProfileDataSPI>) -> Self {
         Self { profile_data_spi }
     }
 }

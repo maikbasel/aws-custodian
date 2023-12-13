@@ -12,7 +12,7 @@ mod tests {
     use app::profile::core::domain::{Config, Credentials, Settings};
     use app::profile::core::error::ProfileError;
     use app::profile::core::spi::ProfileDataSPI;
-    use app::profile::infrastructure::aws::sdk_config::profile_file_adapter::ConfigProfilesAdapter;
+    use app::profile::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
 
     struct ValidContext {
         _test_dir: TempDir,
@@ -108,7 +108,7 @@ mod tests {
     #[tokio::test]
     #[serial]
     async fn should_load_config_from_environment(_: &mut ValidContext) {
-        let cut: Box<dyn ProfileDataSPI> = Box::new(ConfigProfilesAdapter);
+        let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
         let dev_settings = Settings::new(
             Credentials::new(Some("devAccessKeyID".to_string()), Some(SecStr::from("devSecretAccessKey"))),
             Config::new(Some("eu-west-1".to_string()), Some("json".to_string())),
@@ -127,7 +127,7 @@ mod tests {
     #[tokio::test]
     #[serial]
     async fn should_have_errors_when_loading_config_with_invalid_profile_name(_: &mut InvalidContext) {
-        let cut: Box<dyn ProfileDataSPI> = Box::new(ConfigProfilesAdapter);
+        let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
 
         let result = cut.load_profile_data().await;
 

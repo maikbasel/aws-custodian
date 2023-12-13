@@ -8,6 +8,6 @@ use crate::profile::core::error::ProfileError;
 
 #[cfg_attr(test, automock)]
 #[async_trait]
-pub trait ProfileDataSPI {
+pub trait ProfileDataSPI: Send + Sync {
     async fn load_profile_data(&self) -> Result<ProfileSet, ProfileError>;
 }

@@ -1,1 +1,1 @@
-pub mod profile_file_adapter;
+pub mod sdk_config_adapter;
