@@ -10,7 +10,7 @@ exports[`<SidebarMenu /> should render active Home icon when isHomeActive is tru
 >
   <span />
   <span
-    className="hidden pt-2 text-2xl md:flex font-bold"
+    className="hidden pt-2 text-2xl font-bold md:flex"
   >
     Home
   </span>
@@ -27,7 +27,7 @@ exports[`<SidebarMenu /> should render active Profiles icon when isProfilesActiv
 >
   <span />
   <span
-    className="hidden pt-2 text-2xl md:flex font-bold"
+    className="hidden pt-2 text-2xl font-bold md:flex"
   >
     Home
   </span>
