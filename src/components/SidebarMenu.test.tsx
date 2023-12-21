@@ -4,20 +4,24 @@ import SidebarMenu from './SidebarMenu';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import renderer from 'react-test-renderer';
+import useNavigation from "@/hooks/Navigation";
+
+jest.mock('@/hooks/Navigation');
+const mockUseNavigation = useNavigation as jest.MockedFunction<typeof useNavigation>
 
 describe('<SidebarMenu />', () => {
-  const mockUseNavigation = jest.fn();
 
-  jest.mock('@/hooks/Navigation', () => ({
-    __esModule: true,
-    useNavigation: mockUseNavigation(),
-  }));
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('should render the Home menu item', () => {
+    mockUseNavigation.mockReturnValue({
+      isHomeActive: false,
+      isProfilesActive: false,
+    });
+
     render(<SidebarMenu />);
 
     const homeMenuItem = screen.getByText('Home');
@@ -25,6 +29,11 @@ describe('<SidebarMenu />', () => {
   });
 
   it('should render the Profiles menu item', () => {
+    mockUseNavigation.mockReturnValue({
+      isHomeActive: false,
+      isProfilesActive: false,
+    });
+
     render(<SidebarMenu />);
 
     const profilesMenuItem = screen.getByText('Profiles');
@@ -32,10 +41,10 @@ describe('<SidebarMenu />', () => {
   });
 
   it('should render inactive Home icon when isHomeActive is false', () => {
-    mockUseNavigation.mockImplementation(() => ({
+    mockUseNavigation.mockReturnValue({
       isHomeActive: false,
       isProfilesActive: false,
-    }));
+    });
 
     const tree = renderer
       .create(
@@ -53,10 +62,10 @@ describe('<SidebarMenu />', () => {
   });
 
   it('should render active Home icon when isHomeActive is true', () => {
-    mockUseNavigation.mockImplementation(() => ({
+    mockUseNavigation.mockReturnValue({
       isHomeActive: true,
       isProfilesActive: false,
-    }));
+    });
 
     const tree = renderer
       .create(
@@ -65,7 +74,7 @@ describe('<SidebarMenu />', () => {
           className='flex w-full flex-row items-center space-x-4 px-4 py-3 duration-200 hover:bg-white/10'
         >
           <Icon icon='ant-design:home-filled' width='38' height='38' />
-          <span className='hidden pt-2 text-2xl md:flex'>Home</span>
+          <span className='hidden pt-2 text-2xl md:flex font-bold'>Home</span>
         </Link>
       )
       .toJSON();
@@ -95,10 +104,10 @@ describe('<SidebarMenu />', () => {
   });
 
   it('should render active Profiles icon when isProfilesActive is true', () => {
-    mockUseNavigation.mockImplementation(() => ({
+    mockUseNavigation.mockReturnValue({
       isHomeActive: false,
       isProfilesActive: true,
-    }));
+    });
 
     const tree = renderer
       .create(
@@ -107,7 +116,7 @@ describe('<SidebarMenu />', () => {
           className='flex w-full flex-row items-center space-x-4 px-4 py-3 duration-200 hover:bg-white/10'
         >
           <Icon icon='ant-design:profile-filled' width='38' height='38' />
-          <span className='hidden pt-2 text-2xl md:flex'>Home</span>
+          <span className='hidden pt-2 text-2xl md:flex font-bold'>Home</span>
         </Link>
       )
       .toJSON();

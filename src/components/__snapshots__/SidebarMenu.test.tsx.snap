@@ -2,7 +2,7 @@
 
 exports[`<SidebarMenu /> should render active Home icon when isHomeActive is true 1`] = `
 <a
-  className="flex flex-row space-x-4 items-center px-4 py-3 duration-200 hover:bg-white/10 w-full"
+  className="flex w-full flex-row items-center space-x-4 px-4 py-3 duration-200 hover:bg-white/10"
   href="/"
   onClick={[Function]}
   onMouseEnter={[Function]}
@@ -10,24 +10,7 @@ exports[`<SidebarMenu /> should render active Home icon when isHomeActive is tru
 >
   <span />
   <span
-    className="text-2xl pt-2 hidden md:flex"
-  >
-    Home
-  </span>
-</a>
-`;
-
-exports[`<SidebarMenu /> should render active Profiles icon when isHomeActive is true 1`] = `
-<a
-  className="flex flex-row space-x-4 items-center px-4 py-3 duration-200 hover:bg-white/10 w-full"
-  href="/"
-  onClick={[Function]}
-  onMouseEnter={[Function]}
-  onTouchStart={[Function]}
->
-  <span />
-  <span
-    className="text-2xl pt-2 hidden md:flex"
+    className="hidden pt-2 text-2xl md:flex font-bold"
   >
     Home
   </span>
@@ -36,7 +19,7 @@ exports[`<SidebarMenu /> should render active Profiles icon when isHomeActive is
 
 exports[`<SidebarMenu /> should render active Profiles icon when isProfilesActive is true 1`] = `
 <a
-  className="flex flex-row space-x-4 items-center px-4 py-3 duration-200 hover:bg-white/10 w-full"
+  className="flex w-full flex-row items-center space-x-4 px-4 py-3 duration-200 hover:bg-white/10"
   href="/"
   onClick={[Function]}
   onMouseEnter={[Function]}
@@ -44,7 +27,7 @@ exports[`<SidebarMenu /> should render active Profiles icon when isProfilesActiv
 >
   <span />
   <span
-    className="text-2xl pt-2 hidden md:flex"
+    className="hidden pt-2 text-2xl md:flex font-bold"
   >
     Home
   </span>
@@ -53,7 +36,7 @@ exports[`<SidebarMenu /> should render active Profiles icon when isProfilesActiv
 
 exports[`<SidebarMenu /> should render inactive Home icon when isHomeActive is false 1`] = `
 <a
-  className="flex flex-row space-x-4 items-center px-4 py-3 duration-200 hover:bg-white/10 w-full"
+  className="flex w-full flex-row items-center space-x-4 px-4 py-3 duration-200 hover:bg-white/10"
   href="/"
   onClick={[Function]}
   onMouseEnter={[Function]}
@@ -61,24 +44,7 @@ exports[`<SidebarMenu /> should render inactive Home icon when isHomeActive is f
 >
   <span />
   <span
-    className="text-2xl pt-2 hidden md:flex"
-  >
-    Home
-  </span>
-</a>
-`;
-
-exports[`<SidebarMenu /> should render inactive Profiles icon when isHomeActive is false 1`] = `
-<a
-  className="flex flex-row space-x-4 items-center px-4 py-3 duration-200 hover:bg-white/10 w-full"
-  href="/"
-  onClick={[Function]}
-  onMouseEnter={[Function]}
-  onTouchStart={[Function]}
->
-  <span />
-  <span
-    className="text-2xl pt-2 hidden md:flex"
+    className="hidden pt-2 text-2xl md:flex"
   >
     Home
   </span>
@@ -87,7 +53,7 @@ exports[`<SidebarMenu /> should render inactive Profiles icon when isHomeActive 
 
 exports[`<SidebarMenu /> should render inactive Profiles icon when isProfilesActive is false 1`] = `
 <a
-  className="flex flex-row space-x-4 items-center px-4 py-3 duration-200 hover:bg-white/10 w-full"
+  className="flex w-full flex-row items-center space-x-4 px-4 py-3 duration-200 hover:bg-white/10"
   href="/"
   onClick={[Function]}
   onMouseEnter={[Function]}
@@ -95,7 +61,7 @@ exports[`<SidebarMenu /> should render inactive Profiles icon when isProfilesAct
 >
   <span />
   <span
-    className="text-2xl pt-2 hidden md:flex"
+    className="hidden pt-2 text-2xl md:flex"
   >
     Home
   </span>
