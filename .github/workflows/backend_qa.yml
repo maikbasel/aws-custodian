@@ -14,12 +14,13 @@ on:
     branches:
       - master
 
+defaults:
+  run:
+    working-directory: src-tauri
+
 jobs:
   check:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: src-tauri
 
     steps:
       - name: Checkout code
