@@ -1,0 +1,70 @@
+name: Quality Assurance Checks
+
+on:
+  push:
+    paths-ignore:
+      - 'src-tauri/**'
+      - 'docker-compose.yml'
+      - 'README.md'
+      - 'LICENSE.md'
+      - '.gitignore'
+    branches:
+      - master
+  pull_request:
+    paths-ignore:
+      - 'src-tauri/**'
+      - 'docker-compose.yml'
+      - 'README.md'
+      - 'LICENSE.md'
+      - '.gitignore'
+    branches:
+      - master
+
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Lint with ESLint
+        run: npm run lint:report
+        continue-on-error: true
+
+      - name: Annotate Code Linting Results
+        uses: ataylorme/eslint-annotate-action@v2
+        with:
+          report-json: "eslint_report.json"
+
+      - name: Test with Jest
+        run: npm run test:ci
+
+      - name: Create Test Report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: JEST Tests
+          path: junit.xml
+          reporter: jest-junit
+
+#      TODO: Add e2e tests
+#      - name: End-to-end tests with Cypress
+#        uses: cypress-io/github-action@v2
+#        with:
+#          start: npm run start
+#          wait-on: 'http://localhost:3000'
