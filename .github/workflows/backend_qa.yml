@@ -41,9 +41,14 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - uses: actions-rs/tarpaulin@v1
+      - uses: actions-rs/install@v0.1
         with:
-          command: run --all --out Xml
+          crate: cargo-tarpaulin
+          version: latest
+          use-tool-cache: true
+
+      - name: Run cargo-tarpaulin
+        run: cargo tarpaulin -- --test-threads 1 --fail-under 90 --out Stdout
 
 #      - name: Generate code coverage
 #        run: cargo llvm-cov --all-features --no-fail-fast --workspace --lcov --output-path lcov.info
