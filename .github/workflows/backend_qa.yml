@@ -1,0 +1,49 @@
+name: Backend Quality Assurance Checks
+
+on:
+  push:
+    paths:
+      - 'src-tauri/**'
+      - '.github/workflows/backend_qa.yml'
+    branches:
+      - master
+  pull_request:
+    paths:
+      - 'src-tauri/**'
+      - '.github/workflows/backend_qa.yml'
+    branches:
+      - master
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          components: rustfmt, clippy
+
+      - name: Build Code
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --all
+
+      - name: Run cargo-tarpaulin
+        uses: actions-rs/tarpaulin@v0.1
+        with:
+          version: '0.15.0'
+          args: '-- --test-threads 1'
+          out-type: 'Stdout'
+
+      - name: Run Rustfmt
+        run: cargo fmt -- --check
+
+      - name: Run Clippy
+        run: cargo clippy -- -D warnings
