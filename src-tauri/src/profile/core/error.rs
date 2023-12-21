@@ -1,5 +1,5 @@
+use error_stack::Context;
 use std::fmt::{Debug, Display, Formatter};
-use error_stack::{Context};
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum ProfileError {
@@ -11,7 +11,7 @@ impl Display for ProfileError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             ProfileError::InvalidProfileNameError => write!(f, "invalid profile name"),
-            ProfileError::ProfileDataLoadError => write!(f, "failed to load profiles")
+            ProfileError::ProfileDataLoadError => write!(f, "failed to load profiles"),
         }
     }
 }
@@ -26,7 +26,10 @@ mod tests {
     fn given_invalid_profile_error_should_output_expected_error_message_when_printed() {
         let expected = "invalid profile name";
 
-        assert_eq!(format!("{}", ProfileError::InvalidProfileNameError), expected)
+        assert_eq!(
+            format!("{}", ProfileError::InvalidProfileNameError),
+            expected
+        )
     }
 
     #[test]

@@ -18,7 +18,8 @@ impl ProfileDataSPI for SdkConfigAdapter {
             &Default::default(),
             &Default::default(),
             None,
-        ).await;
+        )
+        .await;
 
         match result {
             Ok(profile_set) => {
@@ -36,33 +37,33 @@ impl ProfileDataSPI for SdkConfigAdapter {
                             configuration.errors.push(e);
                         }
                     } else {
-                        panic!("profile set should contain profile name: `{}`", profile_name)
+                        panic!(
+                            "profile set should contain profile name: `{}`",
+                            profile_name
+                        )
                     }
                 }
 
                 Ok(configuration)
             }
-            Err(e) => {
-                Err(Report::from(e)
-                    .change_context(ProfileError::ProfileDataLoadError))
-            }
+            Err(e) => Err(Report::from(e).change_context(ProfileError::ProfileDataLoadError)),
         }
     }
 }
 
 fn extract_config(profile: &Profile) -> Config {
-    let output_format = profile.get("output")
-        .map(|value| value.to_string());
-    let region = profile.get("region")
-        .map(|value| value.to_string());
+    let output_format = profile.get("output").map(|value| value.to_string());
+    let region = profile.get("region").map(|value| value.to_string());
     let config = Config::new(region, output_format);
     config
 }
 
 fn extract_credentials(profile: &Profile) -> Credentials {
-    let access_key_id = profile.get("aws_access_key_id")
+    let access_key_id = profile
+        .get("aws_access_key_id")
         .map(|value| value.to_string());
-    let secret_access_key = profile.get("aws_secret_access_key")
+    let secret_access_key = profile
+        .get("aws_secret_access_key")
         .map(|value| SecStr::from(value));
     let credentials = Credentials::new(access_key_id, secret_access_key);
 

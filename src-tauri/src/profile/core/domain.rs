@@ -18,7 +18,10 @@ pub struct Credentials {
 
 impl Credentials {
     pub fn new(access_key_id: Option<String>, secret_access_key: Option<SecStr>) -> Self {
-        Self { access_key_id, secret_access_key }
+        Self {
+            access_key_id,
+            secret_access_key,
+        }
     }
 }
 
@@ -30,7 +33,10 @@ pub struct Config {
 
 impl Config {
     pub fn new(region: Option<String>, output_format: Option<String>) -> Self {
-        Self { region, output_format }
+        Self {
+            region,
+            output_format,
+        }
     }
 }
 
@@ -42,7 +48,10 @@ pub struct Settings {
 
 impl Settings {
     pub fn new(credentials: Credentials, config: Config) -> Self {
-        Self { credentials: Some(credentials), config: Some(config) }
+        Self {
+            credentials: Some(credentials),
+            config: Some(config),
+        }
     }
 }
 
@@ -57,7 +66,10 @@ pub struct ProfileSet {
 
 impl ProfileSet {
     pub fn new() -> Self {
-        Self { profiles: HashMap::new(), errors: Vec::new() }
+        Self {
+            profiles: HashMap::new(),
+            errors: Vec::new(),
+        }
     }
 
     pub fn add_profile(&mut self, name: &str, settings: Settings) -> Result<(), ProfileError> {
@@ -99,8 +111,8 @@ impl ProfileAPI for ProfileService {
 
 #[cfg(test)]
 mod tests {
-    use fake::Fake;
     use fake::faker::lorem::en::Word;
+    use fake::Fake;
     use rstest::rstest;
     use spectral::prelude::*;
 
@@ -113,7 +125,9 @@ mod tests {
     #[test]
     fn should_add_profile() {
         let mut cut: ProfileSet = ProfileSet::new();
-        let input_settings: Settings = Settings { ..Default::default() };
+        let input_settings: Settings = Settings {
+            ..Default::default()
+        };
         let input_profile: String = Word().fake();
 
         cut.add_profile(&input_profile, input_settings.clone())
@@ -128,7 +142,9 @@ mod tests {
     #[case(" ")]
     fn should_return_error_when_key_is_blank(#[case] input_profile: &str) {
         let mut cut: ProfileSet = ProfileSet::new();
-        let input_settings: Settings = Settings { ..Default::default() };
+        let input_settings: Settings = Settings {
+            ..Default::default()
+        };
 
         let actual = cut.add_profile(input_profile, input_settings);
 
@@ -143,7 +159,9 @@ mod tests {
     #[test]
     fn should_return_profiles() {
         let mut cut: ProfileSet = ProfileSet::new();
-        let input_settings: Settings = Settings { ..Default::default() };
+        let input_settings: Settings = Settings {
+            ..Default::default()
+        };
         let input_profile = Word().fake();
 
         cut.add_profile(input_profile, input_settings)
@@ -156,7 +174,8 @@ mod tests {
     #[tokio::test]
     async fn should_load_profile_data_and_return_the_result() {
         let mut mock_profile_data_spi = MockProfileDataSPI::new();
-        mock_profile_data_spi.expect_load_profile_data()
+        mock_profile_data_spi
+            .expect_load_profile_data()
             .return_once(|| Ok(ProfileSet::new()));
         let cut = ProfileService::new(Arc::new(mock_profile_data_spi));
 

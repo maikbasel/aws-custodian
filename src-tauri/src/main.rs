@@ -1,12 +1,12 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::Arc;
-use app::profile::core::domain::ProfileService;
-use app::profile::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
 use app::__cmd__get_profiles;
 use app::profile::application::tauri::profile_handler::get_profiles;
 use app::profile::core::api::ProfileAPI;
+use app::profile::core::domain::ProfileService;
+use app::profile::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
+use std::sync::Arc;
 
 fn main() {
     let profile_data_spi = SdkConfigAdapter;

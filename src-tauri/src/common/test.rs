@@ -3,7 +3,8 @@ pub mod report_utils {
     use error_stack::{AttachmentKind, FrameKind, Report};
 
     pub fn messages<E>(report: Report<E>) -> Vec<String> {
-        report.frames()
+        report
+            .frames()
             .map(|frame| {
                 if let FrameKind::Attachment(AttachmentKind::Printable(attachment)) = frame.kind() {
                     Some(attachment.to_string())
