@@ -4,14 +4,14 @@ import SidebarMenu from './SidebarMenu';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import renderer from 'react-test-renderer';
-import useNavigation from "@/hooks/Navigation";
+import useNavigation from '@/hooks/Navigation';
 
 jest.mock('@/hooks/Navigation');
-const mockUseNavigation = useNavigation as jest.MockedFunction<typeof useNavigation>
+const mockUseNavigation = useNavigation as jest.MockedFunction<
+  typeof useNavigation
+>;
 
 describe('<SidebarMenu />', () => {
-
-
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -74,7 +74,7 @@ describe('<SidebarMenu />', () => {
           className='flex w-full flex-row items-center space-x-4 px-4 py-3 duration-200 hover:bg-white/10'
         >
           <Icon icon='ant-design:home-filled' width='38' height='38' />
-          <span className='hidden pt-2 text-2xl md:flex font-bold'>Home</span>
+          <span className='hidden pt-2 text-2xl font-bold md:flex'>Home</span>
         </Link>
       )
       .toJSON();
@@ -116,7 +116,7 @@ describe('<SidebarMenu />', () => {
           className='flex w-full flex-row items-center space-x-4 px-4 py-3 duration-200 hover:bg-white/10'
         >
           <Icon icon='ant-design:profile-filled' width='38' height='38' />
-          <span className='hidden pt-2 text-2xl md:flex font-bold'>Home</span>
+          <span className='hidden pt-2 text-2xl font-bold md:flex'>Home</span>
         </Link>
       )
       .toJSON();
