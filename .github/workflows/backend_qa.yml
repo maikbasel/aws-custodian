@@ -29,8 +29,8 @@ jobs:
       - name: Install Rust
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
-          profile: minimal
+          toolchain: nightly
+          override: true
           components: rustfmt, clippy
 
       - name: Install Tauri dependencies (ubuntu only)
@@ -38,11 +38,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libgtk-3-dev libwebkit2gtk-4.0-dev libappindicator3-dev librsvg2-dev patchelf
 
-      - uses: actions-rs/install@v0.1
+      - name: Run tests
+        uses: actions-rs/cargo@v1
         with:
-          crate: cargo-tarpaulin
-          version: latest
-          use-tool-cache: true
+          command: test
+          args: --all-features --no-fail-fast
+        env:
+          CARGO_INCREMENTAL: '0'
+          RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
+          RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
+
+      - name: Create code coverage report
+        uses: actions-rs/grcov@v0.1
 
       - name: Run cargo-tarpaulin
         run: cargo tarpaulin -- --test-threads 1 --manifest-path 'src-tauri/Cargo.toml' --fail-under 90 --out Stdout
