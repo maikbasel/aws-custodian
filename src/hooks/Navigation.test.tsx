@@ -1,42 +1,42 @@
-import useNavigation from "./Navigation"
-import {renderHook} from '@testing-library/react';
-import {usePathname} from "next/navigation";
+import useNavigation from './Navigation';
+import { renderHook } from '@testing-library/react';
+import { usePathname } from 'next/navigation';
 
 jest.mock('next/navigation');
 
 describe('useNavigation hook', () => {
-    let usePathnameMock: jest.Mock;
+  let usePathnameMock: jest.Mock;
 
-    beforeEach(() => {
-        usePathnameMock = usePathname as jest.Mock;
-        usePathnameMock.mockReset();
-    });
+  beforeEach(() => {
+    usePathnameMock = usePathname as jest.Mock;
+    usePathnameMock.mockReset();
+  });
 
-    test('should correctly set isHomeActive when pathname is /', () => {
-        usePathnameMock.mockReturnValue('/');
+  test('should correctly set isHomeActive when pathname is /', () => {
+    usePathnameMock.mockReturnValue('/');
 
-        const { result } = renderHook(() => useNavigation());
+    const { result } = renderHook(() => useNavigation());
 
-        expect(result.current.isHomeActive).toBe(true);
-    });
-    
-    test('should correctly set isProfilesActive when pathname is /profiles', () => {
-        usePathnameMock.mockReturnValue('/profiles');
+    expect(result.current.isHomeActive).toBe(true);
+  });
 
-        const { result } = renderHook(() => useNavigation());
+  test('should correctly set isProfilesActive when pathname is /profiles', () => {
+    usePathnameMock.mockReturnValue('/profiles');
 
-        expect(result.current.isProfilesActive).toBe(true);
-    });
+    const { result } = renderHook(() => useNavigation());
 
-    test('should correctly reset isHomeActive and isProfilesActive on pathname change', () => {
-        usePathnameMock.mockReturnValue('/');
-        const { result, rerender } = renderHook(() => useNavigation());
-        expect(result.current.isHomeActive).toBe(true);
+    expect(result.current.isProfilesActive).toBe(true);
+  });
 
-        usePathnameMock.mockReturnValue('/newPath');
-        rerender();
+  test('should correctly reset isHomeActive and isProfilesActive on pathname change', () => {
+    usePathnameMock.mockReturnValue('/');
+    const { result, rerender } = renderHook(() => useNavigation());
+    expect(result.current.isHomeActive).toBe(true);
 
-        expect(result.current.isHomeActive).toBe(false);
-        expect(result.current.isProfilesActive).toBe(false);
-    });
+    usePathnameMock.mockReturnValue('/newPath');
+    rerender();
+
+    expect(result.current.isHomeActive).toBe(false);
+    expect(result.current.isProfilesActive).toBe(false);
+  });
 });

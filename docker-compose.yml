@@ -4,8 +4,8 @@ services:
     image: localstack/localstack:2.2.0
     container_name: localstack
     ports:
-      - "4566:4566" # LocalStack API Gateway
-      - "4592:4592" # AWS STS port
+      - '4566:4566' # LocalStack API Gateway
+      - '4592:4592' # AWS STS port
     environment:
       - SERVICES=ssm,secretsmanager,sts
       - DEBUG=1
@@ -17,5 +17,5 @@ services:
       - HOSTNAME=localhost
       - USE_SSL=true
     volumes:
-      - "${TMPDIR:-/tmp/localstack}:/tmp/localstack"
-      - "/var/run/docker.sock:/var/run/docker.sock"
+      - '${TMPDIR:-/tmp/localstack}:/tmp/localstack'
+      - '/var/run/docker.sock:/var/run/docker.sock'

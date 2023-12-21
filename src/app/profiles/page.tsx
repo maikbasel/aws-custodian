@@ -1,10 +1,9 @@
-'use client'
+'use client';
 
 export default function Configuration() {
-    return (
-        <div
-            className="flex flex-col pt-4 sm:ml-[120px] md:ml-[250px] sm:border-r sm:border-zinc-700 pb-20 min-h-screen">
-            <span className="px-8 mt-10 font-bold text-3xl">Profiles Page</span>
-        </div>
-    );
+  return (
+    <div className='flex min-h-screen flex-col pb-20 pt-4 sm:ml-[120px] sm:border-r sm:border-zinc-700 md:ml-[250px]'>
+      <span className='mt-10 px-8 text-3xl font-bold'>Profiles Page</span>
+    </div>
+  );
 }
