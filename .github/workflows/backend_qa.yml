@@ -37,7 +37,7 @@ jobs:
         uses: actions-rs/tarpaulin@v0.1
         with:
           version: '0.15.0'
-          args: '-- --test-threads 1 --manifest-path src-tauri/Cargo.toml --fail-under 90'
+          args: '-- --test-threads 1 --manifest-path "src-tauri/Cargo.toml" --fail-under 90'
           out-type: 'Stdout'
 
       - name: Run Rustfmt
