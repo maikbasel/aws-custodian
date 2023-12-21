@@ -37,13 +37,13 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: build
-          args: --all
+          args: --all --manifest-path=src-tauri/Cargo.toml
 
       - name: Run cargo-tarpaulin
         uses: actions-rs/tarpaulin@v0.1
         with:
           version: '0.15.0'
-          args: '-- --test-threads 1'
+          args: '-- --test-threads 1 --manifest-path src-tauri/Cargo.toml'
           out-type: 'Stdout'
 
       - name: Run Rustfmt
