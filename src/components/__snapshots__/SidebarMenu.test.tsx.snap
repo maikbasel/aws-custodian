@@ -1,0 +1,103 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`<SidebarMenu /> should render active Home icon when isHomeActive is true 1`] = `
+<a
+  className="flex flex-row space-x-4 items-center px-4 py-3 duration-200 hover:bg-white/10 w-full"
+  href="/"
+  onClick={[Function]}
+  onMouseEnter={[Function]}
+  onTouchStart={[Function]}
+>
+  <span />
+  <span
+    className="text-2xl pt-2 hidden md:flex"
+  >
+    Home
+  </span>
+</a>
+`;
+
+exports[`<SidebarMenu /> should render active Profiles icon when isHomeActive is true 1`] = `
+<a
+  className="flex flex-row space-x-4 items-center px-4 py-3 duration-200 hover:bg-white/10 w-full"
+  href="/"
+  onClick={[Function]}
+  onMouseEnter={[Function]}
+  onTouchStart={[Function]}
+>
+  <span />
+  <span
+    className="text-2xl pt-2 hidden md:flex"
+  >
+    Home
+  </span>
+</a>
+`;
+
+exports[`<SidebarMenu /> should render active Profiles icon when isProfilesActive is true 1`] = `
+<a
+  className="flex flex-row space-x-4 items-center px-4 py-3 duration-200 hover:bg-white/10 w-full"
+  href="/"
+  onClick={[Function]}
+  onMouseEnter={[Function]}
+  onTouchStart={[Function]}
+>
+  <span />
+  <span
+    className="text-2xl pt-2 hidden md:flex"
+  >
+    Home
+  </span>
+</a>
+`;
+
+exports[`<SidebarMenu /> should render inactive Home icon when isHomeActive is false 1`] = `
+<a
+  className="flex flex-row space-x-4 items-center px-4 py-3 duration-200 hover:bg-white/10 w-full"
+  href="/"
+  onClick={[Function]}
+  onMouseEnter={[Function]}
+  onTouchStart={[Function]}
+>
+  <span />
+  <span
+    className="text-2xl pt-2 hidden md:flex"
+  >
+    Home
+  </span>
+</a>
+`;
+
+exports[`<SidebarMenu /> should render inactive Profiles icon when isHomeActive is false 1`] = `
+<a
+  className="flex flex-row space-x-4 items-center px-4 py-3 duration-200 hover:bg-white/10 w-full"
+  href="/"
+  onClick={[Function]}
+  onMouseEnter={[Function]}
+  onTouchStart={[Function]}
+>
+  <span />
+  <span
+    className="text-2xl pt-2 hidden md:flex"
+  >
+    Home
+  </span>
+</a>
+`;
+
+exports[`<SidebarMenu /> should render inactive Profiles icon when isProfilesActive is false 1`] = `
+<a
+  className="flex flex-row space-x-4 items-center px-4 py-3 duration-200 hover:bg-white/10 w-full"
+  href="/"
+  onClick={[Function]}
+  onMouseEnter={[Function]}
+  onTouchStart={[Function]}
+>
+  <span />
+  <span
+    className="text-2xl pt-2 hidden md:flex"
+  >
+    Home
+  </span>
+</a>
+`;
