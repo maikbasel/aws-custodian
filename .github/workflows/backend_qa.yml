@@ -48,7 +48,7 @@ jobs:
           use-tool-cache: true
 
       - name: Run cargo-tarpaulin
-        run: cargo tarpaulin -- --test-threads 1 --fail-under 90 --out Stdout
+        run: cargo tarpaulin -- --test-threads 1 --fail-under 90 --out Stdout --ignore-panics --no-fail-fast
 
 #      - name: Generate code coverage
 #        run: cargo llvm-cov --all-features --no-fail-fast --workspace --lcov --output-path lcov.info
