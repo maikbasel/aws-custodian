@@ -33,12 +33,13 @@ jobs:
           profile: minimal
           components: rustfmt, clippy
 
-      - name: Run cargo-tarpaulin
-        uses: actions-rs/tarpaulin@v0.1
+      - uses: actions-rs/install@v0.1
         with:
-          version: '0.15.0'
-          args: '-- --test-threads 1 --manifest-path "src-tauri/Cargo.toml" --fail-under 90'
-          out-type: 'Stdout'
+          crate: cargo-tarpaulin
+          version: latest
+
+      - name: Run cargo-tarpaulin
+        run: cargo tarpaulin -- --test-threads 1 --manifest-path 'src-tauri/Cargo.toml' --fail-under 90 --out Stdout
 
       - name: Run Rustfmt
         run: cargo fmt -- --check
