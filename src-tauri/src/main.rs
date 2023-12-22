@@ -8,6 +8,7 @@ use app::profile::core::domain::ProfileService;
 use app::profile::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
 use std::sync::Arc;
 
+#[cfg(not(tarpaulin_include))]
 fn main() {
     let profile_data_spi = SdkConfigAdapter;
     let profile_api = ProfileService::new(Arc::new(profile_data_spi));
