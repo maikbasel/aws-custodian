@@ -123,6 +123,15 @@ mod tests {
     use super::*;
 
     #[test]
+    fn should_create_empty_profile_set() {
+        let expected = ProfileSet::new();
+
+        let actual = ProfileSet::default();
+
+        assert_that(&actual).is_equal_to(expected)
+    }
+
+    #[test]
     fn should_add_profile() {
         let mut cut: ProfileSet = ProfileSet::new();
         let input_settings: Settings = Settings {
@@ -143,7 +152,7 @@ mod tests {
     fn should_return_error_when_key_is_blank(#[case] input_profile: &str) {
         let mut cut: ProfileSet = ProfileSet::new();
         let input_settings: Settings = Settings {
-            ..Default::default()
+            ..Settings::default()
         };
 
         let actual = cut.add_profile(input_profile, input_settings);
@@ -160,7 +169,7 @@ mod tests {
     fn should_return_profiles() {
         let mut cut: ProfileSet = ProfileSet::new();
         let input_settings: Settings = Settings {
-            ..Default::default()
+            ..Settings::default()
         };
         let input_profile = Word().fake();
 
