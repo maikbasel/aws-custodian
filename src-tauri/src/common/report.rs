@@ -29,9 +29,9 @@ mod tests {
     }
 
     #[test]
-    fn should_return_empty_printable_attachments_given_only_non_printable_attachments_are_attached() {
-        let report = Report::new(ProfileError::InvalidProfileNameError)
-            .attach("non printable");
+    fn should_return_empty_printable_attachments_given_only_non_printable_attachments_are_attached()
+    {
+        let report = Report::new(ProfileError::InvalidProfileNameError).attach("non printable");
 
         assert_eq!(extract_printable_attachments(&report), Vec::<String>::new());
     }
@@ -41,6 +41,9 @@ mod tests {
         let report = Report::new(ProfileError::InvalidProfileNameError)
             .attach_printable("printable attachment");
 
-        assert_eq!(extract_printable_attachments(&report), vec!["printable attachment".to_string()]);
+        assert_eq!(
+            extract_printable_attachments(&report),
+            vec!["printable attachment".to_string()]
+        );
     }
 }
