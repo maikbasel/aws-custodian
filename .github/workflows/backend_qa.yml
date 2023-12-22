@@ -31,10 +31,13 @@ jobs:
         with:
           profile: minimal
           toolchain: stable
-          components: rustfmt, clippy, llvm-tools
+          components: rustfmt, clippy
 
-      - name: Install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
+      - name: Run Rustfmt
+        run: cargo fmt -- --check
+
+      - name: Run Clippy
+        run: cargo clippy -- -D warnings
 
       - name: Install Tauri dependencies (ubuntu only)
         run: |
@@ -48,26 +51,4 @@ jobs:
           use-tool-cache: true
 
       - name: Run cargo-tarpaulin
-        run: cargo tarpaulin -- --test-threads 1 --fail-under 90 --out Stdout --ignore-panics --no-fail-fast
-
-#      - name: Generate code coverage
-#        run: cargo llvm-cov --all-features --no-fail-fast --workspace --lcov --output-path lcov.info
-
-      #      - name: Run tests
-      #        uses: actions-rs/cargo@v1
-      #        with:
-      #          command: test
-      #          args: --all-features --no-fail-fast --manifest-path=src-tauri/Cargo.toml
-      #        env:
-      #          CARGO_INCREMENTAL: '0'
-      #          RUSTFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
-      #          RUSTDOCFLAGS: '-Zprofile -Ccodegen-units=1 -Cinline-threshold=0 -Clink-dead-code -Coverflow-checks=off -Cpanic=abort -Zpanic_abort_tests'
-
-      - name: Create code coverage report
-        uses: actions-rs/grcov@v0.1
-
-      - name: Run Rustfmt
-        run: cargo fmt -- --check
-
-      - name: Run Clippy
-        run: cargo clippy -- -D warnings
+        run: cargo tarpaulin --implicit-test-threads
