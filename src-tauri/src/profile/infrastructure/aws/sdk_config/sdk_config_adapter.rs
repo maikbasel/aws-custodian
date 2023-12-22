@@ -52,16 +52,14 @@ impl ProfileDataSPI for SdkConfigAdapter {
 }
 
 fn extract_config(profile: &Profile) -> Config {
-    let output_format = profile.get("output").map(|value| value.to_string());
-    let region = profile.get("region").map(|value| value.to_string());
+    let output_format = profile.get("output");
+    let region = profile.get("region");
 
     Config::new(region, output_format)
 }
 
 fn extract_credentials(profile: &Profile) -> Credentials {
-    let access_key_id = profile
-        .get("aws_access_key_id")
-        .map(|value| value.to_string());
+    let access_key_id = profile.get("aws_access_key_id");
     let secret_access_key = profile.get("aws_secret_access_key").map(SecStr::from);
 
     Credentials::new(access_key_id, secret_access_key)

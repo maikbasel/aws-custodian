@@ -135,10 +135,10 @@ mod tests {
         let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
         let dev_settings = Settings::new(
             Credentials::new(
-                Some("devAccessKeyID".to_string()),
+                Some("devAccessKeyID"),
                 Some(SecStr::from("devSecretAccessKey")),
             ),
-            Config::new(Some("eu-west-1".to_string()), Some("json".to_string())),
+            Config::new(Some("eu-west-1"), Some("json")),
         );
 
         let result = cut.load_profile_data().await;
@@ -163,9 +163,9 @@ mod tests {
         let config = result.unwrap();
         assert_that(&config.errors).has_length(1);
         let is_invalid_profile_name_error =
-            *&config.errors.get(0).unwrap().contains::<ProfileError>();
+            config.errors.get(0).unwrap().contains::<ProfileError>();
         assert_that(&is_invalid_profile_name_error).is_true();
-        let actual = *&config
+        let actual = config
             .errors
             .get(0)
             .unwrap()

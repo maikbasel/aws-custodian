@@ -1,56 +1,87 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use crate::common::report::extract_printable_attachments;
 use async_trait::async_trait;
 use derivative::Derivative;
 use error_stack::{Report, Result};
 use secstr::SecStr;
+use serde::ser::SerializeStruct;
+use serde::Serializer;
 
 use crate::profile::core::api::ProfileAPI;
 use crate::profile::core::error::ProfileError;
 use crate::profile::core::spi::ProfileDataSPI;
-
-#[derive(Debug, Eq, PartialEq, Clone)]
+use heck::AsSnakeCase;
+#[derive(Debug, Eq, PartialEq, Clone, Default)]
 pub struct Credentials {
     pub access_key_id: Option<String>,
     pub secret_access_key: Option<SecStr>,
 }
 
+impl serde::Serialize for Credentials {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut state = serializer.serialize_struct("Credentials", 2)?;
+
+        state.serialize_field("access_key_id", &self.access_key_id)?;
+        let secret_access_key = &self
+            .secret_access_key
+            .as_ref()
+            .map(|sec_str| sec_str.unsecure())
+            .map(std::str::from_utf8)
+            .map_or("Error transforming secret", |result| match result {
+                Ok(sec_str) => sec_str,
+                Err(e) => panic!("failed to serialize credentials: {}", e),
+            });
+        state.serialize_field("secret_access_key", secret_access_key)?;
+
+        state.end()
+    }
+}
+
 impl Credentials {
-    pub fn new(access_key_id: Option<String>, secret_access_key: Option<SecStr>) -> Self {
+    pub fn new(access_key_id: Option<&str>, secret_access_key: Option<SecStr>) -> Self {
+        let access_key_id_str = access_key_id.map(|r| r.to_string());
+
         Self {
-            access_key_id,
+            access_key_id: access_key_id_str,
             secret_access_key,
         }
     }
 }
 
-#[derive(Debug, Eq, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone, Default, serde::Serialize)]
 pub struct Config {
     pub region: Option<String>,
     pub output_format: Option<String>,
 }
 
 impl Config {
-    pub fn new(region: Option<String>, output_format: Option<String>) -> Self {
+    pub fn new(region: Option<&str>, output_format: Option<&str>) -> Self {
+        let region_str = region.map(|r| r.to_string());
+        let output_format_str = output_format.map(|o| o.to_string());
+
         Self {
-            region,
-            output_format,
+            region: region_str,
+            output_format: output_format_str,
         }
     }
 }
 
-#[derive(Debug, Eq, Default, PartialEq, Clone)]
+#[derive(Debug, Eq, PartialEq, Clone, serde::Serialize)]
 pub struct Settings {
-    pub credentials: Option<Credentials>,
-    pub config: Option<Config>,
+    pub credentials: Credentials,
+    pub config: Config,
 }
 
 impl Settings {
     pub fn new(credentials: Credentials, config: Config) -> Self {
         Self {
-            credentials: Some(credentials),
-            config: Some(config),
+            credentials,
+            config,
         }
     }
 }
@@ -92,6 +123,29 @@ impl Default for ProfileSet {
     }
 }
 
+impl serde::Serialize for ProfileSet {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let mut state = serializer.serialize_struct("ProfileSet", 2)?;
+
+        state.serialize_field("profiles", &self.profiles)?;
+        let error_messages: HashMap<String, Vec<String>> = self
+            .errors
+            .iter()
+            .map(|report| {
+                let error_message = report.to_string();
+                let error_attachments = extract_printable_attachments(report);
+                (format!("{}", AsSnakeCase(error_message)), error_attachments)
+            })
+            .collect();
+        state.serialize_field("errors", &error_messages)?;
+
+        state.end()
+    }
+}
+
 pub struct ProfileService {
     profile_data_spi: Arc<dyn ProfileDataSPI>,
 }
@@ -114,9 +168,10 @@ mod tests {
     use fake::faker::lorem::en::Word;
     use fake::Fake;
     use rstest::rstest;
+    use serde_json::{json, Value};
     use spectral::prelude::*;
 
-    use crate::common::test::report_utils::messages;
+    use crate::common::report::extract_printable_attachments;
     use crate::profile::core::error::ProfileError;
     use crate::profile::core::spi::MockProfileDataSPI;
 
@@ -134,9 +189,7 @@ mod tests {
     #[test]
     fn should_add_profile() {
         let mut cut: ProfileSet = ProfileSet::new();
-        let input_settings: Settings = Settings {
-            ..Default::default()
-        };
+        let input_settings: Settings = Settings::new(Credentials::default(), Config::default());
         let input_profile: String = Word().fake();
 
         cut.add_profile(&input_profile, input_settings.clone())
@@ -151,16 +204,14 @@ mod tests {
     #[case(" ")]
     fn should_return_error_when_key_is_blank(#[case] input_profile: &str) {
         let mut cut: ProfileSet = ProfileSet::new();
-        let input_settings: Settings = Settings {
-            ..Settings::default()
-        };
+        let input_settings: Settings = Settings::new(Credentials::default(), Config::default());
 
         let actual = cut.add_profile(input_profile, input_settings);
 
         assert_that(&actual).is_err();
         let report = actual.unwrap_err();
         assert!(report.contains::<ProfileError>());
-        let messages = messages(report);
+        let messages = extract_printable_attachments(&report);
         assert_that(&messages).has_length(1);
         assert_that(&messages).contains(String::from("profile name can not be empty or blank"));
     }
@@ -168,9 +219,7 @@ mod tests {
     #[test]
     fn should_return_profiles() {
         let mut cut: ProfileSet = ProfileSet::new();
-        let input_settings: Settings = Settings {
-            ..Settings::default()
-        };
+        let input_settings: Settings = Settings::new(Credentials::default(), Config::default());
         let input_profile = Word().fake();
 
         cut.add_profile(input_profile, input_settings)
@@ -191,5 +240,72 @@ mod tests {
         let actual = cut.get_profiles().await;
 
         assert_that!(actual).is_ok();
+    }
+
+    #[test]
+    fn should_serialize_credentials() {
+        let expected = r#"{"access_key_id":"my_access_key","secret_access_key":"my_secret_key"}"#;
+        let credentials = Credentials {
+            access_key_id: Some("my_access_key".to_string()),
+            secret_access_key: Some(SecStr::from("my_secret_key")),
+        };
+
+        let serialized = serde_json::to_string(&credentials).unwrap();
+
+        assert_eq!(serialized, expected);
+    }
+
+    #[test]
+    #[should_panic(expected = "failed to serialize credentials")]
+    fn should_panic_when_failing_to_serialize_credentials() {
+        let bad_data = vec![0, 159, 146, 150]; // Non UTF-8 bytes
+        let bad_sec_str = SecStr::new(bad_data);
+
+        let cred = Credentials {
+            access_key_id: Some("my_access_key".to_string()),
+            secret_access_key: Some(bad_sec_str),
+        };
+
+        let _ = serde_json::to_string(&cred).unwrap();
+    }
+
+    #[test]
+    fn should_serialize_profile_set() {
+        let mut profile_set = ProfileSet::new();
+        let report =
+            Report::new(ProfileError::InvalidProfileNameError).attach_printable("some details");
+        profile_set.errors.push(report);
+        let credentials = Credentials::new(
+            Some("my_access_key_id"),
+            Some(SecStr::from("my_secret_access_key")),
+        );
+        let config = Config::new(Some("eu-west-1"), Some("json"));
+        let settings = Settings::new(credentials, config);
+        profile_set.add_profile("my_profile", settings).unwrap();
+        let expected_value: Value = json!({
+            "profiles": {
+                "my_profile": {
+                    "credentials": {
+                        "access_key_id": "my_access_key_id",
+                        "secret_access_key": "my_secret_access_key",
+                    },
+                    "config":{
+                        "region": "eu-west-1",
+                        "output_format": "json"
+                    }
+                }
+            },
+            "errors": {
+                 "invalid_profile_name": [
+                    "some details"
+                ]
+            }
+        });
+
+        let serialized_profile_set = serde_json::to_string(&profile_set).unwrap();
+        let serialized_profile_value: serde_json::Value =
+            serde_json::from_str(&serialized_profile_set).unwrap();
+
+        assert_eq!(serialized_profile_value, expected_value);
     }
 }

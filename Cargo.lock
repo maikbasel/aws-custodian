@@ -71,6 +71,7 @@ dependencies = [
  "derivative",
  "error-stack",
  "fake",
+ "heck 0.4.1",
  "lazy_static",
  "mockall",
  "regex",
