@@ -62,9 +62,7 @@ fn extract_credentials(profile: &Profile) -> Credentials {
     let access_key_id = profile
         .get("aws_access_key_id")
         .map(|value| value.to_string());
-    let secret_access_key = profile
-        .get("aws_secret_access_key")
-        .map(SecStr::from);
+    let secret_access_key = profile.get("aws_secret_access_key").map(SecStr::from);
 
     Credentials::new(access_key_id, secret_access_key)
 }
