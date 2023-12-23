@@ -1,7 +1,7 @@
 use error_stack::Context;
 use std::fmt::{Debug, Display, Formatter};
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug, Eq, PartialEq, serde::Serialize)]
 pub enum ProfileError {
     InvalidProfileNameError,
     ProfileDataLoadError,
