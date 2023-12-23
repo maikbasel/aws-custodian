@@ -1,7 +1,7 @@
-use error_stack::Context;
+use error_stack::{Context, Report};
 use std::fmt::{Debug, Display, Formatter};
 
-#[derive(Debug, Eq, PartialEq, serde::Serialize)]
+#[derive(Debug, Eq, PartialEq, Clone, serde::Serialize)]
 pub enum ProfileError {
     InvalidProfileNameError,
     ProfileDataLoadError,
@@ -17,6 +17,13 @@ impl Display for ProfileError {
 }
 
 impl Context for ProfileError {}
+
+impl From<Report<ProfileError>> for ProfileError {
+    fn from(value: Report<ProfileError>) -> Self {
+        let context = value.current_context();
+        context.clone()
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -37,5 +44,27 @@ mod tests {
         let expected = "failed to load profiles";
 
         assert_eq!(format!("{}", ProfileError::ProfileDataLoadError), expected)
+    }
+
+    #[test]
+    fn should_return_profile_data_load_error_when_calling_from_on_report_with_context_profile_data_load_error(
+    ) {
+        let error = ProfileError::ProfileDataLoadError;
+        let report = Report::new(error.clone());
+
+        let result: ProfileError = report.into();
+
+        assert_eq!(error, result);
+    }
+
+    #[test]
+    fn should_return_invalid_profile_name_error_when_calling_from_on_report_with_context_invalid_profile_name_error(
+    ) {
+        let error = ProfileError::InvalidProfileNameError;
+        let report = Report::new(error.clone());
+
+        let result: ProfileError = report.into();
+
+        assert_eq!(error, result);
     }
 }
