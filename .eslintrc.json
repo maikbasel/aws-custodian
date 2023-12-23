@@ -33,6 +33,9 @@
     }
   },
   "rules": {
-    // include additional rules you want to manually set
+    "quotes": ["error", "single"],
+    "prettier/prettier": ["error", {
+      "endOfLine": "auto"
+    }]
   }
 }

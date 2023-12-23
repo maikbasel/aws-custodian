@@ -7,3 +7,4 @@ src-tauri/
 eslint_report.json
 junit.xml
 tarpaulin-report.html
+src/next-env.d.ts
