@@ -1,7 +1,7 @@
-import '../styles/globals.css';
+import './globals.css';
 import type { Metadata } from 'next';
 import React, { ReactNode } from 'react';
-import SidebarMenu from '@/components/SidebarMenu';
+import Sidebar from '@/sections/dashboard/components/sidebar';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -16,8 +16,8 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
     <html lang='en'>
       <body>
-        <div className='flex min-h-screen bg-gray-800'>
-          <SidebarMenu />
+        <div className='flex min-h-screen bg-background'>
+          <Sidebar />
           <main className='flex-1'>{children}</main>
         </div>
       </body>
