@@ -13,7 +13,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/sections/dashboard/components/sidebar/subnav-accordion';
-import { useSidebar } from '@/sections/dashboard/hooks/useSidebar';
+import { useSidebar } from '@/sections/dashboard/hooks/use-sidebar';
 
 import { type LucideIcon } from 'lucide-react';
 

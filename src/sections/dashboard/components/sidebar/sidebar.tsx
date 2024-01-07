@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, LayoutDashboard, Settings } from 'lucide-react';
-import { useSidebar } from '@/sections/dashboard/hooks/useSidebar';
+import { useSidebar } from '@/sections/dashboard/hooks/use-sidebar';
 import {
   NavItem,
   SideNav,
