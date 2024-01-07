@@ -1,7 +1,9 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import React, { ReactNode } from 'react';
-import Sidebar from '@/sections/dashboard/components/sidebar';
+import Sidebar from '@/sections/dashboard/components/sidebar/sidebar';
+import Header from '@/sections/dashboard/components/header/header';
+import { ThemeProvider } from '@/sections/dashboard/components/header/theme-provider';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -14,12 +16,20 @@ type RootLayoutProps = {
 
 export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
   return (
-    <html lang='en'>
+    <html lang='en' suppressHydrationWarning>
       <body>
-        <div className='flex min-h-screen bg-background'>
-          <Sidebar />
-          <main className='flex-1'>{children}</main>
-        </div>
+        <ThemeProvider
+          attribute='class'
+          defaultTheme='system'
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Header />
+          <div className='flex min-h-screen bg-background'>
+            <Sidebar />
+            <main className='flex-1'>{children}</main>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );
