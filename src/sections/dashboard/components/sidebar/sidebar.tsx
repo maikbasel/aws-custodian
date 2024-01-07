@@ -7,9 +7,12 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, LayoutDashboard, Settings } from 'lucide-react';
 import { useSidebar } from '@/sections/dashboard/hooks/useSidebar';
-import { NavItem, SideNav } from '@/sections/dashboard/components/side-nav';
+import {
+  NavItem,
+  SideNav,
+} from '@/sections/dashboard/components/sidebar/side-nav';
 
-const NavItems: NavItem[] = [
+export const NavItems: NavItem[] = [
   {
     title: 'Dashboard',
     icon: LayoutDashboard,
