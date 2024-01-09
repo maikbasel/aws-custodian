@@ -85,7 +85,6 @@ export function ProfileNav() {
   const [profileSet, setProfileSet] = useState<ProfileSet>();
 
   useEffect(() => {
-    console.info('0', data, error, isLoading);
     if (!isLoading) {
       const parsed: ProfileSet = profileSetSchema.parse(data);
       setProfileSet(parsed);
