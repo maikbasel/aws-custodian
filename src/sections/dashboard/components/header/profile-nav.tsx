@@ -14,10 +14,6 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useProfileContext } from '@/sections/dashboard/context/profile-context';
 import { z } from 'zod';
 
-// TODO:
-//  - Truncate profile names longer than 4 characters
-//  - Handle errors
-
 interface ProfileNavItemProps {
   profileName: string;
   accessKeyId: string;
@@ -110,7 +106,7 @@ export function ProfileNav() {
             aria-expanded={open}
             aria-haspopup='true'
             className='flex items-center justify-start gap-2 p-2'
-            // disabled={profileSet!.profiles.size < 2}
+            disabled={profileSet && Object.keys(profileSet.profiles).length < 2}
           >
             <Avatar className='h-9 w-9'>
               <AvatarFallback>{currentProfile}</AvatarFallback>
