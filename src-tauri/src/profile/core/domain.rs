@@ -1,18 +1,15 @@
 use std::collections::HashMap;
-use std::sync::Arc;
 
-use crate::common::report::extract_printable_attachments;
-use async_trait::async_trait;
 use derivative::Derivative;
 use error_stack::{Report, Result};
+use heck::AsSnakeCase;
 use secstr::SecStr;
 use serde::ser::SerializeStruct;
 use serde::Serializer;
 
-use crate::profile::core::api::ProfileAPI;
+use crate::common::report::extract_printable_attachments;
 use crate::profile::core::error::ProfileError;
-use crate::profile::core::spi::ProfileDataSPI;
-use heck::AsSnakeCase;
+
 #[derive(Debug, Eq, PartialEq, Clone, Default)]
 pub struct Credentials {
     pub access_key_id: Option<String>,
@@ -146,23 +143,6 @@ impl serde::Serialize for ProfileSet {
     }
 }
 
-pub struct ProfileService {
-    profile_data_spi: Arc<dyn ProfileDataSPI>,
-}
-
-impl ProfileService {
-    pub fn new(profile_data_spi: Arc<dyn ProfileDataSPI>) -> Self {
-        Self { profile_data_spi }
-    }
-}
-
-#[async_trait]
-impl ProfileAPI for ProfileService {
-    async fn get_profiles<'a>(&'a self) -> Result<ProfileSet, ProfileError> {
-        self.profile_data_spi.load_profile_data().await
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use fake::faker::lorem::en::Word;
@@ -173,7 +153,6 @@ mod tests {
 
     use crate::common::report::extract_printable_attachments;
     use crate::profile::core::error::ProfileError;
-    use crate::profile::core::spi::MockProfileDataSPI;
 
     use super::*;
 
@@ -227,19 +206,6 @@ mod tests {
         let actual = cut.profiles();
 
         assert_that!(actual.len()).is_equal_to(1);
-    }
-
-    #[tokio::test]
-    async fn should_load_profile_data_and_return_the_result() {
-        let mut mock_profile_data_spi = MockProfileDataSPI::new();
-        mock_profile_data_spi
-            .expect_load_profile_data()
-            .return_once(|| Ok(ProfileSet::new()));
-        let cut = ProfileService::new(Arc::new(mock_profile_data_spi));
-
-        let actual = cut.get_profiles().await;
-
-        assert_that!(actual).is_ok();
     }
 
     #[test]
