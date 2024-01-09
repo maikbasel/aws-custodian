@@ -4,6 +4,7 @@ import React, { ReactNode } from 'react';
 import Sidebar from '@/sections/dashboard/components/sidebar/sidebar';
 import Header from '@/sections/dashboard/components/header/header';
 import { ThemeProvider } from '@/sections/dashboard/components/header/theme-provider';
+import { ProfileProvider } from '@/sections/dashboard/context/profile-context';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -24,11 +25,13 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          <div className='flex min-h-screen bg-background'>
-            <Sidebar />
-            <main className='flex-1'>{children}</main>
-          </div>
+          <ProfileProvider>
+            <Header />
+            <div className='flex min-h-screen bg-background'>
+              <Sidebar />
+              <main className='flex-1'>{children}</main>
+            </div>
+          </ProfileProvider>
         </ThemeProvider>
       </body>
     </html>
