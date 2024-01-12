@@ -2,5 +2,5 @@
 ignore-panics = true
 no-fail-fast = true
 fail-under = 90
-out = ["Stdout"]
-exclude-files = ["src-tauri/target/*"]
+out = ["Stdout", 'Html']
+exclude-files = ["src-tauri/target/*", "node_modules/*"]
