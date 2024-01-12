@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
@@ -33,7 +33,7 @@ interface SidebarProps {
 
 export default function Sidebar({ className }: Readonly<SidebarProps>) {
   const { isOpen, toggle } = useSidebar();
-  const [switched, setSwitched] = useState(false);
+  const [switched, setSwitched] = React.useState(false);
 
   const handleToggle = () => {
     setSwitched(true);
@@ -48,6 +48,7 @@ export default function Sidebar({ className }: Readonly<SidebarProps>) {
         isOpen ? 'w-72' : 'w-[78px]',
         className
       )}
+      data-testid='sidebar-nav'
     >
       <div className='space-y-4 py-4'>
         <div className='px-3 py-2'>
