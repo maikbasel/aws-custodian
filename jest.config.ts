@@ -8,6 +8,7 @@ const createJestConfig = nextJest({
 
 // Add any custom config to be passed to Jest
 const config: Config = {
+  collectCoverage: true,
   coverageProvider: 'v8',
   coverageThreshold: {
     global: {
@@ -17,6 +18,10 @@ const config: Config = {
       statements: 90,
     },
   },
+  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!**/node_modules/**'],
+  coveragePathIgnorePatterns: [
+    '<rootDir>/src/components/ui/', // generated with shadcn/ui CLI
+  ],
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
