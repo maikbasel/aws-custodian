@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "test": "jest",
-    "test:ci": "jest --ci --json --coverage --testLocationInResults --reporters=default --reporters=jest-junit",
+    "test:ci": "jest --ci --testLocationInResults",
     "test:watch": "jest --watch",
     "format": "prettier --check .",
     "format:fix": "prettier --write .",

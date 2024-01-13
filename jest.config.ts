@@ -27,6 +27,7 @@ const config: Config = {
     '^@/(.*)$': '<rootDir>/src/$1',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
+  reporters: ['default', 'jest-junit'],
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
