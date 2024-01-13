@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import * as React from 'react';
-import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { buttonVariants } from '@/components/ui/button';
@@ -35,10 +34,10 @@ interface SideNavProps {
 export function SideNav({ items, setOpen, className }: Readonly<SideNavProps>) {
   const path = usePathname();
   const { isOpen } = useSidebar();
-  const [openItem, setOpenItem] = useState('');
-  const [lastOpenItem, setLastOpenItem] = useState('');
+  const [openItem, setOpenItem] = React.useState('');
+  const [lastOpenItem, setLastOpenItem] = React.useState('');
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (isOpen) {
       setOpenItem(lastOpenItem);
     } else {

@@ -2,7 +2,7 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import Sidebar from '@/sections/dashboard/components/sidebar/sidebar';
 import React from 'react';
 
-describe('Sidebar', () => {
+describe('<Sidebar />', () => {
   afterEach(() => {
     jest.restoreAllMocks();
   });
