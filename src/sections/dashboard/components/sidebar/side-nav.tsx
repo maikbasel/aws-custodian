@@ -21,7 +21,7 @@ export interface NavItem {
   href: string;
   icon: LucideIcon;
   color?: string;
-  isChidren?: boolean;
+  hasChildren?: boolean;
   children?: NavItem[];
 }
 
@@ -49,7 +49,7 @@ export function SideNav({ items, setOpen, className }: Readonly<SideNavProps>) {
   return (
     <nav className='space-y-2'>
       {items.map((item) =>
-        item.isChidren ? (
+        item.hasChildren ? (
           <Accordion
             type='single'
             collapsible
