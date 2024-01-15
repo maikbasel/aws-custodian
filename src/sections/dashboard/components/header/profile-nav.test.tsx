@@ -60,7 +60,7 @@ describe('<ProfileNav />', () => {
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
-  it('Should trigger state change when dropdown is clicked', async () => {
+  it('should expand profile nav when dropdown is clicked', async () => {
     mockIPC((cmd) => {
       // simulated rust command called "get_profiles" that returns profile records
       if (cmd === 'get_profiles') {
