@@ -57,7 +57,7 @@ type Settings = {
   };
 };
 
-type ProfileSet = {
+export type ProfileSet = {
   profiles: Record<string, Settings>;
   errors: Record<string, string[]>;
 };
@@ -106,6 +106,7 @@ export function ProfileNav() {
             aria-haspopup='true'
             className='flex items-center justify-start gap-2 p-2'
             disabled={profileSet && Object.keys(profileSet.profiles).length < 2}
+            data-testid='profile-nav-trigger'
           >
             <Avatar className='h-9 w-9'>
               <AvatarFallback>{currentProfile}</AvatarFallback>
@@ -124,12 +125,12 @@ export function ProfileNav() {
             </div>
 
             {open ? (
-              profileSet && Object.keys(profileSet.profiles).length > 1 ? (
+              profileSet && Object.keys(profileSet.profiles).length > 1 ? ( //NOSONAR
                 <ChevronUp className='ml-2 h-4 w-4 shrink-0 opacity-50' />
               ) : (
                 <></>
               )
-            ) : profileSet && Object.keys(profileSet.profiles).length > 1 ? (
+            ) : profileSet && Object.keys(profileSet.profiles).length > 1 ? ( //NOSONAR
               <ChevronDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
             ) : (
               <></>
