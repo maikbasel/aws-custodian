@@ -16,15 +16,15 @@ import { z } from 'zod';
 
 interface ProfileNavItemProps {
   profileName: string;
-  accessKeyId: string;
   region: string;
+  output_format: string;
   onClick: () => void;
 }
 
 export const ProfileNavItem: React.FC<ProfileNavItemProps> = ({
   profileName,
-  accessKeyId,
   region,
+  output_format,
   onClick,
 }) => (
   <DropdownMenuItem>
@@ -38,23 +38,37 @@ export const ProfileNavItem: React.FC<ProfileNavItemProps> = ({
       </Avatar>
       <div className='flex items-center justify-start gap-2 p-2'>
         <div className='flex flex-col space-y-1 leading-none'>
-          <p className='truncate font-medium'>{accessKeyId}</p>
-          <p className='truncate text-sm text-zinc-700'>{region}</p>
+          <p
+            className='truncate font-medium'
+            data-testid={`${profileName}-profile-nav-item-region-label`}
+          >
+            {region}
+          </p>
+          <p
+            className='truncate text-sm text-zinc-700'
+            data-testid={`${profileName}-profile-nav-item-format-label`}
+          >
+            {output_format}
+          </p>
         </div>
       </div>
     </Button>
   </DropdownMenuItem>
 );
 
+type Config = {
+  region?: string;
+  output_format?: string;
+};
+
+type Credentials = {
+  access_key_id?: string;
+  secret_access_key?: string;
+};
+
 type Settings = {
-  credentials: {
-    access_key_id: string;
-    secret_access_key: string;
-  };
-  config: {
-    region: string;
-    output_format: string;
-  };
+  credentials: Credentials;
+  config: Config;
 };
 
 export type ProfileSet = {
@@ -66,12 +80,12 @@ const profileSetSchema = z.object({
   profiles: z.record(
     z.object({
       credentials: z.object({
-        access_key_id: z.string(),
-        secret_access_key: z.string(),
+        access_key_id: z.string().optional(),
+        secret_access_key: z.string().optional(),
       }),
       config: z.object({
-        region: z.string(),
-        output_format: z.string(),
+        region: z.string().optional(),
+        output_format: z.string().optional(),
       }),
     })
   ),
@@ -79,7 +93,7 @@ const profileSetSchema = z.object({
 });
 
 export function ProfileNav() {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = React.useState(false);
   const { data, error, isLoading } = useProfileContext();
   const [currentProfile, setCurrentProfile] = useState<string>();
   const [profileSet, setProfileSet] = useState<ProfileSet>();
@@ -90,6 +104,7 @@ export function ProfileNav() {
       setProfileSet(parsed);
 
       const initialProfile = Object.keys(parsed.profiles)[0];
+      console.info('1', JSON.stringify(parsed));
       setCurrentProfile(initialProfile);
     }
   }, [data, error, isLoading]);
@@ -114,10 +129,16 @@ export function ProfileNav() {
 
             <div className='flex items-center justify-start gap-2 p-2'>
               <div className='flex flex-col space-y-1 leading-none'>
-                <p className='truncate font-medium'>
+                <p
+                  className='truncate font-medium'
+                  data-testid='profile-nav-trigger-region-label'
+                >
                   {profileSet?.profiles?.[currentProfile!].config.region ?? '?'}
                 </p>
-                <p className='truncate text-sm text-zinc-700'>
+                <p
+                  className='truncate text-sm text-zinc-700'
+                  data-testid='profile-nav-trigger-format-label'
+                >
                   {profileSet?.profiles?.[currentProfile!].config
                     .output_format ?? '?'}
                 </p>
@@ -147,8 +168,8 @@ export function ProfileNav() {
                 <ProfileNavItem
                   key={profile}
                   profileName={profile}
-                  accessKeyId={settings.config.region ?? '?'}
-                  region={settings.config.output_format ?? '?'}
+                  region={settings.config.region ?? '?'}
+                  output_format={settings.config.output_format ?? '?'}
                   onClick={() => setCurrentProfile(profile)}
                 />
               ))}
