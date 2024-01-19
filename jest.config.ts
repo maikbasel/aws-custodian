@@ -18,7 +18,11 @@ const config: Config = {
       statements: 90,
     },
   },
-  collectCoverageFrom: ['src/**/*.{ts,tsx}', '!**/node_modules/**'],
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!**/node_modules/**',
+    '!src/sections/dashboard/components/header/theme-provider.tsx', // just a wrapper for NextThemesProvider
+  ],
   coveragePathIgnorePatterns: [
     '<rootDir>/src/components/ui/', // generated with shadcn/ui CLI
   ],
