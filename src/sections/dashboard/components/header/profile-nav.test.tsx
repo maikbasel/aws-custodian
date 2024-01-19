@@ -8,6 +8,7 @@ import {
 } from '@/sections/dashboard/components/header/profile-nav';
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import { ProfileProvider } from '@/sections/dashboard/context/profile-context';
+import { SWRConfig } from 'swr';
 
 describe('<ProfileNav />', () => {
   const profileSet: ProfileSet = {
@@ -167,5 +168,104 @@ describe('<ProfileNav />', () => {
     const chevronSvg = triggerButton.querySelector('svg .lucide-chevron-up');
 
     expect(chevronSvg).not.toBeInTheDocument();
+  });
+
+  it('should render placeholder values for region and format label in profile nav trigger when these optional values are not set', async () => {
+    const inputProfileSet: ProfileSet = {
+      profiles: {
+        prof1: {
+          credentials: {
+            access_key_id: 'key1',
+            secret_access_key: 'secret1',
+          },
+          config: {
+            region: undefined,
+            output_format: undefined,
+          },
+        },
+      },
+      errors: {},
+    };
+    mockIPC((cmd) => {
+      if (cmd === 'get_profiles') {
+        return inputProfileSet;
+      }
+    });
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileProvider>
+          <ProfileNav />
+        </ProfileProvider>
+      </SWRConfig>
+    );
+    // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
+    await waitFor(() => {
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    });
+
+    const profileNavTriggerRegionLabel = screen.getByTestId(
+      'profile-nav-trigger-region-label'
+    );
+    expect(profileNavTriggerRegionLabel).toHaveTextContent('?');
+    const profileNavTriggerFormatLabel = screen.getByTestId(
+      'profile-nav-trigger-format-label'
+    );
+    expect(profileNavTriggerFormatLabel).toHaveTextContent('?');
+  });
+
+  it('should render placeholder values for region and format label in profile nav item when these optional values are not set', async () => {
+    const inputProfileSet: ProfileSet = {
+      profiles: {
+        prof1: {
+          credentials: {
+            access_key_id: 'key1',
+            secret_access_key: 'secret1',
+          },
+          config: {
+            region: 'region1',
+            output_format: 'format1',
+          },
+        },
+        prof2: {
+          credentials: {
+            access_key_id: 'key2',
+            secret_access_key: 'secret2',
+          },
+          config: {
+            region: undefined,
+            output_format: undefined,
+          },
+        },
+      },
+      errors: {},
+    };
+    mockIPC((cmd) => {
+      if (cmd === 'get_profiles') {
+        return inputProfileSet;
+      }
+    });
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileProvider>
+          <ProfileNav />
+        </ProfileProvider>
+      </SWRConfig>
+    );
+    // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
+    await waitFor(() => {
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    });
+
+    const triggerButton = screen.getByTestId('profile-nav-trigger');
+    await userEvent.click(triggerButton);
+
+    const profileNavTriggerRegionLabel = screen.getByTestId(
+      'prof2-profile-nav-item-region-label'
+    );
+    expect(profileNavTriggerRegionLabel).toHaveTextContent('?');
+    const profileNavTriggerFormatLabel = screen.getByTestId(
+      'prof2-profile-nav-item-format-label'
+    );
+    expect(profileNavTriggerFormatLabel).toHaveTextContent('?');
   });
 });
