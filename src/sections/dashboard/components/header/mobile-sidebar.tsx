@@ -23,7 +23,12 @@ export const MobileSidebar = () => {
       <SheetTrigger asChild>
         <div className='flex items-center justify-center gap-2'>
           <MenuIcon />
-          <h1 className='text-lg font-semibold'>AWS Custodian</h1>
+          <h1
+            className='text-lg font-semibold'
+            data-testid='mobile-app-header-label'
+          >
+            AWS Custodian
+          </h1>
         </div>
       </SheetTrigger>
       <SheetContent side='left' className='w-72'>

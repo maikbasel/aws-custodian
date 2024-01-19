@@ -17,7 +17,9 @@ export default function Header() {
           className='hidden items-center justify-between gap-2 md:flex'
         >
           <Boxes className='h-6 w-6' />
-          <h1 className='text-lg font-semibold'>AWS Custodian</h1>
+          <h1 className='text-lg font-semibold' data-testid='app-header-label'>
+            AWS Custodian
+          </h1>
         </Link>
         <div className={cn('block md:!hidden')}>
           <MobileSidebar />
