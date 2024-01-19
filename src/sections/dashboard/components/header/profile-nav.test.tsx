@@ -275,4 +275,36 @@ describe('<ProfileNav />', () => {
     );
     expect(profileNavTriggerFormatLabel).toHaveTextContent('?');
   });
+
+  it('should select clicked profile as current when profile nav item is clicked', async () => {
+    mockIPC((cmd) => {
+      if (cmd === 'get_profiles') {
+        return profileSet;
+      }
+    });
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileProvider>
+          <ProfileNav />
+        </ProfileProvider>
+      </SWRConfig>
+    );
+    // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
+    await waitFor(() => {
+      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByTestId('profile-nav-trigger'));
+
+    const profileNavItem = screen.getByText(/prof2/i);
+    await userEvent.click(profileNavItem);
+
+    const triggerButton = screen.getByRole('button', {
+      name: /prof2/i,
+    });
+    expect(triggerButton).toBeInTheDocument();
+    expect(triggerButton.getAttribute('data-testid')).toEqual(
+      'profile-nav-trigger'
+    );
+  });
 });
