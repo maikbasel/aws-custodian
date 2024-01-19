@@ -12,8 +12,8 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import React, { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useProfileContext } from '@/sections/dashboard/context/profile-context';
-import { z } from 'zod';
 import { useProfile } from '@/sections/dashboard/hooks/use-profile';
+import { ProfileSet, profileSetSchema } from '@/modules/profiles/domain';
 
 interface ProfileNavItemProps {
   profileName: string;
@@ -56,42 +56,6 @@ export const ProfileNavItem: React.FC<ProfileNavItemProps> = ({
     </Button>
   </DropdownMenuItem>
 );
-
-type Config = {
-  region?: string;
-  output_format?: string;
-};
-
-type Credentials = {
-  access_key_id?: string;
-  secret_access_key?: string;
-};
-
-type Settings = {
-  credentials: Credentials;
-  config: Config;
-};
-
-export type ProfileSet = {
-  profiles: Record<string, Settings>;
-  errors: Record<string, string[]>;
-};
-
-const profileSetSchema = z.object({
-  profiles: z.record(
-    z.object({
-      credentials: z.object({
-        access_key_id: z.string().optional(),
-        secret_access_key: z.string().optional(),
-      }),
-      config: z.object({
-        region: z.string().optional(),
-        output_format: z.string().optional(),
-      }),
-    })
-  ),
-  errors: z.record(z.string().array()),
-});
 
 export function ProfileNav() {
   const [open, setOpen] = React.useState(false);
