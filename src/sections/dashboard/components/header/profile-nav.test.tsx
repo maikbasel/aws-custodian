@@ -1,5 +1,5 @@
 import React from 'react';
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { randomFillSync } from 'crypto';
 import {
@@ -54,7 +54,6 @@ describe('<ProfileNav />', () => {
 
   afterEach(() => {
     clearMocks();
-    cleanup();
   });
 
   it('should render the component without error when in loading state', async () => {
@@ -69,9 +68,11 @@ describe('<ProfileNav />', () => {
       }
     });
     render(
-      <ProfileProvider>
-        <ProfileNav />
-      </ProfileProvider>
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileProvider>
+          <ProfileNav />
+        </ProfileProvider>
+      </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
     await waitFor(() => {
@@ -95,9 +96,11 @@ describe('<ProfileNav />', () => {
       }
     });
     render(
-      <ProfileProvider>
-        <ProfileNav />
-      </ProfileProvider>
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileProvider>
+          <ProfileNav />
+        </ProfileProvider>
+      </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
     await waitFor(() => {
@@ -117,9 +120,11 @@ describe('<ProfileNav />', () => {
       }
     });
     render(
-      <ProfileProvider>
-        <ProfileNav />
-      </ProfileProvider>
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileProvider>
+          <ProfileNav />
+        </ProfileProvider>
+      </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
     await waitFor(() => {
@@ -133,7 +138,7 @@ describe('<ProfileNav />', () => {
     expect(chevronSvg).toHaveClass('lucide-chevron-up');
   });
 
-  it('should not render any chevron icon when no additional profiles are available', async () => {
+  it('should not render chevron icon when no additional profiles are available', async () => {
     const singleProfile: ProfileSet = {
       profiles: {
         prof1: {
@@ -155,9 +160,11 @@ describe('<ProfileNav />', () => {
       }
     });
     render(
-      <ProfileProvider>
-        <ProfileNav />
-      </ProfileProvider>
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileProvider>
+          <ProfileNav />
+        </ProfileProvider>
+      </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
     await waitFor(() => {
