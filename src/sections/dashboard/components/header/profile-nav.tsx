@@ -13,6 +13,7 @@ import React, { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useProfileContext } from '@/sections/dashboard/context/profile-context';
 import { z } from 'zod';
+import { useProfile } from '@/sections/dashboard/hooks/use-profile';
 
 interface ProfileNavItemProps {
   profileName: string;
@@ -95,7 +96,7 @@ const profileSetSchema = z.object({
 export function ProfileNav() {
   const [open, setOpen] = React.useState(false);
   const { data, error, isLoading } = useProfileContext();
-  const [currentProfile, setCurrentProfile] = useState<string>();
+  const { current, setCurrent } = useProfile();
   const [profileSet, setProfileSet] = useState<ProfileSet>();
 
   useEffect(() => {
@@ -104,10 +105,9 @@ export function ProfileNav() {
       setProfileSet(parsed);
 
       const initialProfile = Object.keys(parsed.profiles)[0];
-      console.info('1', JSON.stringify(parsed));
-      setCurrentProfile(initialProfile);
+      setCurrent(initialProfile);
     }
-  }, [data, error, isLoading]);
+  }, [data, error, isLoading, setCurrent]);
 
   return (
     <DropdownMenu onOpenChange={setOpen}>
@@ -124,7 +124,7 @@ export function ProfileNav() {
             data-testid='profile-nav-trigger'
           >
             <Avatar className='h-9 w-9'>
-              <AvatarFallback>{currentProfile}</AvatarFallback>
+              <AvatarFallback>{current}</AvatarFallback>
             </Avatar>
 
             <div className='flex items-center justify-start gap-2 p-2'>
@@ -133,14 +133,13 @@ export function ProfileNav() {
                   className='truncate font-medium'
                   data-testid='profile-nav-trigger-region-label'
                 >
-                  {profileSet?.profiles?.[currentProfile!].config.region ?? '?'}
+                  {profileSet?.profiles?.[current].config.region ?? '?'}
                 </p>
                 <p
                   className='truncate text-sm text-zinc-700'
                   data-testid='profile-nav-trigger-format-label'
                 >
-                  {profileSet?.profiles?.[currentProfile!].config
-                    .output_format ?? '?'}
+                  {profileSet?.profiles?.[current].config.output_format ?? '?'}
                 </p>
               </div>
             </div>
@@ -163,14 +162,14 @@ export function ProfileNav() {
         <DropdownMenuGroup>
           {profileSet &&
             Object.entries(profileSet?.profiles)
-              .filter(([profile]) => profile !== currentProfile)
+              .filter(([profile]) => profile !== current)
               .map(([profile, settings]) => (
                 <ProfileNavItem
                   key={profile}
                   profileName={profile}
                   region={settings.config.region ?? '?'}
                   output_format={settings.config.output_format ?? '?'}
-                  onClick={() => setCurrentProfile(profile)}
+                  onClick={() => setCurrent(profile)}
                 />
               ))}
         </DropdownMenuGroup>
