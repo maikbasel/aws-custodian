@@ -5,10 +5,13 @@ import {
   ColumnDef,
   ColumnFiltersState,
   getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   SortingState,
+  VisibilityState,
 } from '@tanstack/table-core';
 import {
   Table,
@@ -19,57 +22,63 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { flexRender, useReactTable } from '@tanstack/react-table';
-import { Input } from '@/components/ui/input';
 import { DataTablePagination } from '@/components/ui/data-table-pagination';
-import { DataTableViewOptions } from '@/components/ui/data-table-view-options';
+import {
+  DataTableToolbar,
+  FilterableColumn,
+  SearchInputFilter,
+} from '@/components/ui/data-table-toolbar';
 
 export interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  searchInputFilter: SearchInputFilter;
+  filterableColumns: FilterableColumn[];
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  searchInputFilter,
+  filterableColumns,
 }: Readonly<DataTableProps<TData, TValue>>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-
+  const [rowSelection, setRowSelection] = React.useState({});
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
-      columnFilters,
+      columnVisibility,
       rowSelection,
+      columnFilters,
     },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
   return (
-    <>
-      <div className='flex items-center py-4'>
-        <Input
-          placeholder='Filter profiles...'
-          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('name')?.setFilterValue(event.target.value)
-          }
-          className='max-w-sm'
-        />
-        <DataTableViewOptions table={table} />
-      </div>
+    <div className='space-y-4'>
+      <DataTableToolbar
+        table={table}
+        searchInputFilter={searchInputFilter}
+        filterableColumns={filterableColumns}
+      />
       <div className='rounded-md border'>
         <Table>
           <TableHeader>
@@ -77,7 +86,7 @@ export function DataTable<TData, TValue>({
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} colSpan={header.colSpan}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -121,6 +130,6 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <DataTablePagination table={table} />
-    </>
+    </div>
   );
 }
