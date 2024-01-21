@@ -2,13 +2,11 @@ import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { randomFillSync } from 'crypto';
-import {
-  ProfileNav,
-  ProfileSet,
-} from '@/sections/dashboard/components/header/profile-nav';
+import { ProfileNav } from '@/sections/dashboard/components/header/profile-nav';
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import { ProfileProvider } from '@/sections/dashboard/context/profile-context';
 import { SWRConfig } from 'swr';
+import { ProfileSet } from '@/modules/profiles/domain';
 
 describe('<ProfileNav />', () => {
   const profileSet: ProfileSet = {
