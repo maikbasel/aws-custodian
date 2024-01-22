@@ -1,11 +1,11 @@
 [package]
-name = "app"
+name = "backend"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
-default-run = "app"
+description = "A Rust-powered backend for a Tauri Desktop application, providing functionalities for AWS SDK calls."
+authors = ["Maik Basel"]
+license = "MIT"
+repository = "https://github.com/maikbasel/archunit-hex-arch.git"
+default-run = "backend"
 edition = "2021"
 rust-version = "1.60"
 

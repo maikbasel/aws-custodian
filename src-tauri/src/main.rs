@@ -3,10 +3,10 @@
 
 use std::sync::Arc;
 
-use app::__cmd__get_profiles;
-use app::profile::application::tauri::profile_handler::get_profiles;
-use app::profile::core::spi::ProfileDataSPI;
-use app::profile::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
+use backend::__cmd__get_profiles;
+use backend::profile::application::tauri::profile_handler::get_profiles;
+use backend::profile::core::spi::ProfileDataSPI;
+use backend::profile::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
 
 #[cfg(not(tarpaulin_include))]
 fn main() {
