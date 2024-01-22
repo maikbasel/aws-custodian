@@ -1,6 +1,15 @@
 {
   "name": "aws-custodian",
   "version": "0.1.0",
+  "description": "A Next.js front-end application designed to interface with a Rust-powered backend.",
+  "author": {
+    "name": "Maik Basel"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maikbasel/archunit-hex-arch.git"
+  },
   "private": true,
   "scripts": {
     "dev": "next dev",
