@@ -15,9 +15,10 @@
 - [License](#warning-license)
 - [Contact](#handshake-contact)
 
-
 ## :star2: About the Project
+
 ### :space_invader: Tech Stack
+
 <details> <summary>Client</summary> <ul>
 <li><a href="https://nextjs.org/">Next.JS</a></li>
 <li><a href="https://tauri.app/v1/guides/getting-started/setup/next-js/">Tauri</a></li>
@@ -28,10 +29,10 @@
 </ul> </details>
 
 ### :dart: Features
+
 - CRUD operations for your AWS credentials & configuration files by profile.
 - Efficient creation, reading, updating, deletion of SSM parameters and Secret Manager Secrets.
 - Real-time reading and downloading of images/packages from ECR and CodeArtifact repositories.
-
 
 ## :toolbox: Getting Started
 
@@ -39,23 +40,26 @@
 
 - Install Node.JS on your computer<a href="https://nodejs.org/en"> Here</a>
 - Install Tauri CLI
+
 ```bash
 npm install --save-dev @tauri-apps/cli
 ```
-- Install Rust on your computer<a href="https://rustup.rs/"> Here</a>
 
+- Install Rust on your computer<a href="https://rustup.rs/"> Here</a>
 
 ### :test_tube: Running Tests
 
 To run frontend tests run the following command
+
 ```bash
 npm run test
 ```
+
 To run backend test run the following command
+
 ```bash
 cargo test
 ```
-
 
 ### :running: Run Locally
 
@@ -64,30 +68,32 @@ Clone the project
 ```bash
 https://github.com/maikbasel/aws-custodian.git
 ```
+
 Install dependencies
+
 ```bash
 npm install
 ```
+
 Start the development build of the app
+
 ```bash
 npm run tauri:dev
 ```
 
-
 ### :triangular_flag_on_post: Deployment
 
 Build the app for production
+
 ```bash
 npm run tauri build
 ```
-
 
 ## :compass: Roadmap
 
 * [ ] AWS Credentials & Configuration management.
 * [ ] AWS SSM Parameter Store management.
 * [ ] AWS Secret Manager management.
-
 
 ## :wave: Contributing
 
