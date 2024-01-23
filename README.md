@@ -105,7 +105,7 @@ see `CONTRIBUTING.md` for ways to get started
 
 ### :scroll: Code of Conduct
 
-Please read the [Code of Conduct](https://github.com/maikbasel/aws-custodian.git/blob/master/CODE_OF_CONDUCT.md)
+Please read the [Code of Conduct](https://github.com/maikbasel/aws-custodian/blob/master/CODE_OF_CONDUCT.md)
 
 ## :warning: License
 
