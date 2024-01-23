@@ -101,7 +101,7 @@ npm run tauri build
 
 Contributions are always welcome!
 
-see `contributing.md` for ways to get started
+see `CONTRIBUTING.md` for ways to get started
 
 ### :scroll: Code of Conduct
 
