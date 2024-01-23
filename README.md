@@ -25,14 +25,14 @@
 </ul> </details>
 <details> <summary>Server</summary> <ul>
 <li><a href="https://www.rust-lang.org/">Rust</a></li>
-<li><a href="https://tauri.app/">Tauri</a></li>
+<li><a href="https://tauri.app/v1/guides/getting-started/setup/next-js/">Tauri</a></li>
 </ul> </details>
 
 ### :dart: Features
 
 - CRUD operations for your AWS credentials & configuration files by profile.
 - Efficient creation, reading, updating, deletion of SSM parameters and Secret Manager Secrets.
-- Real-time reading and downloading of images/packages from ECR and CodeArtifact repositories.
+- Managing and downloading of images/packages from ECR and CodeArtifact repositories.
 
 ## :toolbox: Getting Started
 
@@ -94,10 +94,10 @@ npm run tauri build
 * [ ] AWS Credentials & Configuration management.
 * [ ] AWS SSM Parameter Store management.
 * [ ] AWS Secret Manager management.
+* [ ] AWS ECR Repository management.
+* [ ] AWS CodeArtifact Repository management.
 
 ## :wave: Contributing
-
-<a href="https://github.com/maikbasel/aws-custodian.git/graphs/contributors"> <img src="https://contrib.rocks/image?repo=Louis3797/awesome-readme-template" /> </a>
 
 Contributions are always welcome!
 
@@ -105,14 +105,14 @@ see `CONTRIBUTING.md` for ways to get started
 
 ### :scroll: Code of Conduct
 
-Please read the [Code of Conduct](https://github.com/maikbasel/aws-custodian/blob/master/CODE_OF_CONDUCT.md)
+Please read the [Code of Conduct](https://github.com/maikbasel/aws-custodian/blob/master/CODE_OF_CONDUCT.md).
 
 ## :warning: License
 
-Distributed under the no License. See LICENSE.txt for more information.
+Distributed under the MIT License. See LICENSE.md for more information.
 
 ## :handshake: Contact
 
-Maik Basel - - myemail@mail.de
+Maik Basel - - to be added
 
-Project Link: [https://github.com/maikbasel/aws-custodian.git](https://github.com/maikbasel/aws-custodian.git)
+Project Link: [https://github.com/maikbasel/aws-custodian.git](https://github.com/maikbasel/aws-custodian.git).
