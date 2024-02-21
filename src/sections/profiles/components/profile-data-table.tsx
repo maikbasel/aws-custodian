@@ -21,7 +21,7 @@ import {
   SearchInputFilter,
 } from '@/components/ui/data-table-toolbar';
 
-type Profile = {
+export type Profile = {
   name: string;
   access_key_id?: string;
   secret_access_key?: string;
@@ -47,7 +47,7 @@ const profileColumns: ColumnDef<Profile>[] = [
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Select row'
+        aria-label={`Select row ${row.index + 1}`}
         className='translate-y-[2px]'
       />
     ),
