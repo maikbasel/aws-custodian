@@ -73,4 +73,82 @@ describe('<ProfileDataTable />', () => {
     await userEvent.click(row1Checkbox);
     expect(row1Checkbox).not.toBeChecked();
   });
+
+  it('should filter row by region when the "Region" filter is changed', async () => {
+    const input: ProfileSet = {
+      profiles: {
+        prof1: {
+          credentials: {
+            access_key_id: 'key1',
+            secret_access_key: 'secret1',
+          },
+          config: {
+            region: 'eu-west-1',
+            output_format: 'json',
+          },
+        },
+        prof2: {
+          credentials: {
+            access_key_id: 'key2',
+            secret_access_key: 'secret2',
+          },
+          config: {
+            region: 'eu-east-1',
+            output_format: 'table',
+          },
+        },
+      },
+      errors: {},
+    };
+    render(<ProfileDataTable data={input} />);
+
+    expect(screen.getAllByRole('row').length).toBe(3);
+
+    await userEvent.click(
+      screen.getAllByRole('button', { name: /Region/i })[0]
+    );
+
+    await userEvent.click(screen.getByRole('option', { name: /eu-west-1/i }));
+
+    expect(screen.getAllByRole('row').length).toBe(2);
+  });
+
+  it('should filter row by output format when the "Output Format" filter is changed', async () => {
+    const input: ProfileSet = {
+      profiles: {
+        prof1: {
+          credentials: {
+            access_key_id: 'key1',
+            secret_access_key: 'secret1',
+          },
+          config: {
+            region: 'eu-west-1',
+            output_format: 'json',
+          },
+        },
+        prof2: {
+          credentials: {
+            access_key_id: 'key2',
+            secret_access_key: 'secret2',
+          },
+          config: {
+            region: 'eu-east-1',
+            output_format: 'table',
+          },
+        },
+      },
+      errors: {},
+    };
+    render(<ProfileDataTable data={input} />);
+
+    expect(screen.getAllByRole('row').length).toBe(3);
+
+    await userEvent.click(
+      screen.getAllByRole('button', { name: /Output Format/i })[0]
+    );
+
+    await userEvent.click(screen.getByRole('option', { name: /json/i }));
+
+    expect(screen.getAllByRole('row').length).toBe(2);
+  });
 });
