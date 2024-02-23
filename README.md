@@ -5,7 +5,6 @@
 
 <h4> <span> · </span> <a href="https://github.com/maikbasel/aws-custodian/blob/master/README.md"> Documentation </a> <span> · </span> <a href="https://github.com/maikbasel/aws-custodian/issues"> Report Bug </a> <span> · </span> <a href="https://github.com/maikbasel/aws-custodian/issues"> Request Feature </a> </h4>
 
-
 </div>
 
 # :notebook_with_decorative_cover: Table of Contents
@@ -91,11 +90,11 @@ npm run tauri build
 
 ## :compass: Roadmap
 
-* [ ] AWS Credentials & Configuration management.
-* [ ] AWS SSM Parameter Store management.
-* [ ] AWS Secret Manager management.
-* [ ] AWS ECR Repository management.
-* [ ] AWS CodeArtifact Repository management.
+- [ ] AWS Credentials & Configuration management.
+- [ ] AWS SSM Parameter Store management.
+- [ ] AWS Secret Manager management.
+- [ ] AWS ECR Repository management.
+- [ ] AWS CodeArtifact Repository management.
 
 ## :wave: Contributing
 

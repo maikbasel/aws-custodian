@@ -11,6 +11,7 @@ community looks forward to your contributions. 🎉
 
 > And if you like the project, but just don't have time to contribute, that's fine. There are other easy ways to support
 > the project and show your appreciation, which we would also be very happy about:
+>
 > - Star the project
 > - Tweet about it
 > - Refer this project in your project's readme
@@ -23,12 +24,12 @@ community looks forward to your contributions. 🎉
 - [Code of Conduct](#code-of-conduct)
 - [I Have a Question](#i-have-a-question)
 - [I Want To Contribute](#i-want-to-contribute)
-    - [Reporting Bugs](#reporting-bugs)
-    - [Suggesting Enhancements](#suggesting-enhancements)
-    - [Your First Code Contribution](#your-first-code-contribution)
-    - [Improving The Documentation](#improving-the-documentation)
+  - [Reporting Bugs](#reporting-bugs)
+  - [Suggesting Enhancements](#suggesting-enhancements)
+  - [Your First Code Contribution](#your-first-code-contribution)
+  - [Improving The Documentation](#improving-the-documentation)
 - [Styleguides](#styleguides)
-    - [Commit Messages](#commit-messages)
+  - [Commit Messages](#commit-messages)
 - [Join The Project Team](#join-the-project-team)
 
 ## Code of Conduct
@@ -73,6 +74,7 @@ Depending on how large the project is, you may want to outsource the questioning
 ## I Want To Contribute
 
 > ### Legal Notice <!-- omit in toc -->
+>
 > When contributing to this project, you must agree that you have authored 100% of the content, that you have the
 > necessary rights to the content and that the content you contribute may be provided under the project license.
 
@@ -97,11 +99,11 @@ following steps in advance to help us fix any potential bug as fast as possible.
 - Also make sure to search the internet (including Stack Overflow) to see if users outside of the GitHub community have
   discussed the issue.
 - Collect information about the bug:
-    - Stack trace (Traceback)
-    - OS, Platform and Version (Windows, Linux, macOS, x86, ARM)
-    - Version of the interpreter, compiler, SDK, runtime environment, package manager, depending on what seems relevant.
-    - Possibly your input and the output
-    - Can you reliably reproduce the issue? And can you also reproduce it with older versions?
+  - Stack trace (Traceback)
+  - OS, Platform and Version (Windows, Linux, macOS, x86, ARM)
+  - Version of the interpreter, compiler, SDK, runtime environment, package manager, depending on what seems relevant.
+  - Possibly your input and the output
+  - Can you reliably reproduce the issue? And can you also reproduce it with older versions?
 
 <!-- omit in toc -->
 
@@ -109,6 +111,7 @@ following steps in advance to help us fix any potential bug as fast as possible.
 
 > You must never report security related issues, vulnerabilities or bugs including sensitive information to the issue
 > tracker, or elsewhere in public. Instead sensitive bugs must be sent by email to <mymail@mail.com>.
+
 <!-- You may add a PGP key to allow the messages to be sent encrypted as well. -->
 
 We use GitHub issues to track bugs and errors. If you run into an issue with the project:
@@ -116,7 +119,7 @@ We use GitHub issues to track bugs and errors. If you run into an issue with the
 - Open an [Issue](https://github.com/maikbasel/aws-custodian/issues/new). (Since we can't be sure at this point whether
   it is a bug or not, we ask you not to talk about a bug yet and not to label the issue.)
 - Explain the behavior you would expect and the actual behavior.
-- Please provide as much context as possible and describe the *reproduction steps* that someone else can follow to
+- Please provide as much context as possible and describe the _reproduction steps_ that someone else can follow to
   recreate the issue on their own. This usually includes your code. For good bug reports you should isolate the problem
   and create a reduced test case.
 - Provide the information you collected in the previous section.

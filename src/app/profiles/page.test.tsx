@@ -1,11 +1,10 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor } from '@testing-library/react';
 import Profiles from './page';
-import { ProfileProvider } from "@/sections/dashboard/context/profile-context";
-import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
-import { SWRConfig } from "swr";
-import { ProfileNav } from "@/sections/dashboard/components/header/profile-nav";
-import React from "react";
-import { ProfileSet } from "@/modules/profiles/domain";
+import { ProfileProvider } from '@/sections/dashboard/context/profile-context';
+import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
+import { SWRConfig } from 'swr';
+import React from 'react';
+import { ProfileSet } from '@/modules/profiles/domain';
 
 describe('Profiles', () => {
   afterEach(() => {
@@ -21,8 +20,7 @@ describe('Profiles', () => {
 
   test('should render error state', async () => {
     const profileSet: ProfileSet = {
-      profiles: {
-      },
+      profiles: {},
       errors: {
         err1: ['error1'],
       },
