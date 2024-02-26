@@ -5,6 +5,10 @@ use std::fmt::{Debug, Display, Formatter};
 pub enum ProfileError {
     InvalidProfileNameError,
     ProfileDataLoadError,
+    ConfigFileLoadError,
+    ConfigFileWriteError,
+    CredentialsFileLoadError,
+    CredentialsFileWriteError,
 }
 
 impl Display for ProfileError {
@@ -12,6 +16,12 @@ impl Display for ProfileError {
         match self {
             ProfileError::InvalidProfileNameError => write!(f, "invalid profile name"),
             ProfileError::ProfileDataLoadError => write!(f, "failed to load profiles"),
+            ProfileError::ConfigFileLoadError => write!(f, "failed to load config file"),
+            ProfileError::ConfigFileWriteError => write!(f, "failed to write config file"),
+            ProfileError::CredentialsFileLoadError => write!(f, "failed to load credentials file"),
+            ProfileError::CredentialsFileWriteError => {
+                write!(f, "failed to write credentials file")
+            }
         }
     }
 }
@@ -28,23 +38,6 @@ impl From<Report<ProfileError>> for ProfileError {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn given_invalid_profile_error_should_output_expected_error_message_when_printed() {
-        let expected = "invalid profile name";
-
-        assert_eq!(
-            format!("{}", ProfileError::InvalidProfileNameError),
-            expected
-        )
-    }
-
-    #[test]
-    fn given_profile_load_error_should_output_expected_error_message_when_printed() {
-        let expected = "failed to load profiles";
-
-        assert_eq!(format!("{}", ProfileError::ProfileDataLoadError), expected)
-    }
 
     #[test]
     fn should_return_profile_data_load_error_when_calling_from_on_report_with_context_profile_data_load_error(

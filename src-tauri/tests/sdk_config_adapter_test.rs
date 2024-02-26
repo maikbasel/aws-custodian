@@ -2,6 +2,7 @@
 mod tests {
     use std::{env, fs};
 
+    use directories::UserDirs;
     use ini::Ini;
     use secstr::SecStr;
     use serial_test::serial;
@@ -16,15 +17,30 @@ mod tests {
 
     struct ValidContext {
         _test_dir: TempDir,
-        original_config_file_location: Option<String>,
-        original_credentials_file_location: Option<String>,
+        original_config_file_location: String,
+        original_credentials_file_location: String,
     }
 
     #[async_trait::async_trait]
     impl AsyncTestContext for ValidContext {
         async fn setup() -> Self {
-            let original_config_file_location = env::var("AWS_CONFIG_FILE").ok();
-            let original_credentials_file_location = env::var("AWS_SHARED_CREDENTIALS_FILE").ok();
+            let user_dir = UserDirs::new().expect("user dir should exist");
+
+            let default_aws_config_file_location = user_dir.home_dir().join(".aws").join("config");
+            let original_config_file_location = env::var("AWS_CONFIG_FILE").ok().unwrap_or(
+                default_aws_config_file_location
+                    .to_string_lossy()
+                    .into_owned(),
+            );
+
+            let default_aws_credentials_file_location =
+                user_dir.home_dir().join(".aws").join("credentials");
+            let original_credentials_file_location =
+                env::var("AWS_SHARED_CREDENTIALS_FILE").ok().unwrap_or(
+                    default_aws_credentials_file_location
+                        .to_string_lossy()
+                        .into_owned(),
+                );
 
             let test_dir = tempdir().unwrap();
             let test_aws_dir_path = test_dir.path().join(".aws");
@@ -58,30 +74,40 @@ mod tests {
         }
 
         async fn teardown(self) {
-            env::set_var(
-                "AWS_CONFIG_FILE",
-                self.original_config_file_location.as_deref().unwrap_or(""),
-            );
+            env::set_var("AWS_CONFIG_FILE", self.original_config_file_location);
             env::set_var(
                 "AWS_SHARED_CREDENTIALS_FILE",
-                self.original_credentials_file_location
-                    .as_deref()
-                    .unwrap_or(""),
+                self.original_credentials_file_location,
             );
         }
     }
 
     struct InvalidContext {
         _test_dir: TempDir,
-        original_config_file_location: Option<String>,
-        original_credentials_file_location: Option<String>,
+        original_config_file_location: String,
+        original_credentials_file_location: String,
     }
 
     #[async_trait::async_trait]
     impl AsyncTestContext for InvalidContext {
         async fn setup() -> Self {
-            let original_config_file_location = env::var("AWS_CONFIG_FILE").ok();
-            let original_credentials_file_location = env::var("AWS_SHARED_CREDENTIALS_FILE").ok();
+            let user_dir = UserDirs::new().expect("user dir should exist");
+
+            let default_aws_config_file_location = user_dir.home_dir().join(".aws").join("config");
+            let original_config_file_location = env::var("AWS_CONFIG_FILE").ok().unwrap_or(
+                default_aws_config_file_location
+                    .to_string_lossy()
+                    .into_owned(),
+            );
+
+            let default_aws_credentials_file_location =
+                user_dir.home_dir().join(".aws").join("credentials");
+            let original_credentials_file_location =
+                env::var("AWS_SHARED_CREDENTIALS_FILE").ok().unwrap_or(
+                    default_aws_credentials_file_location
+                        .to_string_lossy()
+                        .into_owned(),
+                );
 
             let test_dir = tempdir().unwrap();
             let test_aws_dir_path = test_dir.path().join(".aws");
@@ -115,15 +141,10 @@ mod tests {
         }
 
         async fn teardown(self) {
-            env::set_var(
-                "AWS_CONFIG_FILE",
-                self.original_config_file_location.as_deref().unwrap_or(""),
-            );
+            env::set_var("AWS_CONFIG_FILE", self.original_config_file_location);
             env::set_var(
                 "AWS_SHARED_CREDENTIALS_FILE",
-                self.original_credentials_file_location
-                    .as_deref()
-                    .unwrap_or(""),
+                self.original_credentials_file_location,
             );
         }
     }
@@ -172,5 +193,61 @@ mod tests {
             .downcast_ref::<ProfileError>()
             .unwrap();
         assert_that(&actual).is_equal_to(&ProfileError::InvalidProfileNameError);
+    }
+
+    #[test_context(ValidContext)]
+    #[tokio::test]
+    #[serial]
+    async fn should_create_new_profile(_: &mut ValidContext) {
+        let config_file_location = env::var("AWS_CONFIG_FILE").ok().unwrap();
+        let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
+        let input_settings = Settings::new(
+            Credentials::new(
+                Some("newAccessKeyID"),
+                Some(SecStr::from("newSecretAccessKey")),
+            ),
+            Config::new(Some("eu-west-1"), Some("json")),
+        );
+
+        let result = cut.save_profile_data("new", &input_settings).await;
+
+        assert_that(&result).is_ok();
+        let actual_config = Ini::load_from_file(config_file_location).unwrap();
+        let actual_profile_section = &actual_config.section(Some("profile new"));
+        assert_that(actual_profile_section).is_some();
+        assert_that(&actual_profile_section.unwrap().get("region"))
+            .is_some()
+            .is_equal_to("eu-west-1");
+        assert_that(&actual_profile_section.unwrap().get("output"))
+            .is_some()
+            .is_equal_to("json");
+    }
+
+    #[test_context(ValidContext)]
+    #[tokio::test]
+    #[serial]
+    async fn should_create_credentials_for_new_profile(_: &mut ValidContext) {
+        let credentials_file_location = env::var("AWS_SHARED_CREDENTIALS_FILE").ok().unwrap();
+        let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
+        let input_settings = Settings::new(
+            Credentials::new(
+                Some("newAccessKeyID"),
+                Some(SecStr::from("newSecretAccessKey")),
+            ),
+            Config::new(Some("eu-west-1"), Some("json")),
+        );
+
+        let result = cut.save_profile_data("new", &input_settings).await;
+
+        assert_that(&result).is_ok();
+        let actual_credentials = Ini::load_from_file(credentials_file_location).unwrap();
+        let actual_profile_section = &actual_credentials.section(Some("new"));
+        assert_that(actual_profile_section).is_some();
+        assert_that(&actual_profile_section.unwrap().get("aws_access_key_id"))
+            .is_some()
+            .is_equal_to("newAccessKeyID");
+        assert_that(&actual_profile_section.unwrap().get("aws_secret_access_key"))
+            .is_some()
+            .is_equal_to("newSecretAccessKey");
     }
 }
