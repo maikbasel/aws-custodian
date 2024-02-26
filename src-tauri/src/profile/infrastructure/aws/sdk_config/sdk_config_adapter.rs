@@ -53,63 +53,79 @@ impl ProfileDataSPI for SdkConfigAdapter {
             Err(e) => Err(Report::from(e).change_context(ProfileError::ProfileDataLoadError)),
         }
     }
+
     async fn save_profile_data(
         &self,
         profile_name: &str,
         settings: &Settings,
     ) -> error_stack::Result<(), ProfileError> {
-        let user_dir = UserDirs::new().expect("user dir should exist");
+        update_config_file(profile_name, settings)?;
 
-        let default_aws_config_file_location = user_dir.home_dir().join(".aws").join("config");
-        let config_file_location = env::var("AWS_CONFIG_FILE").ok().unwrap_or(
-            default_aws_config_file_location
-                .to_string_lossy()
-                .into_owned(),
-        );
-        let mut config_file = Ini::load_from_file(&config_file_location)
-            .change_context(ProfileError::ConfigFileLoadError)?;
-
-        let mut profile_section =
-            config_file.with_section(Some(format!("profile {}", profile_name)));
-        if let (Some(region), Some(output_format)) =
-            (&settings.config.region, &settings.config.output_format)
-        {
-            profile_section
-                .set("region", region)
-                .set("output", output_format);
-
-            config_file
-                .write_to_file(config_file_location.as_str())
-                .change_context(ProfileError::ConfigFileWriteError)?;
-        }
-
-        let default_aws_credentials_file_location = user_dir.home_dir().join(".aws").join("config");
-        let credentials_file_location = env::var("AWS_SHARED_CREDENTIALS_FILE").ok().unwrap_or(
-            default_aws_credentials_file_location
-                .to_string_lossy()
-                .into_owned(),
-        );
-        let mut credentials_file = Ini::load_from_file(&credentials_file_location)
-            .change_context(ProfileError::ConfigFileLoadError)?;
-
-        let mut profile_section = credentials_file.with_section(Some(profile_name));
-        if let (Some(access_key_id), Some(secret_access_key)) = (
-            &settings.credentials.access_key_id,
-            &settings.credentials.secret_access_key,
-        ) {
-            profile_section.set("aws_access_key_id", access_key_id).set(
-                "aws_secret_access_key",
-                std::str::from_utf8(secret_access_key.unsecure())
-                    .expect("secret access key should be serializable to be UTF-8 string"),
-            );
-
-            credentials_file
-                .write_to_file(credentials_file_location.as_str())
-                .change_context(ProfileError::CredentialsFileWriteError)?;
-        }
+        update_credentials_file(profile_name, settings)?;
 
         Ok(())
     }
+}
+
+fn update_config_file(profile_name: &str, settings: &Settings) -> Result<(), Report<ProfileError>> {
+    let user_dir = UserDirs::new().expect("user dir should exist");
+
+    let default_aws_config_file_location = user_dir.home_dir().join(".aws").join("config");
+    let config_file_location = env::var("AWS_CONFIG_FILE").ok().unwrap_or(
+        default_aws_config_file_location
+            .to_string_lossy()
+            .into_owned(),
+    );
+    let mut config_file = Ini::load_from_file(&config_file_location)
+        .change_context(ProfileError::ConfigFileLoadError)?;
+
+    let mut profile_section = config_file.with_section(Some(format!("profile {}", profile_name)));
+    if let (Some(region), Some(output_format)) =
+        (&settings.config.region, &settings.config.output_format)
+    {
+        profile_section
+            .set("region", region)
+            .set("output", output_format);
+
+        config_file
+            .write_to_file(config_file_location.as_str())
+            .change_context(ProfileError::ConfigFileWriteError)?;
+    }
+    Ok(())
+}
+
+fn update_credentials_file(
+    profile_name: &str,
+    settings: &Settings,
+) -> Result<(), Report<ProfileError>> {
+    let user_dir = UserDirs::new().expect("user dir should exist");
+    let default_aws_credentials_file_location =
+        user_dir.home_dir().join(".aws").join("credentials");
+    let credentials_file_location = env::var("AWS_SHARED_CREDENTIALS_FILE").ok().unwrap_or(
+        default_aws_credentials_file_location
+            .to_string_lossy()
+            .into_owned(),
+    );
+    let mut credentials_file = Ini::load_from_file(&credentials_file_location)
+        .change_context(ProfileError::ConfigFileLoadError)?;
+
+    let mut profile_section = credentials_file.with_section(Some(profile_name));
+    if let (Some(access_key_id), Some(secret_access_key)) = (
+        &settings.credentials.access_key_id,
+        &settings.credentials.secret_access_key,
+    ) {
+        profile_section.set("aws_access_key_id", access_key_id).set(
+            "aws_secret_access_key",
+            std::str::from_utf8(secret_access_key.unsecure())
+                .expect("secret access key should be serializable to be UTF-8 string"),
+        );
+
+        credentials_file
+            .write_to_file(credentials_file_location.as_str())
+            .change_context(ProfileError::CredentialsFileWriteError)?;
+    }
+
+    Ok(())
 }
 
 fn extract_config(profile: &Profile) -> Config {
