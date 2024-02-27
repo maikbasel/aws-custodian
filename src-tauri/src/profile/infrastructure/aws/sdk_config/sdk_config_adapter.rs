@@ -59,9 +59,9 @@ impl ProfileDataSPI for SdkConfigAdapter {
         profile_name: &str,
         settings: &Settings,
     ) -> error_stack::Result<(), ProfileError> {
-        Self::update_config_file(profile_name, settings)?;
+        Self::create_profile_in_config_file(profile_name, settings)?;
 
-        Self::update_credentials_file(profile_name, settings)?;
+        Self::create_profile_in_credentials_file(profile_name, settings)?;
 
         Ok(())
     }
@@ -73,10 +73,22 @@ impl ProfileDataSPI for SdkConfigAdapter {
 
         Ok(())
     }
+
+    fn update_profile_data(
+        &self,
+        profile_name: &str,
+        settings: &Settings,
+    ) -> error_stack::Result<(), ProfileError> {
+        Self::update_profile_in_config_file(profile_name, settings)?;
+
+        Self::update_profile_in_credentials_file(profile_name, settings)?;
+
+        Ok(())
+    }
 }
 
 impl SdkConfigAdapter {
-    fn get_config_file_location() -> Result<String, Report<ProfileError>> {
+    fn get_config_file_location() -> error_stack::Result<String, ProfileError> {
         let user_dir = UserDirs::new().expect("user dir should exist");
         let default_aws_config_file_location = user_dir.home_dir().join(".aws").join("config");
 
@@ -89,7 +101,7 @@ impl SdkConfigAdapter {
         Ok(config_file_location)
     }
 
-    fn get_credentials_file_location() -> Result<String, Report<ProfileError>> {
+    fn get_credentials_file_location() -> error_stack::Result<String, ProfileError> {
         let user_dir = UserDirs::new().expect("user dir should exist");
 
         let default_aws_credentials_file_location = user_dir.home_dir().join(".aws").join("config");
@@ -103,7 +115,7 @@ impl SdkConfigAdapter {
         Ok(credentials_file_location)
     }
 
-    fn delete_from_credentials_file(profile_name: &str) -> Result<(), Report<ProfileError>> {
+    fn delete_from_credentials_file(profile_name: &str) -> error_stack::Result<(), ProfileError> {
         let credentials_file_location = Self::get_credentials_file_location()?;
         let mut config_file = Ini::load_from_file(&credentials_file_location)
             .change_context(ProfileError::CredentialsFileLoadError)?;
@@ -116,7 +128,7 @@ impl SdkConfigAdapter {
         Ok(())
     }
 
-    fn delete_from_config(profile_name: &str) -> Result<(), Report<ProfileError>> {
+    fn delete_from_config(profile_name: &str) -> error_stack::Result<(), ProfileError> {
         let config_file_location = Self::get_config_file_location()?;
         let mut config_file = Ini::load_from_file(&config_file_location)
             .change_context(ProfileError::ConfigFileLoadError)?;
@@ -129,10 +141,10 @@ impl SdkConfigAdapter {
         Ok(())
     }
 
-    fn update_config_file(
+    fn create_profile_in_config_file(
         profile_name: &str,
         settings: &Settings,
-    ) -> Result<(), Report<ProfileError>> {
+    ) -> error_stack::Result<(), ProfileError> {
         let config_file_location = Self::get_config_file_location()?;
         let mut config_file = Ini::load_from_file(&config_file_location)
             .change_context(ProfileError::ConfigFileLoadError)?;
@@ -153,10 +165,10 @@ impl SdkConfigAdapter {
         Ok(())
     }
 
-    fn update_credentials_file(
+    fn create_profile_in_credentials_file(
         profile_name: &str,
         settings: &Settings,
-    ) -> Result<(), Report<ProfileError>> {
+    ) -> error_stack::Result<(), ProfileError> {
         let credentials_file_location = Self::get_credentials_file_location()?;
         let mut credentials_file = Ini::load_from_file(&credentials_file_location)
             .change_context(ProfileError::ConfigFileLoadError)?;
@@ -192,5 +204,68 @@ impl SdkConfigAdapter {
         let secret_access_key = profile.get("aws_secret_access_key").map(SecStr::from);
 
         Credentials::new(access_key_id, secret_access_key)
+    }
+
+    fn update_profile_in_config_file(
+        profile_name: &str,
+        settings: &Settings,
+    ) -> error_stack::Result<(), ProfileError> {
+        let config_file_location = Self::get_config_file_location()?;
+        let mut config_file = Ini::load_from_file(&config_file_location)
+            .change_context(ProfileError::ConfigFileLoadError)?;
+
+        let profile_section = config_file.section_mut(Some(format!("profile {}", profile_name)));
+
+        if profile_section.is_none() {
+            return Err(Report::new(ProfileError::ProfileNotFoundError));
+        }
+
+        let properties = profile_section.unwrap();
+        if let (Some(region), Some(output_format)) =
+            (&settings.config.region, &settings.config.output_format)
+        {
+            properties.insert("region", region);
+            properties.insert("output", output_format);
+
+            config_file
+                .write_to_file(config_file_location.as_str())
+                .change_context(ProfileError::ConfigFileWriteError)?;
+        }
+
+        Ok(())
+    }
+
+    fn update_profile_in_credentials_file(
+        profile_name: &str,
+        settings: &Settings,
+    ) -> error_stack::Result<(), ProfileError> {
+        let credentials_file_location = Self::get_credentials_file_location()?;
+        let mut credentials_file = Ini::load_from_file(&credentials_file_location)
+            .change_context(ProfileError::ConfigFileLoadError)?;
+
+        let profile_section = credentials_file.section_mut(Some(profile_name));
+
+        if profile_section.is_none() {
+            return Err(Report::new(ProfileError::ProfileNotFoundError));
+        }
+
+        let properties = profile_section.unwrap();
+        if let (Some(access_key_id), Some(secret_access_key)) = (
+            &settings.credentials.access_key_id,
+            &settings.credentials.secret_access_key,
+        ) {
+            properties.insert("aws_access_key_id", access_key_id);
+            properties.insert(
+                "aws_secret_access_key",
+                std::str::from_utf8(secret_access_key.unsecure())
+                    .expect("secret access key should be serializable to be UTF-8 string"),
+            );
+
+            credentials_file
+                .write_to_file(credentials_file_location.as_str())
+                .change_context(ProfileError::ConfigFileWriteError)?;
+        }
+
+        Ok(())
     }
 }

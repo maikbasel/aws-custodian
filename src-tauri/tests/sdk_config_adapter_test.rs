@@ -278,4 +278,59 @@ mod tests {
         let actual_credentials = Ini::load_from_file(credentials_file_location).unwrap();
         assert_that(&actual_credentials.section(Some("dev"))).is_none();
     }
+
+    #[test_context(ValidContext)]
+    #[test]
+    #[serial]
+    fn should_update_config_for_given_profile(_: &mut ValidContext) {
+        let config_file_location = env::var("AWS_CONFIG_FILE").ok().unwrap();
+        let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
+        let input_settings = Settings::new(
+            Credentials::new(
+                Some("newAccessKeyID"),
+                Some(SecStr::from("newSecretAccessKey")),
+            ),
+            Config::new(Some("eu-east-1"), Some("table")),
+        );
+
+        let result = cut.update_profile_data("dev", &input_settings);
+
+        assert_that(&result).is_ok();
+        let actual_config = Ini::load_from_file(config_file_location).unwrap();
+        let actual_profile_section = &actual_config.section(Some("profile dev"));
+        assert_that(&actual_profile_section.unwrap().get("region"))
+            .is_some()
+            .is_equal_to("eu-east-1");
+        assert_that(&actual_profile_section.unwrap().get("output"))
+            .is_some()
+            .is_equal_to("table");
+    }
+
+    #[test_context(ValidContext)]
+    #[test]
+    #[serial]
+    fn should_update_credentials_for_given_profile(_: &mut ValidContext) {
+        let credentials_file_location = env::var("AWS_SHARED_CREDENTIALS_FILE").ok().unwrap();
+        let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
+        let input_settings = Settings::new(
+            Credentials::new(
+                Some("newAccessKeyID"),
+                Some(SecStr::from("newSecretAccessKey")),
+            ),
+            Config::new(Some("eu-east-1"), Some("table")),
+        );
+
+        let result = cut.update_profile_data("dev", &input_settings);
+
+        assert_that(&result).is_ok();
+        let actual_credentials = Ini::load_from_file(credentials_file_location).unwrap();
+        let actual_profile_section = &actual_credentials.section(Some("dev"));
+        assert_that(actual_profile_section).is_some();
+        assert_that(&actual_profile_section.unwrap().get("aws_access_key_id"))
+            .is_some()
+            .is_equal_to("newAccessKeyID");
+        assert_that(&actual_profile_section.unwrap().get("aws_secret_access_key"))
+            .is_some()
+            .is_equal_to("newSecretAccessKey");
+    }
 }

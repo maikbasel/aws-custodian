@@ -5,6 +5,7 @@ use std::fmt::{Debug, Display, Formatter};
 pub enum ProfileError {
     InvalidProfileNameError,
     ProfileDataLoadError,
+    ProfileNotFoundError,
     ConfigFileLoadError,
     ConfigFileWriteError,
     CredentialsFileLoadError,
@@ -16,6 +17,7 @@ impl Display for ProfileError {
         match self {
             ProfileError::InvalidProfileNameError => write!(f, "invalid profile name"),
             ProfileError::ProfileDataLoadError => write!(f, "failed to load profiles"),
+            ProfileError::ProfileNotFoundError => write!(f, "profile not found"),
             ProfileError::ConfigFileLoadError => write!(f, "failed to load config file"),
             ProfileError::ConfigFileWriteError => write!(f, "failed to write config file"),
             ProfileError::CredentialsFileLoadError => write!(f, "failed to load credentials file"),
