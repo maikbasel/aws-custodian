@@ -250,4 +250,32 @@ mod tests {
             .is_some()
             .is_equal_to("newSecretAccessKey");
     }
+
+    #[test_context(ValidContext)]
+    #[test]
+    #[serial]
+    fn should_remove_config_for_given_profile(_: &mut ValidContext) {
+        let config_file_location = env::var("AWS_CONFIG_FILE").ok().unwrap();
+        let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
+
+        let result = cut.remove_profile_data("dev");
+
+        assert_that(&result).is_ok();
+        let actual_config = Ini::load_from_file(config_file_location).unwrap();
+        assert_that(&actual_config.section(Some("profile dev"))).is_none();
+    }
+
+    #[test_context(ValidContext)]
+    #[test]
+    #[serial]
+    fn should_remove_credentials_for_given_profile(_: &mut ValidContext) {
+        let credentials_file_location = env::var("AWS_SHARED_CREDENTIALS_FILE").ok().unwrap();
+        let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
+
+        let result = cut.remove_profile_data("dev");
+
+        assert_that(&result).is_ok();
+        let actual_credentials = Ini::load_from_file(credentials_file_location).unwrap();
+        assert_that(&actual_credentials.section(Some("dev"))).is_none();
+    }
 }

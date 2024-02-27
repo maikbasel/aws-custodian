@@ -16,4 +16,6 @@ pub trait ProfileDataSPI: Send + Sync {
         profile_name: &str,
         settings: &Settings,
     ) -> Result<(), ProfileError>;
+
+    fn remove_profile_data(&self, profile_name: &str) -> Result<(), ProfileError>;
 }
