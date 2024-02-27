@@ -54,7 +54,7 @@ impl ProfileDataSPI for SdkConfigAdapter {
         }
     }
 
-    async fn save_profile_data(
+    fn save_profile_data(
         &self,
         profile_name: &str,
         settings: &Settings,

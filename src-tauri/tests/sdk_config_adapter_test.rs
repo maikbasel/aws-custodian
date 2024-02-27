@@ -196,9 +196,9 @@ mod tests {
     }
 
     #[test_context(ValidContext)]
-    #[tokio::test]
+    #[test]
     #[serial]
-    async fn should_create_new_profile(_: &mut ValidContext) {
+    fn should_create_new_profile(_: &mut ValidContext) {
         let config_file_location = env::var("AWS_CONFIG_FILE").ok().unwrap();
         let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
         let input_settings = Settings::new(
@@ -209,7 +209,7 @@ mod tests {
             Config::new(Some("eu-west-1"), Some("json")),
         );
 
-        let result = cut.save_profile_data("new", &input_settings).await;
+        let result = cut.save_profile_data("new", &input_settings);
 
         assert_that(&result).is_ok();
         let actual_config = Ini::load_from_file(config_file_location).unwrap();
@@ -224,9 +224,9 @@ mod tests {
     }
 
     #[test_context(ValidContext)]
-    #[tokio::test]
+    #[test]
     #[serial]
-    async fn should_create_credentials_for_new_profile(_: &mut ValidContext) {
+    fn should_create_credentials_for_new_profile(_: &mut ValidContext) {
         let credentials_file_location = env::var("AWS_SHARED_CREDENTIALS_FILE").ok().unwrap();
         let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
         let input_settings = Settings::new(
@@ -237,7 +237,7 @@ mod tests {
             Config::new(Some("eu-west-1"), Some("json")),
         );
 
-        let result = cut.save_profile_data("new", &input_settings).await;
+        let result = cut.save_profile_data("new", &input_settings);
 
         assert_that(&result).is_ok();
         let actual_credentials = Ini::load_from_file(credentials_file_location).unwrap();

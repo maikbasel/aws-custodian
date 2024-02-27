@@ -11,7 +11,7 @@ use crate::profile::core::error::ProfileError;
 pub trait ProfileDataSPI: Send + Sync {
     async fn load_profile_data(&self) -> Result<ProfileSet, ProfileError>;
 
-    async fn save_profile_data(
+    fn save_profile_data(
         &self,
         profile_name: &str,
         settings: &Settings,
