@@ -135,9 +135,9 @@ dependencies = [
 
 [[package]]
 name = "aws-credential-types"
-version = "1.1.6"
+version = "1.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5635d8707f265c773282a22abe1ecd4fbe96a8eb2f0f14c0796f8016f11a41a"
+checksum = "273fa47dafc9ef14c2c074ddddbea4561ff01b7f68d5091c0e9737ced605c01d"
 dependencies = [
  "aws-smithy-async",
  "aws-smithy-runtime-api",
@@ -147,9 +147,9 @@ dependencies = [
 
 [[package]]
 name = "aws-runtime"
-version = "1.1.6"
+version = "1.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f82b9ae2adfd9d6582440d0eeb394c07f74d21b4c0cc72bdb73735c9e1a9c0e"
+checksum = "6e38bab716c8bf07da24be07ecc02e0f5656ce8f30a891322ecdcb202f943b85"
 dependencies = [
  "aws-credential-types",
  "aws-sigv4",
@@ -214,9 +214,9 @@ dependencies = [
 
 [[package]]
 name = "aws-sdk-sts"
-version = "1.14.0"
+version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "650e4aaae41547151dea4d8142f7ffcc8ab8ba76d5dccc8933936ef2102c3356"
+checksum = "17fd9a53869fee17cea77e352084e1aa71e2c5e323d974c13a9c2bcfd9544c7f"
 dependencies = [
  "aws-credential-types",
  "aws-runtime",
@@ -237,9 +237,9 @@ dependencies = [
 
 [[package]]
 name = "aws-sigv4"
-version = "1.1.6"
+version = "1.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "404c64a104188ac70dd1684718765cb5559795458e446480e41984e68e57d888"
+checksum = "8ada00a4645d7d89f296fe0ddbc3fe3554f03035937c849a05d37ddffc1f29a1"
 dependencies = [
  "aws-credential-types",
  "aws-smithy-http",
@@ -369,6 +369,8 @@ dependencies = [
  "ryu",
  "serde",
  "time",
+ "tokio",
+ "tokio-util",
 ]
 
 [[package]]
@@ -382,9 +384,9 @@ dependencies = [
 
 [[package]]
 name = "aws-types"
-version = "1.1.6"
+version = "1.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8fbb5d48aae496f628e7aa2e41991dd4074f606d9e3ade1ce1059f293d40f9a2"
+checksum = "d07c63521aa1ea9a9f92a701f1a08ce3fd20b46c6efc0d5c8947c1fd879e3df1"
 dependencies = [
  "aws-credential-types",
  "aws-smithy-async",
@@ -401,6 +403,7 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "aws-config",
+ "aws-sdk-sts",
  "cargo-husky",
  "derivative",
  "directories",
@@ -421,6 +424,8 @@ dependencies = [
  "tauri-build",
  "tempfile",
  "test-context",
+ "testcontainers",
+ "testcontainers-modules",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -488,6 +493,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3078c7629b62d3f0439517fa394996acacc5cbc91c5a20d8c658e77abd503a71"
 dependencies = [
  "generic-array",
+]
+
+[[package]]
+name = "bollard-stubs"
+version = "1.42.0-rc.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ed59b5c00048f48d7af971b71f800fdf23e858844a6f9e4d32ca72e9399e7864"
+dependencies = [
+ "serde",
+ "serde_with 1.14.0",
 ]
 
 [[package]]
@@ -886,12 +901,36 @@ dependencies = [
 
 [[package]]
 name = "darling"
+version = "0.13.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a01d95850c592940db9b8194bc39f4bc0e89dee5c4265e4b1807c34a9aba453c"
+dependencies = [
+ "darling_core 0.13.4",
+ "darling_macro 0.13.4",
+]
+
+[[package]]
+name = "darling"
 version = "0.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0209d94da627ab5605dcccf08bb18afa5009cfbef48d8a8b7d7bdbc79be25c5e"
 dependencies = [
- "darling_core",
- "darling_macro",
+ "darling_core 0.20.3",
+ "darling_macro 0.20.3",
+]
+
+[[package]]
+name = "darling_core"
+version = "0.13.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "859d65a907b6852c9361e3185c862aae7fafd2887876799fa55f5f99dc40d610"
+dependencies = [
+ "fnv",
+ "ident_case",
+ "proc-macro2",
+ "quote",
+ "strsim",
+ "syn 1.0.109",
 ]
 
 [[package]]
@@ -910,11 +949,22 @@ dependencies = [
 
 [[package]]
 name = "darling_macro"
+version = "0.13.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9c972679f83bdf9c42bd905396b6c3588a843a17f0f16dfcfa3e2c5d57441835"
+dependencies = [
+ "darling_core 0.13.4",
+ "quote",
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "darling_macro"
 version = "0.20.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "836a9bbc7ad63342d6d6e7b815ccab164bc77a2d95d84bc3117a8c0d5c98e2d5"
 dependencies = [
- "darling_core",
+ "darling_core 0.20.3",
  "quote",
  "syn 2.0.42",
 ]
@@ -1073,7 +1123,7 @@ version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7e57e12b69e57fad516e01e2b3960f122696fdb13420e1a88ed8e210316f2876"
 dependencies = [
- "darling",
+ "darling 0.20.3",
  "proc-macro2",
  "quote",
  "syn 2.0.42",
@@ -3332,6 +3382,16 @@ dependencies = [
 
 [[package]]
 name = "serde_with"
+version = "1.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "678b5a069e50bf00ecd22d0cd8ddf7c236f68581b03db652061ed5eb13a312ff"
+dependencies = [
+ "serde",
+ "serde_with_macros 1.5.2",
+]
+
+[[package]]
+name = "serde_with"
 version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "64cd236ccc1b7a29e7e2739f27c0b2dd199804abc4290e32f59f3b68d6405c23"
@@ -3343,8 +3403,20 @@ dependencies = [
  "indexmap 2.1.0",
  "serde",
  "serde_json",
- "serde_with_macros",
+ "serde_with_macros 3.4.0",
  "time",
+]
+
+[[package]]
+name = "serde_with_macros"
+version = "1.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e182d6ec6f05393cc0e5ed1bf81ad6db3a8feedf8ee515ecdd369809bcce8082"
+dependencies = [
+ "darling 0.13.4",
+ "proc-macro2",
+ "quote",
+ "syn 1.0.109",
 ]
 
 [[package]]
@@ -3353,7 +3425,7 @@ version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "93634eb5f75a2323b16de4748022ac4297f9e76b6dced2be287a099f41b5e788"
 dependencies = [
- "darling",
+ "darling 0.20.3",
  "proc-macro2",
  "quote",
  "syn 2.0.42",
@@ -3868,7 +3940,7 @@ dependencies = [
  "semver",
  "serde",
  "serde_json",
- "serde_with",
+ "serde_with 3.4.0",
  "thiserror",
  "url",
  "walkdir",
@@ -3934,6 +4006,32 @@ checksum = "8901a55b0a7a06ebc4a674dcca925170da8e613fa3b163a1df804ed10afb154d"
 dependencies = [
  "quote",
  "syn 1.0.109",
+]
+
+[[package]]
+name = "testcontainers"
+version = "0.15.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f83d2931d7f521af5bae989f716c3fa43a6af9af7ec7a5e21b59ae40878cec00"
+dependencies = [
+ "bollard-stubs",
+ "futures",
+ "hex",
+ "hmac",
+ "log",
+ "rand 0.8.5",
+ "serde",
+ "serde_json",
+ "sha2",
+]
+
+[[package]]
+name = "testcontainers-modules"
+version = "0.3.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c391cd115649a8a14e5638d0606648d5348b216700a31f402987f57e58693766"
+dependencies = [
+ "testcontainers",
 ]
 
 [[package]]

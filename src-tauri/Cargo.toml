@@ -30,6 +30,7 @@ secstr = "0.5.1"
 heck = "0.4.1"
 rust-ini = "0.20.0"
 directories = "5.0.1"
+aws-sdk-sts = "1.15.0"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.
@@ -46,6 +47,8 @@ test-context = "0.1.4"
 tokio = { version = "1.15.0", features = ["full"] }
 mockall = "0.11.4"
 serial_test = "2.0.0"
+testcontainers = "0.15.0"
+testcontainers-modules = { version = "0.3.4", features = ["localstack"]}
 
 [dev-dependencies.cargo-husky]
 version = "1"
