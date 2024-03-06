@@ -7,8 +7,16 @@ use crate::credentials::core::api::CredentialsDataAPI;
 use crate::credentials::core::error::CredentialsError;
 use crate::credentials::core::spi::CredentialsDataSPI;
 
-struct CredentialsService {
+pub struct CredentialsService {
     credentials_data_spi: Box<dyn CredentialsDataSPI>,
+}
+
+impl CredentialsService {
+    pub fn new(credentials_data_spi: Box<dyn CredentialsDataSPI>) -> Self {
+        Self {
+            credentials_data_spi,
+        }
+    }
 }
 
 #[async_trait]
