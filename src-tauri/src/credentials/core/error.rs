@@ -12,8 +12,8 @@ impl Display for CredentialsError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             CredentialsError::InvalidCredentialsError => write!(f, "invalid credentials error"),
-            CredentialsError::UnexpectedError(skd_error) => {
-                write!(f, "unexpected error: {}", skd_error)
+            CredentialsError::UnexpectedError(error_code) => {
+                write!(f, "unexpected error: {}", error_code)
             }
         }
     }

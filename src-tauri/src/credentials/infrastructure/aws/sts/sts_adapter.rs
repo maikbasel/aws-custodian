@@ -10,7 +10,7 @@ pub struct STSAdapter;
 
 #[async_trait]
 impl CredentialsDataSPI for STSAdapter {
-    async fn validate_credentials(
+    async fn get_caller_identity(
         &self,
         profile_name: &str,
     ) -> error_stack::Result<(), CredentialsError> {

@@ -99,7 +99,7 @@ mod tests {
         env::set_var("LOCALSTACK_ENDPOINT", endpoint_url);
         let cut: Box<dyn CredentialsDataSPI> = Box::new(STSAdapter);
 
-        let actual = cut.validate_credentials(&ctx.profile).await;
+        let actual = cut.get_caller_identity(&ctx.profile).await;
 
         assert_that(&actual).is_ok();
     }
