@@ -1,8 +1,10 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { ProfileSet } from '@/modules/profiles/domain';
 import { ProfileDataTable } from '@/sections/profiles/components/profile-data-table';
 import userEvent from '@testing-library/user-event';
+import { SWRConfig } from 'swr';
+import { mockIPC } from '@tauri-apps/api/mocks';
 
 describe('<ProfileDataTable />', () => {
   const profileSet: ProfileSet = {
@@ -21,19 +23,36 @@ describe('<ProfileDataTable />', () => {
     errors: {},
   };
 
-  it('should render profile data table with profile set data', () => {
-    render(<ProfileDataTable data={profileSet} />);
+  beforeEach(() => {
+    mockIPC((cmd) => {
+      if (cmd === 'validate_credentials') {
+        return false;
+      }
+    });
+  });
 
+  it('should render profile data table with profile set data', async () => {
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileDataTable data={profileSet} />
+      </SWRConfig>
+    );
     const row = screen.getByText(/prof1/i).closest('tr');
 
-    expect(row).toHaveTextContent('key1');
-    expect(row).toHaveTextContent('secret1');
-    expect(row).toHaveTextContent('eu-west-1');
-    expect(row).toHaveTextContent('json');
+    await waitFor(() => {
+      expect(row).toHaveTextContent('key1');
+      expect(row).toHaveTextContent('secret1');
+      expect(row).toHaveTextContent('eu-west-1');
+      expect(row).toHaveTextContent('json');
+    });
   });
 
   it('should select all rows when the "Select All" checkbox is clicked', async () => {
-    render(<ProfileDataTable data={profileSet} />);
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileDataTable data={profileSet} />
+      </SWRConfig>
+    );
 
     await userEvent.click(screen.getByRole('checkbox', { name: 'Select all' }));
 
@@ -43,7 +62,11 @@ describe('<ProfileDataTable />', () => {
   });
 
   it('given "Select All" checkbox is already checked then should unselect all rows when the "Select All" checkbox is clicked again', async () => {
-    render(<ProfileDataTable data={profileSet} />);
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileDataTable data={profileSet} />
+      </SWRConfig>
+    );
 
     await userEvent.click(screen.getByRole('checkbox', { name: 'Select all' }));
 
@@ -55,7 +78,11 @@ describe('<ProfileDataTable />', () => {
   });
 
   it('should select row 1 when the "Select row 1" checkbox is clicked', async () => {
-    render(<ProfileDataTable data={profileSet} />);
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileDataTable data={profileSet} />
+      </SWRConfig>
+    );
     const row1Checkbox = screen.getByRole('checkbox', { name: 'Select row 1' });
 
     await userEvent.click(row1Checkbox);
@@ -64,7 +91,11 @@ describe('<ProfileDataTable />', () => {
   });
 
   it('given row 1 is checkbox is already selected then should unselect row 1 when the "Select row 1" checkbox is clicked again', async () => {
-    render(<ProfileDataTable data={profileSet} />);
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileDataTable data={profileSet} />
+      </SWRConfig>
+    );
     const row1Checkbox = screen.getByRole('checkbox', { name: 'Select row 1' });
 
     await userEvent.click(row1Checkbox);
@@ -100,7 +131,11 @@ describe('<ProfileDataTable />', () => {
       },
       errors: {},
     };
-    render(<ProfileDataTable data={input} />);
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileDataTable data={input} />
+      </SWRConfig>
+    );
 
     expect(screen.getAllByRole('row').length).toBe(3);
 
@@ -139,7 +174,11 @@ describe('<ProfileDataTable />', () => {
       },
       errors: {},
     };
-    render(<ProfileDataTable data={input} />);
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileDataTable data={input} />
+      </SWRConfig>
+    );
 
     expect(screen.getAllByRole('row').length).toBe(3);
 

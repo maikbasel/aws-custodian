@@ -4,22 +4,14 @@ import React from 'react';
 import { ColumnDef } from '@tanstack/table-core';
 import { ProfileSet } from '@/modules/profiles/domain';
 import { DataTable } from '@/components/ui/data-table';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { FileType, Globe2Icon, LucideIcon, MoreHorizontal } from 'lucide-react';
+import { FileType, Globe2Icon, LucideIcon } from 'lucide-react';
 import { DataTableColumnHeader } from '@/components/ui/data-table-column-header';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
   FilterableColumn,
   SearchInputFilter,
 } from '@/components/ui/data-table-toolbar';
+import TestCredentialsButton from '@/sections/profiles/components/test-credentials-button';
 
 export type Profile = {
   name: string;
@@ -91,26 +83,11 @@ const profileColumns: ColumnDef<Profile>[] = [
     },
   },
   {
-    id: 'actions',
+    id: 'test',
     cell: ({ row }) => {
       const profile = row.original;
 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Update {profile.name} profile</DropdownMenuItem>
-            <DropdownMenuItem>Delete {profile.name} profile</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      return <TestCredentialsButton profile={profile.name} />;
     },
   },
 ];
