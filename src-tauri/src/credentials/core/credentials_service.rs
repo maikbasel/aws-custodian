@@ -47,17 +47,16 @@ mod tests {
     use spectral::prelude::*;
 
     use crate::credentials::core::spi::MockCredentialsDataSPI;
-    use crate::profile::core::error::ProfileError;
 
     use super::*;
 
     #[tokio::test]
     async fn should_return_true_for_valid_credentials() {
-        let mut credentialsDataAPIMock = MockCredentialsDataSPI::new();
-        credentialsDataAPIMock
+        let mut credentials_data_api_mock = MockCredentialsDataSPI::new();
+        credentials_data_api_mock
             .expect_get_caller_identity()
             .returning(|_| Ok(()));
-        let cut = CredentialsService::new(Box::new(credentialsDataAPIMock));
+        let cut = CredentialsService::new(Box::new(credentials_data_api_mock));
 
         let result = cut.validate_credentials("dev").await;
 
@@ -66,11 +65,11 @@ mod tests {
 
     #[tokio::test]
     async fn should_return_false_for_invalid_credentials() {
-        let mut credentialsDataAPIMock = MockCredentialsDataSPI::new();
-        credentialsDataAPIMock
+        let mut credentials_data_api_mock = MockCredentialsDataSPI::new();
+        credentials_data_api_mock
             .expect_get_caller_identity()
             .returning(|_| Err(Report::from(CredentialsError::InvalidCredentialsError)));
-        let cut = CredentialsService::new(Box::new(credentialsDataAPIMock));
+        let cut = CredentialsService::new(Box::new(credentials_data_api_mock));
 
         let result = cut.validate_credentials("dev").await;
 
@@ -79,15 +78,15 @@ mod tests {
 
     #[tokio::test]
     async fn should_return_error_when_unexpected_error_occurs() {
-        let mut credentialsDataAPIMock = MockCredentialsDataSPI::new();
-        credentialsDataAPIMock
+        let mut credentials_data_api_mock = MockCredentialsDataSPI::new();
+        credentials_data_api_mock
             .expect_get_caller_identity()
             .returning(|_| {
                 Err(Report::from(CredentialsError::UnexpectedError(
                     "Test".to_string(),
                 )))
             });
-        let cut = CredentialsService::new(Box::new(credentialsDataAPIMock));
+        let cut = CredentialsService::new(Box::new(credentials_data_api_mock));
 
         let result = cut.validate_credentials("dev").await;
 

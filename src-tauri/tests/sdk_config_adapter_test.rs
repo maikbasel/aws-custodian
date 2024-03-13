@@ -10,7 +10,7 @@ mod tests {
     use tempfile::{tempdir, TempDir};
     use test_context::{test_context, AsyncTestContext};
 
-    use backend::profile::core::domain::{Config, Credentials, Settings};
+    use backend::profile::core::domain::{Config, Credentials, Profile};
     use backend::profile::core::error::ProfileError;
     use backend::profile::core::spi::ProfileDataSPI;
     use backend::profile::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
@@ -154,7 +154,8 @@ mod tests {
     #[serial]
     async fn should_load_config_from_environment(_: &mut ValidContext) {
         let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
-        let dev_settings = Settings::new(
+        let dev_profile = Profile::new(
+            "dev".to_string(),
             Credentials::new(
                 Some("devAccessKeyID"),
                 Some(SecStr::from("devSecretAccessKey")),
@@ -167,7 +168,7 @@ mod tests {
         assert_that(&result).is_ok();
         let actual = result.unwrap();
         let actual_profiles = actual.profiles();
-        assert_that(actual_profiles).contains_entry(&"dev".to_string(), &dev_settings);
+        assert_that(actual_profiles).contains(&dev_profile);
     }
 
     #[test_context(InvalidContext)]
@@ -184,11 +185,11 @@ mod tests {
         let config = result.unwrap();
         assert_that(&config.errors).has_length(1);
         let is_invalid_profile_name_error =
-            config.errors.get(0).unwrap().contains::<ProfileError>();
+            config.errors.first().unwrap().contains::<ProfileError>();
         assert_that(&is_invalid_profile_name_error).is_true();
         let actual = config
             .errors
-            .get(0)
+            .first()
             .unwrap()
             .downcast_ref::<ProfileError>()
             .unwrap();
@@ -201,7 +202,8 @@ mod tests {
     fn should_create_new_profile(_: &mut ValidContext) {
         let config_file_location = env::var("AWS_CONFIG_FILE").ok().unwrap();
         let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
-        let input_settings = Settings::new(
+        let input_profile = Profile::new(
+            "new".to_string(),
             Credentials::new(
                 Some("newAccessKeyID"),
                 Some(SecStr::from("newSecretAccessKey")),
@@ -209,7 +211,7 @@ mod tests {
             Config::new(Some("eu-west-1"), Some("json")),
         );
 
-        let result = cut.save_profile_data("new", &input_settings);
+        let result = cut.save_profile_data(&input_profile);
 
         assert_that(&result).is_ok();
         let actual_config = Ini::load_from_file(config_file_location).unwrap();
@@ -229,7 +231,8 @@ mod tests {
     fn should_create_credentials_for_new_profile(_: &mut ValidContext) {
         let credentials_file_location = env::var("AWS_SHARED_CREDENTIALS_FILE").ok().unwrap();
         let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
-        let input_settings = Settings::new(
+        let input_profile = Profile::new(
+            "new".to_string(),
             Credentials::new(
                 Some("newAccessKeyID"),
                 Some(SecStr::from("newSecretAccessKey")),
@@ -237,7 +240,7 @@ mod tests {
             Config::new(Some("eu-west-1"), Some("json")),
         );
 
-        let result = cut.save_profile_data("new", &input_settings);
+        let result = cut.save_profile_data(&input_profile);
 
         assert_that(&result).is_ok();
         let actual_credentials = Ini::load_from_file(credentials_file_location).unwrap();
@@ -285,7 +288,8 @@ mod tests {
     fn should_update_config_for_given_profile(_: &mut ValidContext) {
         let config_file_location = env::var("AWS_CONFIG_FILE").ok().unwrap();
         let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
-        let input_settings = Settings::new(
+        let input_profile = Profile::new(
+            "dev".to_string(),
             Credentials::new(
                 Some("newAccessKeyID"),
                 Some(SecStr::from("newSecretAccessKey")),
@@ -293,7 +297,7 @@ mod tests {
             Config::new(Some("eu-east-1"), Some("table")),
         );
 
-        let result = cut.update_profile_data("dev", &input_settings);
+        let result = cut.update_profile_data(&input_profile);
 
         assert_that(&result).is_ok();
         let actual_config = Ini::load_from_file(config_file_location).unwrap();
@@ -312,7 +316,8 @@ mod tests {
     fn should_update_credentials_for_given_profile(_: &mut ValidContext) {
         let credentials_file_location = env::var("AWS_SHARED_CREDENTIALS_FILE").ok().unwrap();
         let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
-        let input_settings = Settings::new(
+        let input_profile = Profile::new(
+            "dev".to_string(),
             Credentials::new(
                 Some("newAccessKeyID"),
                 Some(SecStr::from("newSecretAccessKey")),
@@ -320,7 +325,7 @@ mod tests {
             Config::new(Some("eu-east-1"), Some("table")),
         );
 
-        let result = cut.update_profile_data("dev", &input_settings);
+        let result = cut.update_profile_data(&input_profile);
 
         assert_that(&result).is_ok();
         let actual_credentials = Ini::load_from_file(credentials_file_location).unwrap();

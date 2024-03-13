@@ -7,7 +7,7 @@ use error_stack::{Report, ResultExt};
 use ini::Ini;
 use secstr::SecStr;
 
-use crate::profile::core::domain::{Config, Credentials, ProfileSet, Settings};
+use crate::profile::core::domain::{Config, Credentials, Profile as DomainProfile, ProfileSet};
 use crate::profile::core::error::ProfileError;
 use crate::profile::core::spi::ProfileDataSPI;
 
@@ -31,13 +31,14 @@ impl ProfileDataSPI for SdkConfigAdapter {
                 let mut configuration = ProfileSet::new();
 
                 for profile_name in profile_names {
-                    if let Some(profile) = profile_set.get_profile(profile_name) {
-                        let config = Self::extract_config(profile);
-                        let credentials = Self::extract_credentials(profile);
+                    if let Some(sdk_profile) = profile_set.get_profile(profile_name) {
+                        let config = Self::extract_config(sdk_profile);
+                        let credentials = Self::extract_credentials(sdk_profile);
 
-                        let settings = Settings::new(credentials, config);
+                        let profile =
+                            DomainProfile::new(profile_name.to_string(), credentials, config);
 
-                        if let Err(e) = configuration.add_profile(profile_name, settings) {
+                        if let Err(e) = configuration.add_profile(profile) {
                             configuration.errors.push(e);
                         }
                     } else {
@@ -54,14 +55,10 @@ impl ProfileDataSPI for SdkConfigAdapter {
         }
     }
 
-    fn save_profile_data(
-        &self,
-        profile_name: &str,
-        settings: &Settings,
-    ) -> error_stack::Result<(), ProfileError> {
-        Self::create_profile_in_config_file(profile_name, settings)?;
+    fn save_profile_data(&self, profile: &DomainProfile) -> error_stack::Result<(), ProfileError> {
+        Self::create_profile_in_config_file(profile)?;
 
-        Self::create_profile_in_credentials_file(profile_name, settings)?;
+        Self::create_profile_in_credentials_file(profile)?;
 
         Ok(())
     }
@@ -76,12 +73,11 @@ impl ProfileDataSPI for SdkConfigAdapter {
 
     fn update_profile_data(
         &self,
-        profile_name: &str,
-        settings: &Settings,
+        profile: &DomainProfile,
     ) -> error_stack::Result<(), ProfileError> {
-        Self::update_profile_in_config_file(profile_name, settings)?;
+        Self::update_profile_in_config_file(profile)?;
 
-        Self::update_profile_in_credentials_file(profile_name, settings)?;
+        Self::update_profile_in_credentials_file(profile)?;
 
         Ok(())
     }
@@ -142,17 +138,16 @@ impl SdkConfigAdapter {
     }
 
     fn create_profile_in_config_file(
-        profile_name: &str,
-        settings: &Settings,
+        profile: &DomainProfile,
     ) -> error_stack::Result<(), ProfileError> {
         let config_file_location = Self::get_config_file_location()?;
         let mut config_file = Ini::load_from_file(&config_file_location)
             .change_context(ProfileError::ConfigFileLoadError)?;
 
         let mut profile_section =
-            config_file.with_section(Some(format!("profile {}", profile_name)));
+            config_file.with_section(Some(format!("profile {}", profile.name)));
         if let (Some(region), Some(output_format)) =
-            (&settings.config.region, &settings.config.output_format)
+            (&profile.config.region, &profile.config.output_format)
         {
             profile_section
                 .set("region", region)
@@ -166,17 +161,16 @@ impl SdkConfigAdapter {
     }
 
     fn create_profile_in_credentials_file(
-        profile_name: &str,
-        settings: &Settings,
+        profile: &DomainProfile,
     ) -> error_stack::Result<(), ProfileError> {
         let credentials_file_location = Self::get_credentials_file_location()?;
         let mut credentials_file = Ini::load_from_file(&credentials_file_location)
             .change_context(ProfileError::ConfigFileLoadError)?;
 
-        let mut profile_section = credentials_file.with_section(Some(profile_name));
+        let mut profile_section = credentials_file.with_section(Some(profile.name.clone()));
         if let (Some(access_key_id), Some(secret_access_key)) = (
-            &settings.credentials.access_key_id,
-            &settings.credentials.secret_access_key,
+            &profile.credentials.access_key_id,
+            &profile.credentials.secret_access_key,
         ) {
             profile_section.set("aws_access_key_id", access_key_id).set(
                 "aws_secret_access_key",
@@ -207,14 +201,13 @@ impl SdkConfigAdapter {
     }
 
     fn update_profile_in_config_file(
-        profile_name: &str,
-        settings: &Settings,
+        profile: &DomainProfile,
     ) -> error_stack::Result<(), ProfileError> {
         let config_file_location = Self::get_config_file_location()?;
         let mut config_file = Ini::load_from_file(&config_file_location)
             .change_context(ProfileError::ConfigFileLoadError)?;
 
-        let profile_section = config_file.section_mut(Some(format!("profile {}", profile_name)));
+        let profile_section = config_file.section_mut(Some(format!("profile {}", profile.name)));
 
         if profile_section.is_none() {
             return Err(Report::new(ProfileError::ProfileNotFoundError));
@@ -222,7 +215,7 @@ impl SdkConfigAdapter {
 
         let properties = profile_section.unwrap();
         if let (Some(region), Some(output_format)) =
-            (&settings.config.region, &settings.config.output_format)
+            (&profile.config.region, &profile.config.output_format)
         {
             properties.insert("region", region);
             properties.insert("output", output_format);
@@ -236,14 +229,13 @@ impl SdkConfigAdapter {
     }
 
     fn update_profile_in_credentials_file(
-        profile_name: &str,
-        settings: &Settings,
+        profile: &DomainProfile,
     ) -> error_stack::Result<(), ProfileError> {
         let credentials_file_location = Self::get_credentials_file_location()?;
         let mut credentials_file = Ini::load_from_file(&credentials_file_location)
             .change_context(ProfileError::ConfigFileLoadError)?;
 
-        let profile_section = credentials_file.section_mut(Some(profile_name));
+        let profile_section = credentials_file.section_mut(Some(profile.name.clone()));
 
         if profile_section.is_none() {
             return Err(Report::new(ProfileError::ProfileNotFoundError));
@@ -251,8 +243,8 @@ impl SdkConfigAdapter {
 
         let properties = profile_section.unwrap();
         if let (Some(access_key_id), Some(secret_access_key)) = (
-            &settings.credentials.access_key_id,
-            &settings.credentials.secret_access_key,
+            &profile.credentials.access_key_id,
+            &profile.credentials.secret_access_key,
         ) {
             properties.insert("aws_access_key_id", access_key_id);
             properties.insert(

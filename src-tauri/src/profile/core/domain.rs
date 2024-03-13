@@ -69,14 +69,16 @@ impl Config {
 }
 
 #[derive(Debug, Eq, PartialEq, Clone, serde::Serialize)]
-pub struct Settings {
+pub struct Profile {
+    pub name: String,
     pub credentials: Credentials,
     pub config: Config,
 }
 
-impl Settings {
-    pub fn new(credentials: Credentials, config: Config) -> Self {
+impl Profile {
+    pub fn new(name: String, credentials: Credentials, config: Config) -> Self {
         Self {
+            name,
             credentials,
             config,
         }
@@ -86,7 +88,7 @@ impl Settings {
 #[derive(Derivative)]
 #[derivative(Debug, Eq, PartialEq)]
 pub struct ProfileSet {
-    profiles: HashMap<String, Settings>,
+    profiles: Vec<Profile>,
     #[derivative(Debug = "ignore")]
     #[derivative(PartialEq = "ignore")]
     pub errors: Vec<Report<ProfileError>>,
@@ -95,21 +97,21 @@ pub struct ProfileSet {
 impl ProfileSet {
     pub fn new() -> Self {
         Self {
-            profiles: HashMap::new(),
+            profiles: Vec::new(),
             errors: Vec::new(),
         }
     }
 
-    pub fn add_profile(&mut self, name: &str, settings: Settings) -> Result<(), ProfileError> {
-        if name.trim().is_empty() {
+    pub fn add_profile(&mut self, profile: Profile) -> Result<(), ProfileError> {
+        if profile.name.trim().is_empty() {
             return Err(Report::new(ProfileError::InvalidProfileNameError)
                 .attach_printable("profile name can not be empty or blank"));
         }
-        self.profiles.insert(name.to_string(), settings);
+        self.profiles.push(profile);
         Ok(())
     }
 
-    pub fn profiles(&self) -> &HashMap<String, Settings> {
+    pub fn profiles(&self) -> &Vec<Profile> {
         &self.profiles
     }
 }
@@ -168,24 +170,35 @@ mod tests {
     #[test]
     fn should_add_profile() {
         let mut cut: ProfileSet = ProfileSet::new();
-        let input_settings: Settings = Settings::new(Credentials::default(), Config::default());
-        let input_profile: String = Word().fake();
+        let input_profile_name: String = Word().fake();
+        let input_profile: Profile = Profile::new(
+            input_profile_name.clone(),
+            Credentials::default(),
+            Config::default(),
+        );
 
-        cut.add_profile(&input_profile, input_settings.clone())
+        cut.add_profile(input_profile.clone())
             .expect("should not fail");
-        let actual = cut.profiles.get(&input_profile);
+        let actual = cut
+            .profiles
+            .iter()
+            .find(|profile| profile.name == input_profile_name);
 
-        assert_eq!(actual, Some(&input_settings))
+        assert_eq!(actual, Some(&input_profile))
     }
 
     #[rstest]
     #[case("")]
     #[case(" ")]
-    fn should_return_error_when_key_is_blank(#[case] input_profile: &str) {
+    fn should_return_error_when_key_is_blank(#[case] input_profile_name: &str) {
         let mut cut: ProfileSet = ProfileSet::new();
-        let input_settings: Settings = Settings::new(Credentials::default(), Config::default());
+        let input_profile: Profile = Profile::new(
+            input_profile_name.to_string(),
+            Credentials::default(),
+            Config::default(),
+        );
 
-        let actual = cut.add_profile(input_profile, input_settings);
+        let actual = cut.add_profile(input_profile);
 
         assert_that(&actual).is_err();
         let report = actual.unwrap_err();
@@ -198,11 +211,14 @@ mod tests {
     #[test]
     fn should_return_profiles() {
         let mut cut: ProfileSet = ProfileSet::new();
-        let input_settings: Settings = Settings::new(Credentials::default(), Config::default());
-        let input_profile = Word().fake();
+        let input_profile_name = Word().fake();
+        let input_profile: Profile = Profile::new(
+            input_profile_name,
+            Credentials::default(),
+            Config::default(),
+        );
 
-        cut.add_profile(input_profile, input_settings)
-            .expect("should not fail");
+        cut.add_profile(input_profile).expect("should not fail");
         let actual = cut.profiles();
 
         assert_that!(actual.len()).is_equal_to(1);
@@ -246,11 +262,12 @@ mod tests {
             Some(SecStr::from("my_secret_access_key")),
         );
         let config = Config::new(Some("eu-west-1"), Some("json"));
-        let settings = Settings::new(credentials, config);
-        profile_set.add_profile("my_profile", settings).unwrap();
+        let profile = Profile::new("my_profile".to_string(), credentials, config);
+        profile_set.add_profile(profile).unwrap();
         let expected_value: Value = json!({
-            "profiles": {
-                "my_profile": {
+            "profiles": [
+                {
+                     "name": "my_profile",
                     "credentials": {
                         "access_key_id": "my_access_key_id",
                         "secret_access_key": "my_secret_access_key",
@@ -260,7 +277,7 @@ mod tests {
                         "output_format": "json"
                     }
                 }
-            },
+            ],
             "errors": {
                  "invalid_profile_name": [
                     "some details"
