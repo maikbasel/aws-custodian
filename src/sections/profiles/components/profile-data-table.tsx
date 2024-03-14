@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { ColumnDef } from '@tanstack/table-core';
-import { ProfileSet } from '@/modules/profiles/domain';
+import { Profile, ProfileSet } from '@/modules/profiles/domain';
 import { DataTable } from '@/components/ui/data-table';
-import { FileType, Globe2Icon, LucideIcon } from 'lucide-react';
+import { FileType, Globe2Icon, MoreHorizontal } from 'lucide-react';
 import { DataTableColumnHeader } from '@/components/ui/data-table-column-header';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -12,14 +12,15 @@ import {
   SearchInputFilter,
 } from '@/components/ui/data-table-toolbar';
 import TestCredentialsButton from '@/sections/profiles/components/test-credentials-button';
-
-export type Profile = {
-  name: string;
-  access_key_id?: string;
-  secret_access_key?: string;
-  region?: string;
-  output_format?: string;
-};
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
 
 const profileColumns: ColumnDef<Profile>[] = [
   {
@@ -53,19 +54,22 @@ const profileColumns: ColumnDef<Profile>[] = [
     ),
   },
   {
-    accessorKey: 'access_key_id',
+    id: 'access_key_id',
+    accessorKey: 'credentials.access_key_id',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Access Key ID' />
     ),
   },
   {
-    accessorKey: 'secret_access_key',
+    id: 'secret_access_key',
+    accessorKey: 'credentials.secret_access_key',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Secret Access Key' />
     ),
   },
   {
-    accessorKey: 'region',
+    id: 'region',
+    accessorKey: 'config.region',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Region' />
     ),
@@ -74,7 +78,8 @@ const profileColumns: ColumnDef<Profile>[] = [
     },
   },
   {
-    accessorKey: 'output_format',
+    id: 'output_format',
+    accessorKey: 'config.output_format',
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title='Output Format' />
     ),
@@ -84,54 +89,69 @@ const profileColumns: ColumnDef<Profile>[] = [
   },
   {
     id: 'test',
+    accessorKey: 'status',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title='Status' />
+    ),
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
     cell: ({ row }) => {
       const profile = row.original;
-
       return <TestCredentialsButton profile={profile.name} />;
     },
   },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      const profile = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant='ghost' className='h-8 w-8 p-0'>
+              <span className='sr-only'>Open menu</span>
+              <MoreHorizontal className='h-4 w-4' />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align='end'>
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>Update {profile.name} profile</DropdownMenuItem>
+            <DropdownMenuItem>Delete {profile.name} profile</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+  },
 ];
-
-function flattenProfileSet(profileSet: ProfileSet): Profile[] {
-  const flattenedArr = [];
-
-  for (const [key, value] of Object.entries(profileSet.profiles)) {
-    const flattenedObj = {
-      name: key,
-      ...value.credentials,
-      ...value.config,
-    };
-    flattenedArr.push(flattenedObj);
-  }
-
-  return flattenedArr;
-}
 
 type ProfileDataTableProps = {
   data: ProfileSet;
 };
 
 export function ProfileDataTable({ data }: Readonly<ProfileDataTableProps>) {
-  const profiles: Profile[] = flattenProfileSet(data);
+  const profiles: Profile[] = data.profiles;
 
-  const getFilterOptions = (property: keyof Profile, icon: LucideIcon) =>
-    profiles
-      .filter((profile) => profile[property] !== undefined)
-      .filter(
-        (profile, index, array) =>
-          array.findIndex((entry) => entry[property] === profile[property]) ===
-          index
-      )
-      .map((profile) => {
-        return {
-          label: profile[property] as string,
-          value: profile[property] as string,
-          icon: icon,
-        };
-      });
-
-  const regionFilterOptions = getFilterOptions('region', Globe2Icon);
-  const outputFormatFilterOptions = getFilterOptions('output_format', FileType);
+  const regionFilterOptions = profiles
+    .filter((profile) => profile.config.region !== undefined)
+    .map((profile) => {
+      return {
+        label: profile.config.region!,
+        value: profile.config.region!,
+        icon: Globe2Icon,
+      };
+    });
+  const outputFormatFilterOptions = profiles
+    .filter((profile) => profile !== undefined)
+    .filter((profile) => profile.config.output_format !== undefined)
+    .map((profile) => {
+      return {
+        label: profile.config.output_format!,
+        value: profile.config.output_format!,
+        icon: FileType,
+      };
+    });
 
   const filterableColumns: FilterableColumn[] = [
     {

@@ -13,7 +13,11 @@ import React, { useEffect, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useProfileContext } from '@/sections/dashboard/context/profile-context';
 import { useProfile } from '@/sections/dashboard/hooks/use-profile';
-import { ProfileSet, profileSetSchema } from '@/modules/profiles/domain';
+import {
+  Profile,
+  ProfileSet,
+  profileSetSchema,
+} from '@/modules/profiles/domain';
 
 interface ProfileNavItemProps {
   profileName: string;
@@ -68,8 +72,8 @@ export function ProfileNav() {
       const parsed: ProfileSet = profileSetSchema.parse(data);
       setProfileSet(parsed);
 
-      const initialProfile = Object.keys(parsed.profiles)[0];
-      setCurrent(initialProfile);
+      const initialProfile: Profile = parsed.profiles[0];
+      setCurrent(initialProfile.name);
     }
   }, [data, error, isLoading, setCurrent]);
 
@@ -84,7 +88,7 @@ export function ProfileNav() {
             aria-expanded={open}
             aria-haspopup='true'
             className='flex items-center justify-start gap-2 p-2'
-            disabled={profileSet && Object.keys(profileSet.profiles).length < 2}
+            disabled={profileSet && profileSet.profiles.length < 2}
             data-testid='profile-nav-trigger'
           >
             <Avatar className='h-9 w-9'>
@@ -97,13 +101,17 @@ export function ProfileNav() {
                   className='truncate font-medium'
                   data-testid='profile-nav-trigger-region-label'
                 >
-                  {profileSet?.profiles?.[current].config.region ?? '?'}
+                  {profileSet?.profiles?.find(
+                    (profile: Profile) => profile.name === current
+                  )?.config.region ?? '?'}
                 </p>
                 <p
                   className='truncate text-sm text-zinc-700'
                   data-testid='profile-nav-trigger-format-label'
                 >
-                  {profileSet?.profiles?.[current].config.output_format ?? '?'}
+                  {profileSet?.profiles?.find(
+                    (profile: Profile) => profile.name === current
+                  )?.config.output_format ?? '?'}
                 </p>
               </div>
             </div>
@@ -124,18 +132,17 @@ export function ProfileNav() {
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-56' align='end' forceMount>
         <DropdownMenuGroup>
-          {profileSet &&
-            Object.entries(profileSet?.profiles)
-              .filter(([profile]) => profile !== current)
-              .map(([profile, settings]) => (
-                <ProfileNavItem
-                  key={profile}
-                  profileName={profile}
-                  region={settings.config.region ?? '?'}
-                  output_format={settings.config.output_format ?? '?'}
-                  onClick={() => setCurrent(profile)}
-                />
-              ))}
+          {profileSet?.profiles
+            .filter((profile: Profile) => profile.name !== current)
+            .map((profile: Profile) => (
+              <ProfileNavItem
+                key={profile.name}
+                profileName={profile.name}
+                region={profile.config.region ?? '?'}
+                output_format={profile.config.output_format ?? '?'}
+                onClick={() => setCurrent(profile.name)}
+              />
+            ))}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>

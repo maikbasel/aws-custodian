@@ -31,8 +31,9 @@ export default function TestCredentialsButton({
 
   return (
     <Button
-      variant='outline'
+      variant='ghost'
       size='icon'
+      className='flex items-center'
       disabled={busy}
       onClick={() => {
         setValidated(true);
@@ -49,12 +50,27 @@ export default function TestCredentialsButton({
     >
       {validated ? (
         valid ? (
-          <ShieldCheck className={`h-4 w-4 ${busy ? 'animate-pulse' : ''}`} />
+          <>
+            <ShieldCheck
+              className={`h-4 w-4 text-green-500 ${
+                busy ? 'animate-pulse' : ''
+              }`}
+            />
+            <span className='sr-only'>Valid</span>
+          </>
         ) : (
-          <ShieldAlert className={`h-4 w-4 ${busy ? 'animate-pulse' : ''}`} />
+          <>
+            <ShieldAlert
+              className={`h-4 w-4 text-red-500 ${busy ? 'animate-pulse' : ''}`}
+            />
+            <span className='sr-only'>Invalid</span>
+          </>
         )
       ) : (
-        <Shield className='h-4 w-4' />
+        <>
+          <Shield className='h-4 w-4 text-gray-500' />
+          <span className='sr-only'>Validating...</span>
+        </>
       )}
     </Button>
   );
