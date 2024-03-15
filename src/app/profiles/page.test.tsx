@@ -20,7 +20,7 @@ describe('Profiles', () => {
 
   test('should render error state', async () => {
     const profileSet: ProfileSet = {
-      profiles: {},
+      profiles: [],
       errors: {
         err1: ['error1'],
       },

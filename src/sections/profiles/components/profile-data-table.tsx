@@ -21,6 +21,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import {
+  DataTableActions,
+} from '@/components/data-table-actions-button';
 
 const profileColumns: ColumnDef<Profile>[] = [
   {
@@ -171,12 +174,34 @@ export function ProfileDataTable({ data }: Readonly<ProfileDataTableProps>) {
     placeholder: 'Filter profiles',
   };
 
+  const actions: DataTableActions = {
+    createAction: {
+      label: 'Create new profile',
+      onClick: () => {
+        console.log('Create new profile');
+      },
+    },
+    editAction: {
+      label: 'Edit profile',
+      onClick: () => {
+        console.log('Edit profile');
+      },
+    },
+    deleteAllAction: {
+      label: 'Delete profiles',
+      onClick: () => {
+        console.log('Delete profiles');
+      },
+    },
+  };
+
   return (
     <DataTable
       columns={profileColumns}
       data={profiles}
       searchInputFilter={searchInputFilter}
       filterableColumns={filterableColumns}
+      actions={actions}
     />
   );
 }

@@ -8,8 +8,9 @@ import { mockIPC } from '@tauri-apps/api/mocks';
 
 describe('<ProfileDataTable />', () => {
   const profileSet: ProfileSet = {
-    profiles: {
-      prof1: {
+    profiles: [
+      {
+        name: 'prof1',
         credentials: {
           access_key_id: 'key1',
           secret_access_key: 'secret1',
@@ -19,7 +20,7 @@ describe('<ProfileDataTable />', () => {
           output_format: 'json',
         },
       },
-    },
+    ],
     errors: {},
   };
 
@@ -107,8 +108,9 @@ describe('<ProfileDataTable />', () => {
 
   it('should filter row by region when the "Region" filter is changed', async () => {
     const input: ProfileSet = {
-      profiles: {
-        prof1: {
+      profiles: [
+        {
+          name: 'prof1',
           credentials: {
             access_key_id: 'key1',
             secret_access_key: 'secret1',
@@ -118,7 +120,8 @@ describe('<ProfileDataTable />', () => {
             output_format: 'json',
           },
         },
-        prof2: {
+        {
+          name: 'prof2',
           credentials: {
             access_key_id: 'key2',
             secret_access_key: 'secret2',
@@ -128,7 +131,7 @@ describe('<ProfileDataTable />', () => {
             output_format: 'table',
           },
         },
-      },
+      ],
       errors: {},
     };
     render(
@@ -150,8 +153,9 @@ describe('<ProfileDataTable />', () => {
 
   it('should filter row by output format when the "Output Format" filter is changed', async () => {
     const input: ProfileSet = {
-      profiles: {
-        prof1: {
+      profiles: [
+        {
+          name: 'prof1',
           credentials: {
             access_key_id: 'key1',
             secret_access_key: 'secret1',
@@ -161,7 +165,8 @@ describe('<ProfileDataTable />', () => {
             output_format: 'json',
           },
         },
-        prof2: {
+        {
+          name: 'prof2',
           credentials: {
             access_key_id: 'key2',
             secret_access_key: 'secret2',
@@ -171,7 +176,7 @@ describe('<ProfileDataTable />', () => {
             output_format: 'table',
           },
         },
-      },
+      ],
       errors: {},
     };
     render(
