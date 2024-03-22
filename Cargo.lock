@@ -411,6 +411,7 @@ dependencies = [
  "fake",
  "heck 0.4.1",
  "lazy_static",
+ "log",
  "mockall",
  "regex",
  "rstest",

@@ -8,6 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DataTableViewOptions } from '@/components/ui/data-table-view-options';
 import { type LucideIcon } from 'lucide-react';
+import DataTableActionsButton, {
+} from '@/components/data-table-actions-button';
+import ProfileFormDialog from '@/sections/profiles/components/profile-form-dialog';
 
 interface FilterOption {
   value: string;
@@ -26,7 +29,7 @@ export interface SearchInputFilter {
   columnName: string;
 }
 
-interface DataTableToolbarProps<TData> {
+export interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   searchInputFilter: SearchInputFilter;
   filterableColumns: FilterableColumn[];
@@ -38,6 +41,12 @@ export function DataTableToolbar<TData>({
   filterableColumns,
 }: Readonly<DataTableToolbarProps<TData>>) {
   const isFiltered = table.getState().columnFilters.length > 0;
+
+  const selectedRows = table
+    .getSelectedRowModel()
+    .rows.map(({ original }) => original);
+
+  const [showCreateDialog, setShowCreateDialog] = React.useState(false);
 
   return (
     <div className='flex items-center justify-between'>
@@ -80,7 +89,24 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <div className='flex flex-1 items-center space-x-2'>
+        <Button
+          variant='outline'
+          size='sm'
+          className='ml-auto hidden h-8 border-dashed lg:flex'
+          onClick={() => setShowCreateDialog(true)}
+        >
+          Create Profile
+        </Button>
+        <ProfileFormDialog
+          open={showCreateDialog}
+          setOpen={setShowCreateDialog}
+        />
+
+        <DataTableActionsButton selectedRows={selectedRows} />
+
+        <DataTableViewOptions table={table} />
+      </div>
     </div>
   );
 }

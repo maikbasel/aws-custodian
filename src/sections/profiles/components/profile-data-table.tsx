@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ColumnDef } from '@tanstack/table-core';
+import { ColumnDef, Row } from '@tanstack/table-core';
 import { Profile, ProfileSet } from '@/modules/profiles/domain';
 import { DataTable } from '@/components/ui/data-table';
 import { FileType, Globe2Icon, MoreHorizontal } from 'lucide-react';
@@ -21,9 +21,77 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
+import { invoke } from '@tauri-apps/api/tauri';
+import { useSWRConfig } from 'swr';
 import {
-  DataTableActions,
-} from '@/components/data-table-actions-button';
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import ProfileFormDialog from '@/sections/profiles/components/profile-form-dialog';
+
+const RowAction: React.FC<{ row: Row<Profile> }> = ({ row }) => {
+  const profile = row.original;
+  const { mutate } = useSWRConfig();
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
+  const [showUpdateDialog, setShowUpdateDialog] = React.useState(false);
+
+  async function onDelete() {
+    invoke('delete_profile', { profileName: profile.name }).then(() => {
+      mutate('get_profiles');
+    });
+    setShowDeleteDialog(false);
+  }
+
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant='ghost' className='h-8 w-8 p-0'>
+            <span className='sr-only'>Open menu</span>
+            <MoreHorizontal className='h-4 w-4' />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align='end'>
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onSelect={() => setShowUpdateDialog(true)}>
+            Update {profile.name} profile
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setShowDeleteDialog(true)}>
+            Delete {profile.name} profile
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <ProfileFormDialog
+        profile={profile}
+        open={showUpdateDialog}
+        setOpen={setShowUpdateDialog}
+      />
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete the
+              <strong>&nbsp;{profile.name}</strong> profile as well as it&apos;s
+              corresponding configuration settings and credentials.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={onDelete}>Continue</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
+  );
+};
 
 const profileColumns: ColumnDef<Profile>[] = [
   {
@@ -106,26 +174,7 @@ const profileColumns: ColumnDef<Profile>[] = [
   },
   {
     id: 'actions',
-    cell: ({ row }) => {
-      const profile = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' className='h-8 w-8 p-0'>
-              <span className='sr-only'>Open menu</span>
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Update {profile.name} profile</DropdownMenuItem>
-            <DropdownMenuItem>Delete {profile.name} profile</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
+    cell: RowAction,
   },
 ];
 
@@ -174,34 +223,12 @@ export function ProfileDataTable({ data }: Readonly<ProfileDataTableProps>) {
     placeholder: 'Filter profiles',
   };
 
-  const actions: DataTableActions = {
-    createAction: {
-      label: 'Create new profile',
-      onClick: () => {
-        console.log('Create new profile');
-      },
-    },
-    editAction: {
-      label: 'Edit profile',
-      onClick: () => {
-        console.log('Edit profile');
-      },
-    },
-    deleteAllAction: {
-      label: 'Delete profiles',
-      onClick: () => {
-        console.log('Delete profiles');
-      },
-    },
-  };
-
   return (
     <DataTable
       columns={profileColumns}
       data={profiles}
       searchInputFilter={searchInputFilter}
       filterableColumns={filterableColumns}
-      actions={actions}
     />
   );
 }

@@ -31,6 +31,7 @@ heck = "0.4.1"
 rust-ini = "0.20.0"
 directories = "5.0.1"
 aws-sdk-sts = "1.15.0"
+log = "0.4.20"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

@@ -31,7 +31,7 @@ impl serde::Serialize for Credentials {
             .as_ref()
             .map(|sec_str| sec_str.unsecure())
             .map(std::str::from_utf8)
-            .map_or("Error transforming secret", |result| match result {
+            .map(|result| match result {
                 Ok(sec_str) => sec_str,
                 Err(e) => panic!("failed to serialize credentials: {}", e),
             });

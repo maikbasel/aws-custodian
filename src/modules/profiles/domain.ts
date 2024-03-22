@@ -3,14 +3,13 @@ import { z } from 'zod';
 const profileSchema = z.object({
   name: z.string(),
   credentials: z.object({
-    access_key_id: z.string().optional(),
-    secret_access_key: z.string().optional(), // FIXME: Use secure string
+    access_key_id: z.string().optional().nullish(),
+    secret_access_key: z.string().optional().nullish(), // FIXME: Use secure string
   }),
   config: z.object({
-    region: z.string().optional(),
-    output_format: z.string().optional(),
+    region: z.string().optional().nullish(),
+    output_format: z.string().optional().nullish(),
   }),
-  valid: z.boolean().optional(),
 });
 
 export type Profile = z.infer<typeof profileSchema>;
