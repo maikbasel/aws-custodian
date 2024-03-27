@@ -17,7 +17,7 @@ interface DataTableActionsButtonProps<TData> {
 
 export default function DataTableActionsButton<TData>({
   selectedRows,
-}: DataTableActionsButtonProps<TData>) {
+}: Readonly<DataTableActionsButtonProps<TData>>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -31,9 +31,7 @@ export default function DataTableActionsButton<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-[150px]'>
-        <DropdownMenuItem>
-          Create new
-        </DropdownMenuItem>
+        <DropdownMenuItem>Create new</DropdownMenuItem>
         <DropdownMenuItem
           disabled={!selectedRows || selectedRows?.length !== 1}
         >

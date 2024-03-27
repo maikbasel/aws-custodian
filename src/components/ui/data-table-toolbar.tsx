@@ -8,8 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DataTableViewOptions } from '@/components/ui/data-table-view-options';
 import { type LucideIcon } from 'lucide-react';
-import DataTableActionsButton, {
-} from '@/components/data-table-actions-button';
+import DataTableActionsButton from '@/components/data-table-actions-button';
 import ProfileFormDialog from '@/sections/profiles/components/profile-form-dialog';
 
 interface FilterOption {
