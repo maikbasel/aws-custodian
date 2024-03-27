@@ -100,7 +100,8 @@ impl SdkConfigAdapter {
     fn get_credentials_file_location() -> error_stack::Result<String, ProfileError> {
         let user_dir = UserDirs::new().expect("user dir should exist");
 
-        let default_aws_credentials_file_location = user_dir.home_dir().join(".aws").join("config");
+        let default_aws_credentials_file_location =
+            user_dir.home_dir().join(".aws").join("credentials");
 
         let credentials_file_location = env::var("AWS_SHARED_CREDENTIALS_FILE").ok().unwrap_or(
             default_aws_credentials_file_location
