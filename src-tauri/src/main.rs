@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::sync::Arc;
+use tauri_plugin_log::LogTarget;
 
 use backend::__cmd__create_profile;
 use backend::__cmd__delete_profile;
@@ -24,6 +25,11 @@ fn main() {
     let credentials_data_api = CredentialsService::new(Box::new(STSAdapter));
 
     tauri::Builder::default()
+        .plugin(
+            tauri_plugin_log::Builder::default()
+                .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
+                .build(),
+        )
         .manage(Arc::new(profile_data_spi) as Arc<dyn ProfileDataSPI>)
         .manage(Arc::new(credentials_data_api) as Arc<dyn CredentialsDataAPI>)
         .invoke_handler(tauri::generate_handler![
