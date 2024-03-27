@@ -42,7 +42,12 @@ export default function ProfileFormDialog({
   const isCreate = !profile;
 
   const formSchema = z.object({
-    name: z.string().min(1, 'Profile name must not be empty.'),
+    name: z.string().refine(
+      (arg) => {
+        return isCreate ? arg !== undefined && arg.length >= 1 : true;
+      },
+      () => ({ message: 'Profile name must not be empty.' })
+    ),
     credentials: z.object({
       accessKeyId: z.string().min(1, 'Access key ID must not be empty.'),
       secretAccessKey: z
@@ -94,15 +99,16 @@ export default function ProfileFormDialog({
           output_format: values.config.outputFormat,
         },
       },
-    }).then(() => {
-      mutate('get_profiles');
-      form.reset();
-      setOpen(false);
-    });
+    })
+      .then(() => {
+        mutate('get_profiles');
+        form.reset();
+        setOpen(false);
+      })
+      .catch((reason) => console.error(reason));
   }
 
   async function onEdit(values: z.infer<typeof formSchema>) {
-    console.info(values);
     invoke('edit_profile', {
       profile: {
         name: values.name,
@@ -151,7 +157,7 @@ export default function ProfileFormDialog({
                 <FormItem>
                   <FormLabel>Profile name</FormLabel>
                   <FormControl>
-                    <Input placeholder='dev' {...field} />
+                    <Input disabled={!isCreate} placeholder='dev' {...field} />
                   </FormControl>
                   <FormDescription>
                     This is the name for your configuration settings and
