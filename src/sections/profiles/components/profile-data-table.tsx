@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ColumnDef, Row } from '@tanstack/table-core';
+import { ColumnDef, Row, SortingState } from "@tanstack/table-core";
 import { Profile, ProfileSet } from '@/modules/profiles/domain';
 import { DataTable } from '@/components/ui/data-table';
 import { FileType, Globe2Icon, MoreHorizontal } from 'lucide-react';

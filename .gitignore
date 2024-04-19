@@ -64,3 +64,4 @@ eslint_report.json
 junit.xml
 /target/
 tarpaulin-report.html
+.aider*

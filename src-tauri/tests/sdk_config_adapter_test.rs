@@ -181,7 +181,7 @@ mod tests {
 
         let result = cut.load_profile_data().await;
 
-        assert_that(&result).is_ok();
+        assert_that(&result).is_err();
         let config = result.unwrap();
         assert_that(&config.errors).has_length(1);
         let is_invalid_profile_name_error =

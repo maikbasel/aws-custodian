@@ -3,7 +3,7 @@ use std::env;
 use async_trait::async_trait;
 use aws_config::profile::Profile;
 use directories::UserDirs;
-use error_stack::{Report, ResultExt};
+use error_stack::{FutureExt, Report, ResultExt};
 use ini::Ini;
 use secstr::SecStr;
 
@@ -16,8 +16,8 @@ pub struct SdkConfigAdapter;
 #[async_trait]
 impl ProfileDataSPI for SdkConfigAdapter {
     async fn load_profile_data(&self) -> error_stack::Result<ProfileSet, ProfileError> {
-        // See https://docs.rs/aws-config/latest/aws_config/profile/index.html
         let result = aws_config::profile::load(
+            // See https://docs.rs/aws-config/latest/aws_config/profile/index.html
             &Default::default(),
             &Default::default(),
             &Default::default(),
@@ -29,6 +29,7 @@ impl ProfileDataSPI for SdkConfigAdapter {
             Ok(profile_set) => {
                 let profile_names = profile_set.profiles();
                 let mut configuration = ProfileSet::new();
+                let mut error_accumulator: Option<Report<ProfileError>> = None;
 
                 for profile_name in profile_names {
                     if let Some(sdk_profile) = profile_set.get_profile(profile_name) {
@@ -39,7 +40,11 @@ impl ProfileDataSPI for SdkConfigAdapter {
                             DomainProfile::new(profile_name.to_string(), credentials, config);
 
                         if let Err(e) = configuration.add_profile(profile) {
-                            configuration.errors.push(e);
+                            // Use take() to move the value out temporarily and replace it with None
+                            error_accumulator = Some(match error_accumulator.take() {
+                                Some(acc) => acc.attach(e), // attach returns a new Report
+                                None => e,
+                            });
                         }
                     } else {
                         panic!(
