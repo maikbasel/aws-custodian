@@ -34,9 +34,6 @@ describe('<ProfileNav />', () => {
         },
       },
     ],
-    errors: {
-      err1: ['error1'],
-    },
   };
 
   // jsdom doesn't come with a WebCrypto implementation
@@ -153,7 +150,6 @@ describe('<ProfileNav />', () => {
           },
         },
       ],
-      errors: {},
     };
     mockIPC((cmd) => {
       if (cmd === 'get_profiles') {
@@ -193,7 +189,6 @@ describe('<ProfileNav />', () => {
           },
         },
       ],
-      errors: {},
     };
     mockIPC((cmd) => {
       if (cmd === 'get_profiles') {
@@ -248,7 +243,6 @@ describe('<ProfileNav />', () => {
           },
         },
       ],
-      errors: {},
     };
     mockIPC((cmd) => {
       if (cmd === 'get_profiles') {

@@ -21,7 +21,6 @@ describe('<ProfileDataTable />', () => {
         },
       },
     ],
-    errors: {},
   };
 
   beforeEach(() => {
@@ -132,7 +131,6 @@ describe('<ProfileDataTable />', () => {
           },
         },
       ],
-      errors: {},
     };
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
@@ -177,7 +175,6 @@ describe('<ProfileDataTable />', () => {
           },
         },
       ],
-      errors: {},
     };
     render(
       <SWRConfig value={{ provider: () => new Map() }}>

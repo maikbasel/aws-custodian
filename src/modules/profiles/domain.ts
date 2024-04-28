@@ -49,7 +49,6 @@ export type Profile = z.infer<typeof profileSchema>;
 
 export const profileSetSchema = z.object({
   profiles: z.array(profileSchema),
-  errors: z.record(z.string().array()),
 });
 
 export type ProfileSet = z.infer<typeof profileSetSchema>;
