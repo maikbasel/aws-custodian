@@ -3,7 +3,7 @@ use std::env;
 use async_trait::async_trait;
 use aws_config::profile::Profile;
 use directories::UserDirs;
-use error_stack::{FutureExt, Report, ResultExt};
+use error_stack::{Report, ResultExt};
 use ini::Ini;
 use secstr::SecStr;
 
@@ -29,7 +29,6 @@ impl ProfileDataSPI for SdkConfigAdapter {
             Ok(profile_set) => {
                 let profile_names = profile_set.profiles();
                 let mut configuration = ProfileSet::new();
-                let mut error_accumulator: Option<Report<ProfileError>> = None;
 
                 for profile_name in profile_names {
                     if let Some(sdk_profile) = profile_set.get_profile(profile_name) {
@@ -39,13 +38,7 @@ impl ProfileDataSPI for SdkConfigAdapter {
                         let profile =
                             DomainProfile::new(profile_name.to_string(), credentials, config);
 
-                        if let Err(e) = configuration.add_profile(profile) {
-                            // Use take() to move the value out temporarily and replace it with None
-                            error_accumulator = Some(match error_accumulator.take() {
-                                Some(acc) => acc.attach(e), // attach returns a new Report
-                                None => e,
-                            });
-                        }
+                        configuration.add_profile(profile);
                     } else {
                         panic!(
                             "profile set should contain profile name: `{}`",

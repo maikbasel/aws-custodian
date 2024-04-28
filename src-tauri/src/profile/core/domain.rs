@@ -1,16 +1,10 @@
-use std::collections::HashMap;
 use std::fmt::Formatter;
 
 use derivative::Derivative;
-use error_stack::{Report, Result};
-use heck::AsSnakeCase;
 use secstr::SecStr;
 use serde::de::{MapAccess, SeqAccess, Visitor};
 use serde::ser::SerializeStruct;
 use serde::{Deserializer, Serializer};
-
-use crate::common::report::extract_printable_attachments;
-use crate::profile::core::error::ProfileError;
 
 #[derive(Debug, Eq, PartialEq, Clone, Default)]
 pub struct Credentials {
@@ -158,34 +152,28 @@ impl Profile {
     }
 }
 
-#[derive(Derivative)]
-#[derivative(Debug, Eq, PartialEq)]
+#[derive(Derivative, Debug, Eq, PartialEq, Clone, serde::Serialize, serde::Deserialize)]
 pub struct ProfileSet {
     profiles: Vec<Profile>,
-    #[derivative(Debug = "ignore")]
-    #[derivative(PartialEq = "ignore")]
-    pub errors: Vec<Report<ProfileError>>,
 }
 
 impl ProfileSet {
     pub fn new() -> Self {
         Self {
             profiles: Vec::new(),
-            errors: Vec::new(),
         }
     }
 
-    pub fn add_profile(&mut self, profile: Profile) -> Result<(), ProfileError> {
-        if profile.name.trim().is_empty() {
-            return Err(Report::new(ProfileError::InvalidProfileNameError)
-                .attach_printable("profile name can not be empty or blank"));
-        }
+    pub fn add_profile(&mut self, profile: Profile) {
         self.profiles.push(profile);
-        Ok(())
     }
 
     pub fn profiles(&self) -> &Vec<Profile> {
         &self.profiles
+    }
+
+    pub fn sort_profiles_asc(&mut self) {
+        self.profiles.sort_by(|a, b| a.name.cmp(&b.name));
     }
 }
 
@@ -195,39 +183,12 @@ impl Default for ProfileSet {
     }
 }
 
-impl serde::Serialize for ProfileSet {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut state = serializer.serialize_struct("ProfileSet", 2)?;
-
-        state.serialize_field("profiles", &self.profiles)?;
-        let error_messages: HashMap<String, Vec<String>> = self
-            .errors
-            .iter()
-            .map(|report| {
-                let error_message = report.to_string();
-                let error_attachments = extract_printable_attachments(report);
-                (format!("{}", AsSnakeCase(error_message)), error_attachments)
-            })
-            .collect();
-        state.serialize_field("errors", &error_messages)?;
-
-        state.end()
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use fake::faker::lorem::en::Word;
     use fake::Fake;
-    use rstest::rstest;
     use serde_json::{json, Value};
     use spectral::prelude::*;
-
-    use crate::common::report::extract_printable_attachments;
-    use crate::profile::core::error::ProfileError;
 
     use super::*;
 
@@ -250,35 +211,13 @@ mod tests {
             Config::default(),
         );
 
-        cut.add_profile(input_profile.clone())
-            .expect("should not fail");
+        cut.add_profile(input_profile.clone());
         let actual = cut
             .profiles
             .iter()
             .find(|profile| profile.name == input_profile_name);
 
         assert_eq!(actual, Some(&input_profile))
-    }
-
-    #[rstest]
-    #[case("")]
-    #[case(" ")]
-    fn should_return_error_when_key_is_blank(#[case] input_profile_name: &str) {
-        let mut cut: ProfileSet = ProfileSet::new();
-        let input_profile: Profile = Profile::new(
-            input_profile_name.to_string(),
-            Credentials::default(),
-            Config::default(),
-        );
-
-        let actual = cut.add_profile(input_profile);
-
-        assert_that(&actual).is_err();
-        let report = actual.unwrap_err();
-        assert!(report.contains::<ProfileError>());
-        let messages = extract_printable_attachments(&report);
-        assert_that(&messages).has_length(1);
-        assert_that(&messages).contains(String::from("profile name can not be empty or blank"));
     }
 
     #[test]
@@ -291,7 +230,7 @@ mod tests {
             Config::default(),
         );
 
-        cut.add_profile(input_profile).expect("should not fail");
+        cut.add_profile(input_profile);
         let actual = cut.profiles();
 
         assert_that!(actual.len()).is_equal_to(1);
@@ -327,16 +266,13 @@ mod tests {
     #[test]
     fn should_serialize_profile_set() {
         let mut profile_set = ProfileSet::new();
-        let report =
-            Report::new(ProfileError::InvalidProfileNameError).attach_printable("some details");
-        profile_set.errors.push(report);
         let credentials = Credentials::new(
             Some("my_access_key_id"),
             Some(SecStr::from("my_secret_access_key")),
         );
         let config = Config::new(Some("eu-west-1"), Some("json"));
         let profile = Profile::new("my_profile".to_string(), credentials, config);
-        profile_set.add_profile(profile).unwrap();
+        profile_set.add_profile(profile);
         let expected_value: Value = json!({
             "profiles": [
                 {
@@ -351,15 +287,10 @@ mod tests {
                     }
                 }
             ],
-            "errors": {
-                 "invalid_profile_name": [
-                    "some details"
-                ]
-            }
         });
 
         let serialized_profile_set = serde_json::to_string(&profile_set).unwrap();
-        let serialized_profile_value: serde_json::Value =
+        let serialized_profile_value: Value =
             serde_json::from_str(&serialized_profile_set).unwrap();
 
         assert_eq!(serialized_profile_value, expected_value);
@@ -381,5 +312,33 @@ mod tests {
             std::str::from_utf8(deserialized.secret_access_key.as_ref().unwrap().unsecure())
                 .expect("secret access key should be serializable to be UTF-8 string");
         assert_eq!(secret_access_key, "mySecretKey".to_string());
+    }
+
+    #[test]
+    fn should_sort_profiles_asc() {
+        let mut profile_set = ProfileSet::new();
+        profile_set.add_profile(Profile::new(
+            "c".to_string(),
+            Credentials::default(),
+            Config::default(),
+        ));
+        profile_set.add_profile(Profile::new(
+            "b".to_string(),
+            Credentials::default(),
+            Config::default(),
+        ));
+        profile_set.add_profile(Profile::new(
+            "a".to_string(),
+            Credentials::default(),
+            Config::default(),
+        ));
+
+        profile_set.sort_profiles_asc();
+
+        let sorted_profiles = profile_set.profiles();
+
+        assert_that!(&sorted_profiles[0].name).is_equal_to("a".to_string());
+        assert_that!(&sorted_profiles[1].name).is_equal_to("b".to_string());
+        assert_that!(&sorted_profiles[2].name).is_equal_to("c".to_string());
     }
 }

@@ -10,10 +10,10 @@ use crate::profile::core::error::ProfileError;
 #[async_trait]
 pub trait ProfileDataAPI: Send + Sync {
     async fn get_profiles(&self) -> Result<ProfileSet, ProfileError>;
-    
-    fn create_profile(&self, profile: Profile) -> Result<(), ProfileError>;
-    
-    fn edit_profile(&self, profile: Profile) -> Result<(), ProfileError>;
-    
-    fn delete_profile(&self, profile_name: String) -> Result<(), ProfileError>;
+
+    fn create_profile(&self, profile: &Profile) -> Result<(), ProfileError>;
+
+    fn edit_profile(&self, profile: &Profile) -> Result<(), ProfileError>;
+
+    fn delete_profile(&self, profile_name: &str) -> Result<(), ProfileError>;
 }
