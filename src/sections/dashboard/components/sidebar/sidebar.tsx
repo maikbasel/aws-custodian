@@ -5,7 +5,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, LayoutDashboard, Settings } from 'lucide-react';
+import { ChevronRight, Settings } from 'lucide-react';
 import { useSidebar } from '@/sections/dashboard/hooks/use-sidebar';
 import {
   NavItem,
@@ -14,15 +14,9 @@ import {
 
 export const NavItems: NavItem[] = [
   {
-    title: 'Dashboard',
-    icon: LayoutDashboard,
-    href: '/',
-    color: 'text-sky-500',
-  },
-  {
     title: 'Profiles',
     icon: Settings,
-    href: '/profiles',
+    href: '/',
     color: 'text-green-500',
   },
 ];
