@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ColumnDef, Row, SortingState } from "@tanstack/table-core";
+import { ColumnDef, Row } from '@tanstack/table-core';
 import { Profile, ProfileSet } from '@/modules/profiles/domain';
 import { DataTable } from '@/components/ui/data-table';
 import { FileType, Globe2Icon, MoreHorizontal } from 'lucide-react';
@@ -160,15 +160,10 @@ const profileColumns: ColumnDef<Profile>[] = [
   },
   {
     id: 'test',
-    accessorKey: 'status',
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title='Status' />
-    ),
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
+    accessorKey: 'Status',
     cell: ({ row }) => {
       const profile = row.original;
+
       return <TestCredentialsButton profile={profile.name} />;
     },
   },

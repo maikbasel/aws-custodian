@@ -5,6 +5,7 @@ import Sidebar from '@/sections/dashboard/components/sidebar/sidebar';
 import Header from '@/sections/dashboard/components/header/header';
 import { ThemeProvider } from '@/sections/dashboard/components/header/theme-provider';
 import { ProfileProvider } from '@/sections/dashboard/context/profile-context';
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -25,15 +26,17 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
           enableSystem
           disableTransitionOnChange
         >
-          <ProfileProvider>
-            <Header />
-            <div className='flex h-screen border-collapse overflow-hidden'>
-              <Sidebar />
-              <main className='flex-1 overflow-y-auto overflow-x-hidden bg-secondary/10 pb-1 pt-16'>
-                {children}
-              </main>
-            </div>
-          </ProfileProvider>
+          <TooltipProvider>
+            <ProfileProvider>
+              <Header />
+              <div className='flex h-screen border-collapse overflow-hidden'>
+                <Sidebar />
+                <main className='flex-1 overflow-y-auto overflow-x-hidden bg-secondary/10 pb-1 pt-16'>
+                  {children}
+                </main>
+              </div>
+            </ProfileProvider>
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>
