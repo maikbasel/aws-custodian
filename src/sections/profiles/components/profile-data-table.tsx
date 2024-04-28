@@ -1,13 +1,27 @@
 'use client';
 
 import React from 'react';
-import { ColumnDef, Row } from '@tanstack/table-core';
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  getCoreRowModel,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  Row,
+  RowSelectionState,
+  SortingState,
+  VisibilityState,
+} from '@tanstack/table-core';
 import { Profile, ProfileSet } from '@/modules/profiles/domain';
 import { DataTable } from '@/components/ui/data-table';
 import { FileType, Globe2Icon, MoreHorizontal } from 'lucide-react';
 import { DataTableColumnHeader } from '@/components/ui/data-table-column-header';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
+  DataTableToolbar,
   FilterableColumn,
   SearchInputFilter,
 } from '@/components/ui/data-table-toolbar';
@@ -34,6 +48,8 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import ProfileFormDialog from '@/sections/profiles/components/profile-form-dialog';
+import { useReactTable } from '@tanstack/react-table';
+import { DataTablePagination } from '@/components/ui/data-table-pagination';
 
 const RowAction: React.FC<{ row: Row<Profile> }> = ({ row }) => {
   const profile = row.original;
@@ -218,12 +234,47 @@ export function ProfileDataTable({ data }: Readonly<ProfileDataTableProps>) {
     placeholder: 'Filter profiles',
   };
 
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+
+  const table = useReactTable({
+    data: profiles,
+    columns: profileColumns,
+    state: {
+      sorting,
+      columnVisibility,
+      rowSelection,
+      columnFilters,
+    },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+  });
+
   return (
-    <DataTable
-      columns={profileColumns}
-      data={profiles}
-      searchInputFilter={searchInputFilter}
-      filterableColumns={filterableColumns}
-    />
+    <div className='space-y-4'>
+      <DataTableToolbar
+        filterableColumns={filterableColumns}
+        searchInputFilter={searchInputFilter}
+        table={table}
+      />
+
+      <DataTable table={table} />
+
+      <DataTablePagination table={table} />
+    </div>
   );
 }
