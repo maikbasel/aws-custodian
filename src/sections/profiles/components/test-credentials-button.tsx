@@ -32,11 +32,11 @@ export default function TestCredentialsButton({
     });
 
     setBusy(false);
-  }, []);
+  }, [profile]);
 
   return (
     <Tooltip>
-      <TooltipTrigger>
+      <TooltipTrigger asChild>
         <Button
           variant='ghost'
           size='icon'
