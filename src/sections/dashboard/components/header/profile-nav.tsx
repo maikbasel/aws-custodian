@@ -9,15 +9,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { useProfileContext } from '@/sections/dashboard/context/profile-context';
-import { useProfile } from '@/sections/dashboard/hooks/use-profile';
-import {
-  Profile,
-  ProfileSet,
-  profileSetSchema,
-} from '@/modules/profiles/domain';
+import { Profile } from '@/modules/profiles/domain';
+import { useCurrentProfile } from '@/sections/dashboard/hooks/use-current-profile';
+import { useProfileSet } from '@/sections/dashboard/hooks/use-profile-set';
 
 interface ProfileNavItemProps {
   profileName: string;
@@ -63,19 +59,21 @@ export const ProfileNavItem: React.FC<ProfileNavItemProps> = ({
 
 export function ProfileNav() {
   const [open, setOpen] = React.useState(false);
-  const { data, error, isLoading } = useProfileContext();
-  const { current, setCurrent } = useProfile();
-  const [profileSet, setProfileSet] = useState<ProfileSet>();
+  const { profileSet, error, isLoading } = useProfileSet();
+  const { current, setCurrent } = useCurrentProfile();
+  // const [profileSet, setProfileSet] = useState<ProfileSet>();
 
   useEffect(() => {
     if (!isLoading) {
-      const parsed: ProfileSet = profileSetSchema.parse(data);
-      setProfileSet(parsed);
+      // const parsed: ProfileSet = profileSetSchema.parse(data);
+      // setProfileSet(parsed);
 
-      const initialProfile: Profile = parsed.profiles[0];
+      // const initialProfile: Profile = parsed.profiles[0];
+      const initialProfile: Profile = profileSet!.profiles[0];
+      // setCurrent(initialProfile.name);
       setCurrent(initialProfile.name);
     }
-  }, [data, error, isLoading, setCurrent]);
+  }, [profileSet, error, isLoading, setCurrent]);
 
   return (
     <DropdownMenu onOpenChange={setOpen}>

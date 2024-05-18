@@ -1,6 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import Profiles from './page';
-import { ProfileProvider } from '@/sections/dashboard/context/profile-context';
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import { SWRConfig } from 'swr';
 import React from 'react';
@@ -29,9 +28,7 @@ describe('Profiles', () => {
     });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileProvider>
-          <Profiles />
-        </ProfileProvider>
+        <Profiles />
       </SWRConfig>
     );
     await waitFor(() => {

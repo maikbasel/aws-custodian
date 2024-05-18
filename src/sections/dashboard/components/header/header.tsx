@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Boxes } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/css-utils';
 import { ThemeToggle } from '@/sections/dashboard/components/header/theme-toggle';
 import { MobileSidebar } from '@/sections/dashboard/components/header/mobile-sidebar';
 import { ProfileNav } from '@/sections/dashboard/components/header/profile-nav';

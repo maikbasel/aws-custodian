@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 
-interface ProfileStore {
+interface CurrentProfileStore {
   current: string;
   setCurrent: (profile: string) => void;
 }
 
-export const useProfile = create<ProfileStore>((set) => ({
+export const useCurrentProfile = create<CurrentProfileStore>((set) => ({
   current: '',
   setCurrent: (profile) => set(() => ({ current: profile })),
 }));

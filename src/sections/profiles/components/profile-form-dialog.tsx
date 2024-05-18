@@ -28,7 +28,7 @@ import { Step, StepItem, Stepper, useStepper } from '@/components/ui/stepper';
 import { create } from 'zustand';
 import { invoke } from '@tauri-apps/api/tauri';
 import { useSWRConfig } from 'swr';
-import { isNotBlank } from '@/modules/common/string-utils';
+import { isNotBlank } from '@/lib/string-utils';
 import {
   Select,
   SelectContent,

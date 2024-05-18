@@ -4,7 +4,7 @@ import * as React from 'react';
 import { cva } from 'class-variance-authority';
 import { CheckIcon, Loader2, LucideIcon, X } from 'lucide-react';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/css-utils';
 import { Button } from '@/components/ui/button';
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 

@@ -1,18 +1,17 @@
 'use client';
 
 import React from 'react';
-import { useProfileContext } from '@/sections/dashboard/context/profile-context';
 import { ProfileDataTable } from '@/sections/profiles/components/profile-data-table';
-import { ProfileSet, profileSetSchema } from '@/modules/profiles/domain';
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
 } from '@/components/ui/breadcrumb';
+import { useProfileSet } from '@/sections/dashboard/hooks/use-profile-set';
 
-export default function Profiles() {
-  const { data, error, isLoading } = useProfileContext();
+const ProfilesPage = () => {
+  const { profileSet, error, isLoading } = useProfileSet();
 
   if (isLoading) {
     return <div>Loading...</div>; // FIXME: Make more visually appealing
@@ -22,8 +21,10 @@ export default function Profiles() {
     throw new Error(error.message); // FIXME: Handle error
   }
 
-  const parsed: ProfileSet = profileSetSchema.parse(data);
+  return <ProfileDataTable data={profileSet!} />;
+};
 
+export default function App() {
   return (
     <div className='flex h-full flex-col space-y-4 p-4 pt-6'>
       <Breadcrumb>
@@ -34,7 +35,7 @@ export default function Profiles() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <ProfileDataTable data={parsed} />
+      <ProfilesPage />
     </div>
   );
 }

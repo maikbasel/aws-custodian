@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import * as React from 'react';
 import { usePathname } from 'next/navigation';
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/css-utils';
 import { buttonVariants } from '@/components/ui/button';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import {

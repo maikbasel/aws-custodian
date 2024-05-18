@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/css-utils';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, Settings } from 'lucide-react';
