@@ -17,7 +17,6 @@ export const NavItems: NavItem[] = [
     title: 'Profiles',
     icon: Settings,
     href: '/',
-    color: 'text-green-500',
   },
 ];
 
