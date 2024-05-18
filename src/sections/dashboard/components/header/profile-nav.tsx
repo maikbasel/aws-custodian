@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import React, { useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Profile } from '@/modules/profiles/domain';
-import { useCurrentProfile } from '@/sections/dashboard/hooks/use-current-profile';
+import { useCurrentProfile } from '@/sections/dashboard/stores/use-current-profile';
 import { useProfileSet } from '@/sections/dashboard/hooks/use-profile-set';
 
 interface ProfileNavItemProps {
@@ -61,16 +61,15 @@ export function ProfileNav() {
   const [open, setOpen] = React.useState(false);
   const { profileSet, error, isLoading } = useProfileSet();
   const { current, setCurrent } = useCurrentProfile();
-  // const [profileSet, setProfileSet] = useState<ProfileSet>();
 
   useEffect(() => {
     if (!isLoading) {
-      // const parsed: ProfileSet = profileSetSchema.parse(data);
-      // setProfileSet(parsed);
-
-      // const initialProfile: Profile = parsed.profiles[0];
-      const initialProfile: Profile = profileSet!.profiles[0];
-      // setCurrent(initialProfile.name);
+      const defaultProfile = profileSet!.profiles.find(
+        (value: Profile) => value.name === 'default'
+      );
+      const initialProfile: Profile = defaultProfile
+        ? defaultProfile
+        : profileSet!.profiles[0];
       setCurrent(initialProfile.name);
     }
   }, [profileSet, error, isLoading, setCurrent]);
