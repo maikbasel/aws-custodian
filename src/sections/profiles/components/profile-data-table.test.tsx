@@ -5,6 +5,7 @@ import { ProfileDataTable } from '@/sections/profiles/components/profile-data-ta
 import userEvent from '@testing-library/user-event';
 import { SWRConfig } from 'swr';
 import { mockIPC } from '@tauri-apps/api/mocks';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 describe('<ProfileDataTable />', () => {
   const profileSet: ProfileSet = {
@@ -34,7 +35,9 @@ describe('<ProfileDataTable />', () => {
   it('should render profile data table with profile set data', async () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileDataTable data={profileSet} />
+        <TooltipProvider>
+          <ProfileDataTable data={profileSet} />
+        </TooltipProvider>
       </SWRConfig>
     );
     const row = screen.getByText(/prof1/i).closest('tr');
@@ -50,7 +53,9 @@ describe('<ProfileDataTable />', () => {
   it('should select all rows when the "Select All" checkbox is clicked', async () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileDataTable data={profileSet} />
+        <TooltipProvider>
+          <ProfileDataTable data={profileSet} />
+        </TooltipProvider>
       </SWRConfig>
     );
 
@@ -64,7 +69,9 @@ describe('<ProfileDataTable />', () => {
   it('given "Select All" checkbox is already checked then should unselect all rows when the "Select All" checkbox is clicked again', async () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileDataTable data={profileSet} />
+        <TooltipProvider>
+          <ProfileDataTable data={profileSet} />
+        </TooltipProvider>
       </SWRConfig>
     );
 
@@ -80,7 +87,9 @@ describe('<ProfileDataTable />', () => {
   it('should select row 1 when the "Select row 1" checkbox is clicked', async () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileDataTable data={profileSet} />
+        <TooltipProvider>
+          <ProfileDataTable data={profileSet} />
+        </TooltipProvider>
       </SWRConfig>
     );
     const row1Checkbox = screen.getByRole('checkbox', { name: 'Select row 1' });
@@ -93,7 +102,9 @@ describe('<ProfileDataTable />', () => {
   it('given row 1 is checkbox is already selected then should unselect row 1 when the "Select row 1" checkbox is clicked again', async () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileDataTable data={profileSet} />
+        <TooltipProvider>
+          <ProfileDataTable data={profileSet} />
+        </TooltipProvider>
       </SWRConfig>
     );
     const row1Checkbox = screen.getByRole('checkbox', { name: 'Select row 1' });
@@ -134,7 +145,9 @@ describe('<ProfileDataTable />', () => {
     };
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileDataTable data={input} />
+        <TooltipProvider>
+          <ProfileDataTable data={input} />
+        </TooltipProvider>
       </SWRConfig>
     );
 
@@ -178,7 +191,9 @@ describe('<ProfileDataTable />', () => {
     };
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileDataTable data={input} />
+        <TooltipProvider>
+          <ProfileDataTable data={input} />
+        </TooltipProvider>
       </SWRConfig>
     );
 

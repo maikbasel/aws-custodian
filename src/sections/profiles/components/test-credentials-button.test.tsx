@@ -4,6 +4,7 @@ import TestCredentialsButton from './test-credentials-button';
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import { SWRConfig } from 'swr';
 import userEvent from '@testing-library/user-event';
+import { TooltipProvider } from '@/components/ui/tooltip';
 
 describe('<TestCredentialsButton />', () => {
   afterEach(() => {
@@ -18,7 +19,9 @@ describe('<TestCredentialsButton />', () => {
     });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <TestCredentialsButton profile='prof1' />
+        <TooltipProvider>
+          <TestCredentialsButton profile='prof1' />
+        </TooltipProvider>
       </SWRConfig>
     );
 
@@ -37,7 +40,9 @@ describe('<TestCredentialsButton />', () => {
     });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <TestCredentialsButton profile='prof1' />
+        <TooltipProvider>
+          <TestCredentialsButton profile='prof1' />
+        </TooltipProvider>
       </SWRConfig>
     );
 

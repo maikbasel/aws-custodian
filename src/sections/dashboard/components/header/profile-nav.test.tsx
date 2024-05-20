@@ -4,7 +4,6 @@ import userEvent from '@testing-library/user-event';
 import { randomFillSync } from 'crypto';
 import { ProfileNav } from '@/sections/dashboard/components/header/profile-nav';
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
-import { ProfileProvider } from '@/sections/dashboard/context/profile-context';
 import { SWRConfig } from 'swr';
 import { ProfileSet } from '@/modules/profiles/domain';
 
@@ -54,7 +53,16 @@ describe('<ProfileNav />', () => {
   });
 
   it('should render the component without error when in loading state', async () => {
-    render(<ProfileNav />);
+    mockIPC((cmd) => {
+      if (cmd === 'get_profiles') {
+        return profileSet;
+      }
+    });
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <ProfileNav />
+      </SWRConfig>
+    );
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
@@ -66,9 +74,7 @@ describe('<ProfileNav />', () => {
     });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileProvider>
-          <ProfileNav />
-        </ProfileProvider>
+        <ProfileNav />
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
@@ -94,9 +100,7 @@ describe('<ProfileNav />', () => {
     });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileProvider>
-          <ProfileNav />
-        </ProfileProvider>
+        <ProfileNav />
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
@@ -118,9 +122,7 @@ describe('<ProfileNav />', () => {
     });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileProvider>
-          <ProfileNav />
-        </ProfileProvider>
+        <ProfileNav />
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
@@ -158,9 +160,7 @@ describe('<ProfileNav />', () => {
     });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileProvider>
-          <ProfileNav />
-        </ProfileProvider>
+        <ProfileNav />
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
@@ -197,9 +197,7 @@ describe('<ProfileNav />', () => {
     });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileProvider>
-          <ProfileNav />
-        </ProfileProvider>
+        <ProfileNav />
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
@@ -251,9 +249,7 @@ describe('<ProfileNav />', () => {
     });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileProvider>
-          <ProfileNav />
-        </ProfileProvider>
+        <ProfileNav />
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
@@ -282,9 +278,7 @@ describe('<ProfileNav />', () => {
     });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileProvider>
-          <ProfileNav />
-        </ProfileProvider>
+        <ProfileNav />
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865

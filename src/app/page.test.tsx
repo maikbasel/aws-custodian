@@ -11,7 +11,19 @@ describe('Profiles', () => {
   });
 
   test('should render loading state', () => {
-    render(<Profiles />);
+    const profileSet: ProfileSet = {
+      profiles: [],
+    };
+    mockIPC((cmd) => {
+      if (cmd === 'get_profiles') {
+        return profileSet;
+      }
+    });
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <Profiles />
+      </SWRConfig>
+    );
 
     const loadingElement = screen.getByText(/loading/i);
     expect(loadingElement).toBeInTheDocument();
