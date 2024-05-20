@@ -1,7 +1,7 @@
 {
   "name": "aws-custodian",
   "version": "0.1.0",
-  "description": "A Next.js front-end application designed to interface with a Rust-powered backend.",
+  "description": "A Next.js front-end application designed to interface with a Rust-powered Tauri backend.",
   "author": {
     "name": "Maik Basel"
   },

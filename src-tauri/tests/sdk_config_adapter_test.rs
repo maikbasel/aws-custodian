@@ -50,6 +50,14 @@ mod tests {
                 .with_section(Some("profile dev"))
                 .set("region", "eu-west-1")
                 .set("output", "json");
+            test_config
+                .with_section(Some("profile qa"))
+                .set("region", "eu-east-1")
+                .set("output", "table");
+            test_config
+                .with_section(Some("profile prod"))
+                .set("region", "eu-east-2")
+                .set("output", "json");
             let test_config_file_path = test_aws_dir_path.join("config");
             test_config.write_to_file(&test_config_file_path).unwrap();
             env::set_var("AWS_CONFIG_FILE", test_config_file_path);
@@ -59,6 +67,14 @@ mod tests {
                 .with_section(Some("dev"))
                 .set("aws_access_key_id", "devAccessKeyID")
                 .set("aws_secret_access_key", "devSecretAccessKey");
+            test_credentials
+                .with_section(Some("qa"))
+                .set("aws_access_key_id", "qaAccessKeyID")
+                .set("aws_secret_access_key", "qaSecretAccessKey");
+            test_credentials
+                .with_section(Some("prod"))
+                .set("aws_access_key_id", "prodAccessKeyID")
+                .set("aws_secret_access_key", "prodSecretAccessKey");
             let test_credentials_file_path = test_aws_dir_path.join("credentials");
             test_credentials
                 .write_to_file(&test_credentials_file_path)
@@ -187,6 +203,44 @@ mod tests {
         assert_that(&result).is_ok();
         let actual_credentials = Ini::load_from_file(credentials_file_location).unwrap();
         assert_that(&actual_credentials.section(Some("dev"))).is_none();
+    }
+
+    #[test_context(ValidContext)]
+    #[test]
+    #[serial]
+    fn should_remove_config_for_given_profiles(_: &mut ValidContext) {
+        let config_file_location = env::var("AWS_CONFIG_FILE").ok().unwrap();
+        let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
+        let given_config = Ini::load_from_file(config_file_location.clone()).unwrap();
+        assert_that(&given_config.section(Some("profile dev"))).is_some();
+        assert_that(&given_config.section(Some("profile qa"))).is_some();
+        let input = ["dev".to_string(), "qa".to_string()];
+
+        let result = cut.remove_profiles_data(&input);
+
+        assert_that(&result).is_ok();
+        let actual_config = Ini::load_from_file(config_file_location).unwrap();
+        assert_that(&actual_config.section(Some("profile dev"))).is_none();
+        assert_that(&actual_config.section(Some("profile qa"))).is_none();
+    }
+
+    #[test_context(ValidContext)]
+    #[test]
+    #[serial]
+    fn should_remove_credentials_for_given_profiles(_: &mut ValidContext) {
+        let credentials_file_location = env::var("AWS_SHARED_CREDENTIALS_FILE").ok().unwrap();
+        let cut: Box<dyn ProfileDataSPI> = Box::new(SdkConfigAdapter);
+        let given_credentials = Ini::load_from_file(credentials_file_location.clone()).unwrap();
+        assert_that(&given_credentials.section(Some("dev"))).is_some();
+        assert_that(&given_credentials.section(Some("qa"))).is_some();
+        let input = ["dev".to_string(), "qa".to_string()];
+
+        let result = cut.remove_profiles_data(&input);
+
+        assert_that(&result).is_ok();
+        let actual_credentials = Ini::load_from_file(credentials_file_location).unwrap();
+        assert_that(&actual_credentials.section(Some("dev"))).is_none();
+        assert_that(&actual_credentials.section(Some("qa"))).is_none();
     }
 
     #[test_context(ValidContext)]

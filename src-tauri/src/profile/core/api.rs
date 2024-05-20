@@ -16,4 +16,6 @@ pub trait ProfileDataAPI: Send + Sync {
     fn edit_profile(&self, profile: &Profile) -> Result<(), ProfileError>;
 
     fn delete_profile(&self, profile_name: &str) -> Result<(), ProfileError>;
+
+    fn delete_profiles(&self, profile_names: &[String]) -> Result<(), ProfileError>;
 }

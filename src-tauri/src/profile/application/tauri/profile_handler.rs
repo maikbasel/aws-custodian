@@ -42,3 +42,14 @@ pub async fn delete_profile(
     api.delete_profile(&profile_name)
         .map_err(ProfileError::from)
 }
+
+#[tauri::command]
+#[cfg(not(tarpaulin_include))]
+pub async fn delete_profiles(
+    api: tauri::State<'_, Arc<dyn ProfileDataAPI>>,
+    profile_names: Vec<String>,
+) -> Result<(), ProfileError> {
+    log::info!("delete_profiles: {:?}", profile_names);
+    api.delete_profiles(profile_names.as_slice())
+        .map_err(ProfileError::from)
+}

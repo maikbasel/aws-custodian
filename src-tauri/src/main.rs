@@ -7,6 +7,7 @@ use tauri_plugin_log::LogTarget;
 
 use backend::__cmd__create_profile;
 use backend::__cmd__delete_profile;
+use backend::__cmd__delete_profiles;
 use backend::__cmd__edit_profile;
 use backend::__cmd__get_profiles;
 use backend::__cmd__validate_credentials;
@@ -15,7 +16,7 @@ use backend::credentials::core::api::CredentialsDataAPI;
 use backend::credentials::core::credentials_service::CredentialsService;
 use backend::credentials::infrastructure::aws::sts::sts_adapter::STSAdapter;
 use backend::profile::application::tauri::profile_handler::{
-    create_profile, delete_profile, edit_profile, get_profiles,
+    create_profile, delete_profile, delete_profiles, edit_profile, get_profiles,
 };
 use backend::profile::core::api::ProfileDataAPI;
 use backend::profile::core::profile_service::ProfileService;
@@ -40,7 +41,8 @@ fn main() {
             create_profile,
             edit_profile,
             delete_profile,
-            validate_credentials
+            validate_credentials,
+            delete_profiles
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

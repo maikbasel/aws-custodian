@@ -69,6 +69,19 @@ impl ProfileDataSPI for SdkConfigAdapter {
         Ok(())
     }
 
+    fn remove_profiles_data(
+        &self,
+        profile_names: &[String],
+    ) -> error_stack::Result<(), ProfileError> {
+        // Might need some optimization in the future.
+        for profile_name in profile_names {
+            Self::delete_from_config(profile_name)?;
+            Self::delete_from_credentials_file(profile_name)?;
+        }
+
+        Ok(())
+    }
+
     fn update_profile_data(
         &self,
         profile: &DomainProfile,
@@ -112,8 +125,7 @@ impl SdkConfigAdapter {
 
     fn delete_from_credentials_file(profile_name: &str) -> error_stack::Result<(), ProfileError> {
         let credentials_file_location = Self::get_credentials_file_location()?;
-        let mut config_file = Ini::load_from_file(&credentials_file_location)
-            .change_context(ProfileError::CredentialsFileLoadError)?;
+        let mut config_file = Self::load_credentials_file(&credentials_file_location)?;
 
         config_file.delete(Some(profile_name));
 
@@ -125,8 +137,7 @@ impl SdkConfigAdapter {
 
     fn delete_from_config(profile_name: &str) -> error_stack::Result<(), ProfileError> {
         let config_file_location = Self::get_config_file_location()?;
-        let mut config_file = Ini::load_from_file(&config_file_location)
-            .change_context(ProfileError::ConfigFileLoadError)?;
+        let mut config_file = Self::load_config_file(&config_file_location)?;
 
         config_file.delete(Some(format!("profile {}", profile_name)));
 
@@ -134,6 +145,17 @@ impl SdkConfigAdapter {
             .write_to_file(config_file_location.as_str())
             .change_context(ProfileError::ConfigFileWriteError)?;
         Ok(())
+    }
+
+    fn load_credentials_file(
+        credentials_file_location: &String,
+    ) -> error_stack::Result<Ini, ProfileError> {
+        Ini::load_from_file(credentials_file_location)
+            .change_context(ProfileError::CredentialsFileLoadError)
+    }
+
+    fn load_config_file(config_file_location: &String) -> error_stack::Result<Ini, ProfileError> {
+        Ini::load_from_file(config_file_location).change_context(ProfileError::ConfigFileLoadError)
     }
 
     fn create_profile_in_config_file(

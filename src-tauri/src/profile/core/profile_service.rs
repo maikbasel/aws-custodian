@@ -37,6 +37,10 @@ impl ProfileDataAPI for ProfileService {
     fn delete_profile(&self, profile_name: &str) -> error_stack::Result<(), ProfileError> {
         self.profile_data_spi.remove_profile_data(profile_name)
     }
+
+    fn delete_profiles(&self, profile_names: &[String]) -> error_stack::Result<(), ProfileError> {
+        self.profile_data_spi.remove_profiles_data(profile_names)
+    }
 }
 
 #[cfg(test)]
@@ -112,6 +116,22 @@ mod tests {
         let profile_service = ProfileService::new(Box::new(profile_data_spi_mock));
 
         let actual = profile_service.delete_profile(&profile_name);
+
+        assert_that!(actual).is_ok();
+    }
+
+    #[test]
+    fn should_delete_profiles() {
+        let profile_names = ["a".to_string(), "b".to_string()];
+        let mut profile_data_spi_mock = MockProfileDataSPI::new();
+        profile_data_spi_mock
+            .expect_remove_profiles_data()
+            .with(eq(profile_names.clone()))
+            .times(1)
+            .returning(move |_| Ok(()));
+        let profile_service = ProfileService::new(Box::new(profile_data_spi_mock));
+
+        let actual = profile_service.delete_profiles(&profile_names);
 
         assert_that!(actual).is_ok();
     }
