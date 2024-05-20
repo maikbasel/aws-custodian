@@ -50,6 +50,7 @@ import {
 import ProfileFormDialog from '@/sections/profiles/components/profile-form-dialog';
 import { useReactTable } from '@tanstack/react-table';
 import { DataTablePagination } from '@/components/ui/data-table-pagination';
+import ProfileActionsButton from '@/sections/profiles/components/profile-actions-button';
 
 const RowAction: React.FC<{ row: Row<Profile> }> = ({ row }) => {
   const profile = row.original;
@@ -94,8 +95,8 @@ const RowAction: React.FC<{ row: Row<Profile> }> = ({ row }) => {
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              <strong>&nbsp;{profile.name}</strong> profile as well as it&apos;s
+              This action cannot be undone. This will permanently delete the{' '}
+              <strong>&nbsp;{profile.name}</strong> profile as well as it&apos;s{' '}
               corresponding configuration settings and credentials.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -264,13 +265,19 @@ export function ProfileDataTable({ data }: Readonly<ProfileDataTableProps>) {
     getFacetedUniqueValues: getFacetedUniqueValues(),
   });
 
+  const selectedRows = table
+    .getSelectedRowModel()
+    .rows.map(({ original }) => original);
+
   return (
     <div className='space-y-4'>
       <DataTableToolbar
         filterableColumns={filterableColumns}
         searchInputFilter={searchInputFilter}
         table={table}
-      />
+      >
+        <ProfileActionsButton selectedRows={selectedRows} />
+      </DataTableToolbar>
 
       <DataTable table={table} />
 
