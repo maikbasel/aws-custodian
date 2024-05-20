@@ -21,9 +21,9 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import ProfileFormDialog from '@/sections/profiles/components/profile-form-dialog';
-import { Profile } from '@/modules/profiles/domain';
-import { invoke } from '@tauri-apps/api/tauri';
+import { Profile } from '@/modules/profiles/core/domain';
 import { mutate } from 'swr';
+import { useProfileForm } from '@/sections/profiles/hooks/use-profile-form';
 
 interface DataTableActionsButtonProps {
   selectedRows: Profile[];
@@ -35,15 +35,17 @@ export default function ProfileActionsButton({
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [showUpdateDialog, setShowUpdateDialog] = React.useState(false);
   const [showCreateDialog, setShowCreateDialog] = React.useState(false);
+  const { deleteProfiles } = useProfileForm();
 
   async function onDelete() {
-    console.info('deleted1', selectedRows);
     const profileNames = selectedRows.map((row) => row.name);
-    console.info('deleted2', profileNames);
-    invoke('delete_profiles', { profileNames: profileNames }).then(() => {
-      mutate('get_profiles');
-    });
-    setShowDeleteDialog(false);
+
+    deleteProfiles(profileNames)
+      .then(() => {
+        mutate('get_profiles');
+      })
+      .catch((reason) => console.error(reason))
+      .finally(() => setShowDeleteDialog(false));
   }
 
   return (

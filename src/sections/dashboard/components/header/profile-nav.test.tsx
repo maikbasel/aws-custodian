@@ -5,7 +5,17 @@ import { randomFillSync } from 'crypto';
 import { ProfileNav } from '@/sections/dashboard/components/header/profile-nav';
 import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import { SWRConfig } from 'swr';
-import { ProfileSet } from '@/modules/profiles/domain';
+import { ProfileSet } from '@/modules/profiles/core/domain';
+import { DIContextProvider } from '@/context/di-context';
+import { getProfiles } from '@/modules/profiles/application/get-profiles';
+import { Ok } from 'oxide.ts';
+
+jest.mock('@/modules/profiles/application/get-profiles', () => ({
+  ...jest.requireActual('@/modules/profiles/application/get-profiles'),
+  getProfiles: jest.fn(),
+}));
+
+const mockGetProfiles = getProfiles as jest.MockedFunction<typeof getProfiles>;
 
 describe('<ProfileNav />', () => {
   const profileSet: ProfileSet = {
@@ -48,33 +58,31 @@ describe('<ProfileNav />', () => {
     });
   });
 
+  beforeEach(() => {
+    mockGetProfiles.mockResolvedValue(Ok(profileSet));
+  });
+
   afterEach(() => {
-    clearMocks();
+    jest.resetAllMocks();
   });
 
   it('should render the component without error when in loading state', async () => {
-    mockIPC((cmd) => {
-      if (cmd === 'get_profiles') {
-        return profileSet;
-      }
-    });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileNav />
+        <DIContextProvider>
+          <ProfileNav />
+        </DIContextProvider>
       </SWRConfig>
     );
     expect(screen.getByText('Loading...')).toBeInTheDocument();
   });
 
   it('should expand profile nav when dropdown is clicked', async () => {
-    mockIPC((cmd) => {
-      if (cmd === 'get_profiles') {
-        return profileSet;
-      }
-    });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileNav />
+        <DIContextProvider>
+          <ProfileNav />
+        </DIContextProvider>
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
@@ -93,14 +101,11 @@ describe('<ProfileNav />', () => {
   });
 
   it('should render chevron down icon in trigger button when profile nav is closed and additional profiles are available', async () => {
-    mockIPC((cmd) => {
-      if (cmd === 'get_profiles') {
-        return profileSet;
-      }
-    });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileNav />
+        <DIContextProvider>
+          <ProfileNav />
+        </DIContextProvider>
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
@@ -115,14 +120,11 @@ describe('<ProfileNav />', () => {
   });
 
   it('should render chevron up icon in trigger button when profile nav is open and additional profiles are available', async () => {
-    mockIPC((cmd) => {
-      if (cmd === 'get_profiles') {
-        return profileSet;
-      }
-    });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileNav />
+        <DIContextProvider>
+          <ProfileNav />
+        </DIContextProvider>
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
@@ -160,7 +162,9 @@ describe('<ProfileNav />', () => {
     });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileNav />
+        <DIContextProvider>
+          <ProfileNav />
+        </DIContextProvider>
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
@@ -190,14 +194,12 @@ describe('<ProfileNav />', () => {
         },
       ],
     };
-    mockIPC((cmd) => {
-      if (cmd === 'get_profiles') {
-        return inputProfileSet;
-      }
-    });
+    mockGetProfiles.mockResolvedValue(Ok(inputProfileSet));
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileNav />
+        <DIContextProvider>
+          <ProfileNav />
+        </DIContextProvider>
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
@@ -242,14 +244,12 @@ describe('<ProfileNav />', () => {
         },
       ],
     };
-    mockIPC((cmd) => {
-      if (cmd === 'get_profiles') {
-        return inputProfileSet;
-      }
-    });
+    mockGetProfiles.mockResolvedValue(Ok(inputProfileSet));
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileNav />
+        <DIContextProvider>
+          <ProfileNav />
+        </DIContextProvider>
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
@@ -271,14 +271,11 @@ describe('<ProfileNav />', () => {
   });
 
   it('should select clicked profile as current when profile nav item is clicked', async () => {
-    mockIPC((cmd) => {
-      if (cmd === 'get_profiles') {
-        return profileSet;
-      }
-    });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <ProfileNav />
+        <DIContextProvider>
+          <ProfileNav />
+        </DIContextProvider>
       </SWRConfig>
     );
     // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865

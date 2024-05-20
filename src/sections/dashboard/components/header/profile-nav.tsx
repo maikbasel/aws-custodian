@@ -11,9 +11,9 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import React, { useEffect } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
-import { Profile } from '@/modules/profiles/domain';
-import { useCurrentProfile } from '@/sections/dashboard/stores/use-current-profile';
-import { useProfileSet } from '@/sections/dashboard/hooks/use-profile-set';
+import { Profile } from '@/modules/profiles/core/domain';
+import { useCurrentProfileStore } from '@/stores/use-current-profile-store';
+import { useProfileSet } from '@/hooks/use-profile-set';
 
 interface ProfileNavItemProps {
   profileName: string;
@@ -60,16 +60,14 @@ export const ProfileNavItem: React.FC<ProfileNavItemProps> = ({
 export function ProfileNav() {
   const [open, setOpen] = React.useState(false);
   const { profileSet, error, isLoading } = useProfileSet();
-  const { current, setCurrent } = useCurrentProfile();
+  const { current, setCurrent } = useCurrentProfileStore();
 
   useEffect(() => {
-    if (!isLoading) {
-      const defaultProfile = profileSet!.profiles.find(
+    if (!isLoading && profileSet) {
+      const defaultProfile = profileSet.profiles.find(
         (value: Profile) => value.name === 'default'
       );
-      const initialProfile: Profile = defaultProfile
-        ? defaultProfile
-        : profileSet!.profiles[0];
+      const initialProfile: Profile = defaultProfile ?? profileSet.profiles[0];
       setCurrent(initialProfile.name);
     }
   }, [profileSet, error, isLoading, setCurrent]);

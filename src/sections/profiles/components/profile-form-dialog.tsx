@@ -23,10 +23,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { outputFormats, Profile, regions } from '@/modules/profiles/domain';
+import {
+  outputFormats,
+  Profile,
+  regions,
+} from '@/modules/profiles/core/domain';
 import { Step, StepItem, Stepper, useStepper } from '@/components/ui/stepper';
-import { create } from 'zustand';
-import { invoke } from '@tauri-apps/api/tauri';
 import { useSWRConfig } from 'swr';
 import { isNotBlank } from '@/lib/string-utils';
 import {
@@ -36,41 +38,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
-interface ProfileFormValue {
-  name: string;
-  accessKeyId: string;
-  secretAccessKey: string;
-  region: string;
-  outputFormat: string;
-}
-
-interface ProfileFormStore {
-  formData: ProfileFormValue;
-  setFormData: (value: ProfileFormValue) => void;
-  resetFormData: () => void;
-}
-
-const userProfileFormStore = create<ProfileFormStore>((set) => ({
-  formData: {
-    name: '',
-    accessKeyId: '',
-    secretAccessKey: '',
-    region: '',
-    outputFormat: '',
-  },
-  setFormData: (value: ProfileFormValue) => set(() => ({ formData: value })),
-  resetFormData: () =>
-    set(() => ({
-      formData: {
-        name: '',
-        accessKeyId: '',
-        secretAccessKey: '',
-        region: '',
-        outputFormat: '',
-      },
-    })),
-}));
+import { userProfileFormStore } from '@/sections/profiles/stores/use-profile-form-store';
+import { useProfileForm } from '@/sections/profiles/hooks/use-profile-form';
 
 const StepperFormActions: React.FC = () => {
   const {
@@ -356,20 +325,22 @@ const ConfigStepForm: React.FC<FinalStepFormProps> = ({
 
   const { mutate } = useSWRConfig();
 
+  const { createProfile, editProfile } = useProfileForm();
+
   async function onCreate() {
-    invoke('create_profile', {
-      profile: {
-        name: formData.name,
-        credentials: {
-          access_key_id: formData.accessKeyId,
-          secret_access_key: formData.secretAccessKey,
-        },
-        config: {
-          region: formData.region,
-          output_format: formData.outputFormat,
-        },
+    const newProfile: Profile = {
+      name: formData.name,
+      credentials: {
+        access_key_id: formData.accessKeyId,
+        secret_access_key: formData.secretAccessKey,
       },
-    })
+      config: {
+        region: formData.region,
+        output_format: formData.outputFormat,
+      },
+    };
+
+    createProfile(newProfile)
       .then(() => {
         mutate('get_profiles');
       })
@@ -381,19 +352,18 @@ const ConfigStepForm: React.FC<FinalStepFormProps> = ({
   }
 
   async function onEdit() {
-    invoke('edit_profile', {
-      profile: {
-        name: formData.name,
-        credentials: {
-          access_key_id: formData.accessKeyId,
-          secret_access_key: formData.secretAccessKey,
-        },
-        config: {
-          region: formData.region,
-          output_format: formData.outputFormat,
-        },
+    const updatedProfile: Profile = {
+      name: formData.name,
+      credentials: {
+        access_key_id: formData.accessKeyId,
+        secret_access_key: formData.secretAccessKey,
       },
-    })
+      config: {
+        region: formData.region,
+        output_format: formData.outputFormat,
+      },
+    };
+    editProfile(updatedProfile)
       .then(() => {
         mutate('get_profiles');
       })

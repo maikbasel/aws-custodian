@@ -8,7 +8,7 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
 } from '@/components/ui/breadcrumb';
-import { useProfileSet } from '@/sections/dashboard/hooks/use-profile-set';
+import { useProfileSet } from '@/hooks/use-profile-set';
 
 const ProfilesPage = () => {
   const { profileSet, error, isLoading } = useProfileSet();

@@ -1,27 +1,39 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import Profiles from './page';
-import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
+import { mockIPC } from '@tauri-apps/api/mocks';
 import { SWRConfig } from 'swr';
 import React from 'react';
-import { ProfileSet } from '@/modules/profiles/domain';
+import { ProfileSet } from '@/modules/profiles/core/domain';
+import { getProfiles } from '@/modules/profiles/application/get-profiles';
+import { Ok } from 'oxide.ts';
+import { DIContextProvider } from '@/context/di-context';
+
+jest.mock('@/modules/profiles/application/get-profiles', () => ({
+  ...jest.requireActual('@/modules/profiles/application/get-profiles'),
+  getProfiles: jest.fn(),
+}));
+
+const mockGetProfiles = getProfiles as jest.MockedFunction<typeof getProfiles>;
+
+const profileSet: ProfileSet = {
+  profiles: [],
+};
 
 describe('Profiles', () => {
+  beforeEach(() => {
+    mockGetProfiles.mockResolvedValue(Ok(profileSet));
+  });
+
   afterEach(() => {
-    clearMocks();
+    jest.resetAllMocks();
   });
 
   test('should render loading state', () => {
-    const profileSet: ProfileSet = {
-      profiles: [],
-    };
-    mockIPC((cmd) => {
-      if (cmd === 'get_profiles') {
-        return profileSet;
-      }
-    });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <Profiles />
+        <DIContextProvider>
+          <Profiles />
+        </DIContextProvider>
       </SWRConfig>
     );
 
@@ -40,7 +52,9 @@ describe('Profiles', () => {
     });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <Profiles />
+        <DIContextProvider>
+          <Profiles />
+        </DIContextProvider>
       </SWRConfig>
     );
     await waitFor(() => {

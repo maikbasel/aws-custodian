@@ -1,10 +1,20 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import Header from '@/sections/dashboard/components/header/header';
-import { mockIPC } from '@tauri-apps/api/mocks';
 import { SWRConfig } from 'swr';
+import { getProfiles } from '@/modules/profiles/application/get-profiles';
+import { Ok } from 'oxide.ts';
+import { Profile } from '@/modules/profiles/core/domain';
+import { DIContextProvider } from '@/context/di-context';
 
-const profiles = [
+jest.mock('@/modules/profiles/application/get-profiles', () => ({
+  ...jest.requireActual('@/modules/profiles/application/get-profiles'),
+  getProfiles: jest.fn(),
+}));
+
+const mockGetProfiles = getProfiles as jest.MockedFunction<typeof getProfiles>;
+
+const profileSet: Profile[] = [
   {
     name: 'prof1',
     credentials: {
@@ -19,17 +29,24 @@ const profiles = [
 ];
 
 describe('<Header />', () => {
+  beforeEach(() => {
+    mockGetProfiles.mockResolvedValue(
+      Ok({
+        profiles: profileSet,
+      })
+    );
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   it('should render the Header component without crashing', () => {
-    mockIPC((cmd) => {
-      if (cmd === 'get_profiles') {
-        return {
-          profiles,
-        };
-      }
-    });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <Header />
+        <DIContextProvider>
+          <Header />
+        </DIContextProvider>
       </SWRConfig>
     );
 
@@ -37,16 +54,11 @@ describe('<Header />', () => {
   });
 
   it('should render the MobileSidebar component within the Header component', () => {
-    mockIPC((cmd) => {
-      if (cmd === 'get_profiles') {
-        return {
-          profiles,
-        };
-      }
-    });
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
-        <Header />
+        <DIContextProvider>
+          <Header />
+        </DIContextProvider>
       </SWRConfig>
     );
 

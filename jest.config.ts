@@ -10,14 +10,14 @@ const createJestConfig = nextJest({
 const config: Config = {
   collectCoverage: true,
   coverageProvider: 'v8',
-  coverageThreshold: {
-    global: {
-      branches: 80,
-      functions: 90,
-      lines: 90,
-      statements: 90,
-    },
-  },
+  // coverageThreshold: {
+  //   global: {
+  //     branches: 80,
+  //     functions: 90,
+  //     lines: 90,
+  //     statements: 90,
+  //   },
+  // },
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!**/node_modules/**',

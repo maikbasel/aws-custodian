@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { ProfileSet } from '@/modules/profiles/domain';
+import { ProfileSet } from '@/modules/profiles/core/domain';
 import { ProfileDataTable } from '@/sections/profiles/components/profile-data-table';
 import userEvent from '@testing-library/user-event';
 import { SWRConfig } from 'swr';

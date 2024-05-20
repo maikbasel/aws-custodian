@@ -5,7 +5,7 @@ interface CurrentProfileStore {
   setCurrent: (profile: string) => void;
 }
 
-export const useCurrentProfile = create<CurrentProfileStore>((set) => ({
+export const useCurrentProfileStore = create<CurrentProfileStore>((set) => ({
   current: '',
   setCurrent: (profile) => set(() => ({ current: profile })),
 }));

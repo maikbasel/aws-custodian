@@ -6,7 +6,7 @@ import { cn } from '@/lib/css-utils';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, Settings } from 'lucide-react';
-import { useSidebar } from '@/sections/dashboard/stores/use-sidebar';
+import { useSidebarStore } from '@/stores/use-sidebar-store';
 import {
   NavItem,
   SideNav,
@@ -25,7 +25,7 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ className }: Readonly<SidebarProps>) {
-  const { isOpen, toggle } = useSidebar();
+  const { isOpen, toggle } = useSidebarStore();
   const [switched, setSwitched] = React.useState(false);
 
   const handleToggle = () => {

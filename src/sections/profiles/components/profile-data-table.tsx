@@ -15,7 +15,7 @@ import {
   SortingState,
   VisibilityState,
 } from '@tanstack/table-core';
-import { Profile, ProfileSet } from '@/modules/profiles/domain';
+import { Profile, ProfileSet } from '@/modules/profiles/core/domain';
 import { DataTable } from '@/components/ui/data-table';
 import { FileType, Globe2Icon, MoreHorizontal } from 'lucide-react';
 import { DataTableColumnHeader } from '@/components/ui/data-table-column-header';
@@ -35,7 +35,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { invoke } from '@tauri-apps/api/tauri';
 import { useSWRConfig } from 'swr';
 import {
   AlertDialog,
@@ -51,18 +50,22 @@ import ProfileFormDialog from '@/sections/profiles/components/profile-form-dialo
 import { useReactTable } from '@tanstack/react-table';
 import { DataTablePagination } from '@/components/ui/data-table-pagination';
 import ProfileActionsButton from '@/sections/profiles/components/profile-actions-button';
+import { useProfileForm } from '@/sections/profiles/hooks/use-profile-form';
 
 const RowAction: React.FC<{ row: Row<Profile> }> = ({ row }) => {
   const profile = row.original;
   const { mutate } = useSWRConfig();
   const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
   const [showUpdateDialog, setShowUpdateDialog] = React.useState(false);
+  const { deleteProfile } = useProfileForm();
 
   async function onDelete() {
-    invoke('delete_profile', { profileName: profile.name }).then(() => {
-      mutate('get_profiles');
-    });
-    setShowDeleteDialog(false);
+    deleteProfile(profile.name)
+      .then(() => {
+        mutate('get_profiles');
+      })
+      .catch((reason) => console.error(reason))
+      .finally(() => setShowDeleteDialog(false));
   }
 
   return (
@@ -78,7 +81,7 @@ const RowAction: React.FC<{ row: Row<Profile> }> = ({ row }) => {
           <DropdownMenuLabel>Actions</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onSelect={() => setShowUpdateDialog(true)}>
-            Update {profile.name} profile
+            Edit {profile.name} profile
           </DropdownMenuItem>
           <DropdownMenuItem onSelect={() => setShowDeleteDialog(true)}>
             Delete {profile.name} profile

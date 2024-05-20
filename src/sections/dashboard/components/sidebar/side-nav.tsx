@@ -12,7 +12,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/sections/dashboard/components/sidebar/subnav-accordion';
-import { useSidebar } from '@/sections/dashboard/stores/use-sidebar';
+import { useSidebarStore } from '@/stores/use-sidebar-store';
 
 import { type LucideIcon } from 'lucide-react';
 
@@ -33,7 +33,7 @@ interface SideNavProps {
 
 export function SideNav({ items, setOpen, className }: Readonly<SideNavProps>) {
   const path = usePathname();
-  const { isOpen } = useSidebar();
+  const { isOpen } = useSidebarStore();
   const [openItem, setOpenItem] = React.useState('');
   const [lastOpenItem, setLastOpenItem] = React.useState('');
 
