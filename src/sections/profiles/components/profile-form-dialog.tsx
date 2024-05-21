@@ -466,8 +466,6 @@ export default function ProfileFormDialog({
   const { resetFormData } = userProfileFormStore();
 
   function onOpenChange(openState: boolean) {
-    console.info('is edit', profile != undefined);
-    console.info('open state changed', openState);
     setOpen(openState);
     if (open) {
       resetFormData();
