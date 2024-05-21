@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import Header from '@/sections/dashboard/components/header/header';
 import { SWRConfig } from 'swr';
 import { getProfiles } from '@/modules/profiles/application/get-profiles';
@@ -43,25 +43,25 @@ describe('<Header />', () => {
 
   it('should render the Header component without crashing', () => {
     render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <DIContextProvider>
-          <Header />
-        </DIContextProvider>
-      </SWRConfig>
+      <DIContextProvider>
+        <Header />
+      </DIContextProvider>
     );
 
-    expect(screen.getByTestId('app-header-label')).toBeInTheDocument();
+    waitFor(() =>
+      expect(screen.getByTestId('app-header-label')).toBeInTheDocument()
+    );
   });
 
   it('should render the MobileSidebar component within the Header component', () => {
     render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <DIContextProvider>
-          <Header />
-        </DIContextProvider>
-      </SWRConfig>
+      <DIContextProvider>
+        <Header />
+      </DIContextProvider>
     );
 
-    expect(screen.getByTestId('mobile-app-header-label')).toBeInTheDocument();
+    waitFor(() =>
+      expect(screen.getByTestId('mobile-app-header-label')).toBeInTheDocument()
+    );
   });
 });

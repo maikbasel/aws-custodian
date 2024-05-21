@@ -24,7 +24,7 @@ const ProfilesPage = () => {
   return <ProfileDataTable data={profileSet!} />;
 };
 
-export default function App() {
+export default function Profiles() {
   return (
     <div className='flex h-full flex-col space-y-4 p-4 pt-6'>
       <Breadcrumb>

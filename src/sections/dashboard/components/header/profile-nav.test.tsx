@@ -3,7 +3,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { randomFillSync } from 'crypto';
 import { ProfileNav } from '@/sections/dashboard/components/header/profile-nav';
-import { clearMocks, mockIPC } from '@tauri-apps/api/mocks';
 import { SWRConfig } from 'swr';
 import { ProfileSet } from '@/modules/profiles/core/domain';
 import { DIContextProvider } from '@/context/di-context';
@@ -74,7 +73,10 @@ describe('<ProfileNav />', () => {
         </DIContextProvider>
       </SWRConfig>
     );
-    expect(screen.getByText('Loading...')).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(screen.getByText('Loading...')).toBeInTheDocument()
+    );
   });
 
   it('should expand profile nav when dropdown is clicked', async () => {
@@ -140,42 +142,40 @@ describe('<ProfileNav />', () => {
   });
 
   it('should not render chevron icon when no additional profiles are available', async () => {
-    const singleProfile: ProfileSet = {
-      profiles: [
-        {
-          name: 'prof1',
-          credentials: {
-            access_key_id: 'key1',
-            secret_access_key: 'secret1',
+    jest.isolateModules(async () => {
+      const singleProfile: ProfileSet = {
+        profiles: [
+          {
+            name: 'prof1',
+            credentials: {
+              access_key_id: 'key1',
+              secret_access_key: 'secret1',
+            },
+            config: {
+              region: 'region1',
+              output_format: 'format1',
+            },
           },
-          config: {
-            region: 'region1',
-            output_format: 'format1',
-          },
-        },
-      ],
-    };
-    mockIPC((cmd) => {
-      if (cmd === 'get_profiles') {
-        return singleProfile;
-      }
-    });
-    render(
-      <SWRConfig value={{ provider: () => new Map() }}>
-        <DIContextProvider>
-          <ProfileNav />
-        </DIContextProvider>
-      </SWRConfig>
-    );
-    // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
-    await waitFor(() => {
-      expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
-    });
+        ],
+      };
+      mockGetProfiles.mockResolvedValue(Ok(singleProfile));
+      render(
+        <SWRConfig value={{ provider: () => new Map() }}>
+          <DIContextProvider>
+            <ProfileNav />
+          </DIContextProvider>
+        </SWRConfig>
+      );
+      // await waitForElementToBeRemoved(() => screen.queryByText('Loading...')); see https://github.com/testing-library/react-testing-library/issues/865
+      await waitFor(() => {
+        expect(screen.queryByText('Loading...')).not.toBeInTheDocument();
+      });
 
-    const triggerButton = screen.getByTestId('profile-nav-trigger');
-    const chevronSvg = triggerButton.querySelector('svg .lucide-chevron-up');
+      const triggerButton = screen.getByTestId('profile-nav-trigger');
+      const chevronSvg = triggerButton.querySelector('svg .lucide-chevron-up');
 
-    expect(chevronSvg).not.toBeInTheDocument();
+      expect(chevronSvg).not.toBeInTheDocument();
+    });
   });
 
   it('should render placeholder values for region and format label in profile nav trigger when these optional values are not set', async () => {
