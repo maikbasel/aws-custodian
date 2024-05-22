@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
 import Header from '@/sections/dashboard/components/header/header';
-import { SWRConfig } from 'swr';
 import { getProfiles } from '@/modules/profiles/application/get-profiles';
 import { Ok } from 'oxide.ts';
 import { Profile } from '@/modules/profiles/core/domain';
