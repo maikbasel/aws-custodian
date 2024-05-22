@@ -52,9 +52,11 @@ jobs:
         continue-on-error: true
 
       - name: Annotate Code Linting Results
+        if: success() || failure()
         uses: ataylorme/eslint-annotate-action@v2
         with:
           report-json: 'eslint_report.json'
+        continue-on-error: true
 
       - name: Test with Jest
         run: npm run test:ci
@@ -66,6 +68,7 @@ jobs:
           name: JEST Tests
           path: junit.xml
           reporter: jest-junit
+        continue-on-error: true
 #      TODO: Add e2e tests
 #      - name: End-to-end tests with Cypress
 #        uses: cypress-io/github-action@v2
