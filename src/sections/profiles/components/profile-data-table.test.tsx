@@ -4,8 +4,21 @@ import { ProfileSet } from '@/modules/profiles/core/domain';
 import { ProfileDataTable } from '@/sections/profiles/components/profile-data-table';
 import userEvent from '@testing-library/user-event';
 import { SWRConfig } from 'swr';
-import { mockIPC } from '@tauri-apps/api/mocks';
 import { TooltipProvider } from '@/components/ui/tooltip';
+import { validateCredentials } from '@/modules/credentials/application/validateCredentials';
+import { Ok } from 'oxide.ts';
+import { DIContextProvider } from '@/context/di-context';
+
+jest.mock('@/modules/credentials/application/validateCredentials', () => ({
+  ...jest.requireActual(
+    '@/modules/credentials/application/validateCredentials'
+  ),
+  validateCredentials: jest.fn(),
+}));
+
+const mockValidateCredentials = validateCredentials as jest.MockedFunction<
+  typeof validateCredentials
+>;
 
 describe('<ProfileDataTable />', () => {
   const profileSet: ProfileSet = {
@@ -25,18 +38,16 @@ describe('<ProfileDataTable />', () => {
   };
 
   beforeEach(() => {
-    mockIPC((cmd) => {
-      if (cmd === 'validate_credentials') {
-        return false;
-      }
-    });
+    mockValidateCredentials.mockResolvedValue(Ok(false));
   });
 
   it('should render profile data table with profile set data', async () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <TooltipProvider>
-          <ProfileDataTable data={profileSet} />
+          <DIContextProvider>
+            <ProfileDataTable data={profileSet} />
+          </DIContextProvider>
         </TooltipProvider>
       </SWRConfig>
     );
@@ -54,7 +65,9 @@ describe('<ProfileDataTable />', () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <TooltipProvider>
-          <ProfileDataTable data={profileSet} />
+          <DIContextProvider>
+            <ProfileDataTable data={profileSet} />
+          </DIContextProvider>
         </TooltipProvider>
       </SWRConfig>
     );
@@ -70,7 +83,9 @@ describe('<ProfileDataTable />', () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <TooltipProvider>
-          <ProfileDataTable data={profileSet} />
+          <DIContextProvider>
+            <ProfileDataTable data={profileSet} />
+          </DIContextProvider>
         </TooltipProvider>
       </SWRConfig>
     );
@@ -88,7 +103,9 @@ describe('<ProfileDataTable />', () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <TooltipProvider>
-          <ProfileDataTable data={profileSet} />
+          <DIContextProvider>
+            <ProfileDataTable data={profileSet} />
+          </DIContextProvider>
         </TooltipProvider>
       </SWRConfig>
     );
@@ -103,7 +120,9 @@ describe('<ProfileDataTable />', () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <TooltipProvider>
-          <ProfileDataTable data={profileSet} />
+          <DIContextProvider>
+            <ProfileDataTable data={profileSet} />
+          </DIContextProvider>
         </TooltipProvider>
       </SWRConfig>
     );
@@ -146,7 +165,9 @@ describe('<ProfileDataTable />', () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <TooltipProvider>
-          <ProfileDataTable data={input} />
+          <DIContextProvider>
+            <ProfileDataTable data={input} />
+          </DIContextProvider>
         </TooltipProvider>
       </SWRConfig>
     );
@@ -192,7 +213,9 @@ describe('<ProfileDataTable />', () => {
     render(
       <SWRConfig value={{ provider: () => new Map() }}>
         <TooltipProvider>
-          <ProfileDataTable data={input} />
+          <DIContextProvider>
+            <ProfileDataTable data={input} />
+          </DIContextProvider>
         </TooltipProvider>
       </SWRConfig>
     );
