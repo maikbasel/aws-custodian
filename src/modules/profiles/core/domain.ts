@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Result } from 'oxide.ts';
-import Error from 'next/error';
+import { BackendError } from '@/modules/common/error';
 
 export const regions = [
   'af-south-1',
@@ -55,18 +55,14 @@ export const profileSetSchema = z.object({
 
 export type ProfileSet = z.infer<typeof profileSetSchema>;
 
-export class ProfileDataError extends Error {}
-
 export interface ProfileDataSPI {
-  loadProfiles(): Promise<Result<ProfileSet, ProfileDataError>>;
+  loadProfiles(): Promise<Result<ProfileSet, BackendError>>;
 
-  saveProfile(profile: Profile): Promise<Result<void, ProfileDataError>>;
+  saveProfile(profile: Profile): Promise<Result<void, BackendError>>;
 
-  updateProfile(profile: Profile): Promise<Result<void, ProfileDataError>>;
+  updateProfile(profile: Profile): Promise<Result<void, BackendError>>;
 
-  removeProfile(profileName: string): Promise<Result<void, ProfileDataError>>;
+  removeProfile(profileName: string): Promise<Result<void, BackendError>>;
 
-  removeProfiles(
-    profileNames: string[]
-  ): Promise<Result<void, ProfileDataError>>;
+  removeProfiles(profileNames: string[]): Promise<Result<void, BackendError>>;
 }

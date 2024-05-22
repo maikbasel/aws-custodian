@@ -7,6 +7,7 @@ import { createProfile } from '@/modules/profiles/application/create-profile';
 import { deleteProfile } from '@/modules/profiles/application/delete-profile';
 import { deleteProfiles } from '@/modules/profiles/application/delete-profiles';
 import { editProfile } from '@/modules/profiles/application/edit-profile';
+import { validateCredentials } from '@/modules/credentials/application/validateCredentials';
 
 export const useProfileForm = () => {
   const context = useContext(DIContext);
@@ -23,5 +24,7 @@ export const useProfileForm = () => {
       deleteProfile(context.profileDataSPI, profileName),
     deleteProfiles: async (profileNames: string[]) =>
       deleteProfiles(context.profileDataSPI, profileNames),
+    validateCredentials: async (profileName: string) =>
+      validateCredentials(context.credentialsDataSPI, profileName),
   };
 };

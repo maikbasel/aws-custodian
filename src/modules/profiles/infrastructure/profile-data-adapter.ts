@@ -1,12 +1,15 @@
 import {
   Profile,
-  ProfileDataError,
+  ProfileDataSPI,
   ProfileSet,
   profileSetSchema,
-  ProfileDataSPI,
 } from '@/modules/profiles/core/domain';
 import { Err, Ok, Result } from 'oxide.ts';
 import { invoke } from '@tauri-apps/api/tauri';
+import {
+  BackendError,
+  backendErrorResponseSchema,
+} from '@/modules/common/error';
 
 export function createProfileDataAdapter(): ProfileDataSPI {
   return {
@@ -18,40 +21,45 @@ export function createProfileDataAdapter(): ProfileDataSPI {
   };
 }
 
-async function loadProfiles(): Promise<Result<ProfileSet, ProfileDataError>> {
+function parseError(err: unknown) {
+  const errorResponse = backendErrorResponseSchema.parse(err);
+  return Err(errorResponse.error);
+}
+
+async function loadProfiles(): Promise<Result<ProfileSet, BackendError>> {
   return invoke<Record<string, never>>('get_profiles')
     .then((data) => Ok(profileSetSchema.parse(data)))
-    .catch((err) => Err(new ProfileDataError(err.message)));
+    .catch((err) => parseError(err));
 }
 
 async function saveProfile(
   profile: Profile
-): Promise<Result<void, ProfileDataError>> {
+): Promise<Result<void, BackendError>> {
   return invoke<void>('create_profile', { profile })
     .then(() => Ok(undefined))
-    .catch((err) => Err(new ProfileDataError(err.message)));
+    .catch((err) => parseError(err));
 }
 
 async function updateProfile(
   profile: Profile
-): Promise<Result<void, ProfileDataError>> {
+): Promise<Result<void, BackendError>> {
   return invoke<void>('edit_profile', { profile })
     .then(() => Ok(undefined))
-    .catch((err) => Err(new ProfileDataError(err.message)));
+    .catch((err) => parseError(err));
 }
 
 async function removeProfile(
   profileName: string
-): Promise<Result<void, ProfileDataError>> {
+): Promise<Result<void, BackendError>> {
   return invoke<void>('delete_profile', { profileName: profileName })
     .then(() => Ok(undefined))
-    .catch((err) => Err(new ProfileDataError(err.message)));
+    .catch((err) => parseError(err));
 }
 
 async function removeProfiles(
   profileNames: string[]
-): Promise<Result<void, ProfileDataError>> {
+): Promise<Result<void, BackendError>> {
   return invoke<void>('delete_profiles', { profileNames: profileNames })
     .then(() => Ok(undefined))
-    .catch((err) => Err(new ProfileDataError(err.message)));
+    .catch((err) => parseError(err));
 }

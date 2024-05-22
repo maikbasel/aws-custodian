@@ -37,7 +37,7 @@ impl CredentialsDataSPI for STSAdapter {
                         Err(Report::new(CredentialsError::InvalidCredentialsError))
                     }
                     _ => {
-                        let error_code = error_code.unwrap_or("UnknownError");
+                        let error_code = error_code.unwrap_or("Server Error");
                         Err(Report::new(CredentialsError::UnexpectedError(
                             error_code.to_string(),
                         )))

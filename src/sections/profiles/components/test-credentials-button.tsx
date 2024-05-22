@@ -1,14 +1,21 @@
 'use client';
 
-import { Shield, ShieldAlert, ShieldCheck } from 'lucide-react';
+import {
+  ShieldAlert,
+  ShieldCheck,
+  ShieldEllipsis,
+  ShieldX,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import React, { useEffect, useState } from 'react';
-import { invoke } from '@tauri-apps/api/tauri';
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useProfileForm } from '@/sections/profiles/hooks/use-profile-form';
+import { useToast } from '@/components/ui/use-toast';
+import { BackendError } from '@/modules/common/error';
 
 type TestCredentialsButtonProps = {
   profile: string;
@@ -20,19 +27,113 @@ export default function TestCredentialsButton({
   const [validated, setValidated] = useState<boolean>(false);
   const [busy, setBusy] = useState<boolean>(false);
   const [valid, setValid] = useState<boolean>(false);
+  const [failed, setFailed] = useState<boolean>(false);
+  const { toast } = useToast();
+  const { validateCredentials } = useProfileForm();
 
   useEffect(() => {
-    setValidated(true);
     setBusy(true);
 
-    invoke<boolean>('validate_credentials', {
-      profileName: profile,
-    }).then((value) => {
-      setValid(value);
-    });
-
-    setBusy(false);
+    validateCredentials(profile)
+      .then((value) => {
+        if (value.isOk()) {
+          setValid(value.unwrap());
+          setValidated(true);
+        } else {
+          const backendError = value.unwrapErr();
+          toast({
+            variant: 'destructive',
+            title: `Credentials validation failed! There is something wrong with profile ${profile}.`,
+            description: `${backendError.code}: ${backendError.message}`,
+          });
+          setFailed(true);
+        }
+      })
+      .finally(() => {
+        setBusy(false);
+        setValidated(true);
+      });
   }, [profile]);
+
+  const toastError = (backendError: BackendError) => {
+    toast({
+      variant: 'destructive',
+      title: `Credentials validation failed! There is something wrong with the profile "${profile}".`,
+      description: `${backendError.code}: ${backendError.message}`,
+    });
+  };
+
+  const onClick = () => {
+    setBusy(true);
+
+    validateCredentials(profile)
+      .then((value) => {
+        const backendError = value.unwrapErr();
+        if (value.isOk()) {
+          setValid(value.unwrap());
+        } else {
+          toastError(backendError);
+          setFailed(true);
+        }
+      })
+      .finally(() => setBusy(false));
+  };
+
+  const renderIcon = (validated: boolean, valid: boolean, busy: boolean) => {
+    if (!validated) {
+      return (
+        <>
+          <ShieldEllipsis
+            className={`h-4 w-4 text-gray-500 ${busy ? 'animate-pulse' : ''}`}
+          />
+          <span className='sr-only'>Validating...</span>
+        </>
+      );
+    }
+
+    if (valid) {
+      return (
+        <>
+          <ShieldCheck
+            className={`h-4 w-4 text-green-500 ${busy ? 'animate-pulse' : ''}`}
+          />
+          <span className='sr-only'>Valid</span>
+        </>
+      );
+    }
+
+    if (failed) {
+      return (
+        <>
+          <ShieldX
+            className={`h-4 w-4 text-red-500 ${busy ? 'animate-pulse' : ''}`}
+          />
+          <span className='sr-only'>Failed</span>
+        </>
+      );
+    }
+
+    return (
+      <>
+        <ShieldAlert
+          className={`h-4 w-4 text-yellow-500 ${busy ? 'animate-pulse' : ''}`}
+        />
+        <span className='sr-only'>Invalid</span>
+      </>
+    );
+  };
+
+  const renderTooltipContent = (validated: boolean, valid: boolean) => {
+    if (!validated) {
+      return 'Validating...';
+    }
+
+    if (failed) {
+      return 'Failed';
+    }
+
+    return valid ? 'Valid' : 'Invalid';
+  };
 
   return (
     <Tooltip>
@@ -42,49 +143,13 @@ export default function TestCredentialsButton({
           size='icon'
           className='flex items-center'
           disabled={busy}
-          onClick={() => {
-            setValidated(true);
-            setBusy(true);
-            setTimeout(async () => {
-              invoke<boolean>('validate_credentials', {
-                profileName: profile,
-              }).then((value) => {
-                setValid(value);
-              });
-              setBusy(false);
-            }, 1000);
-          }}
+          onClick={onClick}
         >
-          {validated ? (
-            valid ? (
-              <>
-                <ShieldCheck
-                  className={`h-4 w-4 text-green-500 ${
-                    busy ? 'animate-pulse' : ''
-                  }`}
-                />
-                <span className='sr-only'>Valid</span>
-              </>
-            ) : (
-              <>
-                <ShieldAlert
-                  className={`h-4 w-4 text-red-500 ${
-                    busy ? 'animate-pulse' : ''
-                  }`}
-                />
-                <span className='sr-only'>Invalid</span>
-              </>
-            )
-          ) : (
-            <>
-              <Shield className='h-4 w-4 text-gray-500' />
-              <span className='sr-only'>Validating...</span>
-            </>
-          )}
+          {renderIcon(validated, valid, busy)}
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        <p>{validated ? (valid ? 'Valid' : 'Invalid') : 'Validating...'}</p>
+        <p>{renderTooltipContent(validated, valid)}</p>
       </TooltipContent>
     </Tooltip>
   );

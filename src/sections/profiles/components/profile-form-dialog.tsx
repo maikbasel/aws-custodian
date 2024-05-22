@@ -40,6 +40,7 @@ import {
 } from '@/components/ui/select';
 import { userProfileFormStore } from '@/sections/profiles/stores/use-profile-form-store';
 import { useProfileForm } from '@/sections/profiles/hooks/use-profile-form';
+import { toast } from '@/components/ui/use-toast';
 
 const StepperFormActions: React.FC = () => {
   const {
@@ -341,8 +342,17 @@ const ConfigStepForm: React.FC<FinalStepFormProps> = ({
     };
 
     createProfile(newProfile)
-      .then(() => {
-        mutate('get_profiles');
+      .then((result) => {
+        if (result.isOk()) {
+          mutate('get_profiles');
+        } else {
+          const backendError = result.unwrapErr();
+          toast({
+            variant: 'destructive',
+            title: `Creating profile ${newProfile.name} failed!`,
+            description: `${backendError.code}: ${backendError.message}`,
+          });
+        }
       })
       .catch((reason) => console.error(reason))
       .finally(() => {
@@ -364,8 +374,17 @@ const ConfigStepForm: React.FC<FinalStepFormProps> = ({
       },
     };
     editProfile(updatedProfile)
-      .then(() => {
-        mutate('get_profiles');
+      .then((result) => {
+        if (result.isOk()) {
+          mutate('get_profiles');
+        } else {
+          const backendError = result.unwrapErr();
+          toast({
+            variant: 'destructive',
+            title: `Editing profile ${updatedProfile.name} failed!`,
+            description: `${backendError.code}: ${backendError.message}`,
+          });
+        }
       })
       .catch((reason) => console.error(reason))
       .finally(() => {

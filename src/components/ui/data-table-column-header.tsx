@@ -9,7 +9,7 @@ import {
 } from '@radix-ui/react-icons';
 import { Column } from '@tanstack/react-table';
 
-import { cn } from '@/lib/css-utils';
+import { cn } from '@/lib/utils';
 import {
   DropdownMenu,
   DropdownMenuContent,

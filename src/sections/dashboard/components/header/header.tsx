@@ -2,8 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Boxes } from 'lucide-react';
-import { cn } from '@/lib/css-utils';
+import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/sections/dashboard/components/header/theme-toggle';
 import { MobileSidebar } from '@/sections/dashboard/components/header/mobile-sidebar';
 import { ProfileNav } from '@/sections/dashboard/components/header/profile-nav';
@@ -16,7 +15,6 @@ export default function Header() {
           href={'/'}
           className='hidden items-center justify-between gap-2 md:flex'
         >
-          <Boxes className='h-6 w-6' />
           <h1 className='text-lg font-semibold' data-testid='app-header-label'>
             AWS Custodian
           </h1>

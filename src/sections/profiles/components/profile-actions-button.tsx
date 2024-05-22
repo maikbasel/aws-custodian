@@ -24,6 +24,7 @@ import ProfileFormDialog from '@/sections/profiles/components/profile-form-dialo
 import { Profile } from '@/modules/profiles/core/domain';
 import { mutate } from 'swr';
 import { useProfileForm } from '@/sections/profiles/hooks/use-profile-form';
+import { toast } from '@/components/ui/use-toast';
 
 interface DataTableActionsButtonProps {
   selectedRows: Profile[];
@@ -41,8 +42,17 @@ export default function ProfileActionsButton({
     const profileNames = selectedRows.map((row) => row.name);
 
     deleteProfiles(profileNames)
-      .then(() => {
-        mutate('get_profiles');
+      .then((result) => {
+        if (result.isOk()) {
+          mutate('get_profiles');
+        } else {
+          const backendError = result.unwrapErr();
+          toast({
+            variant: 'destructive',
+            title: `Deleting profiles ${profileNames.join(', ')} failed!`,
+            description: `${backendError.code}: ${backendError.message}`,
+          });
+        }
       })
       .catch((reason) => console.error(reason))
       .finally(() => setShowDeleteDialog(false));

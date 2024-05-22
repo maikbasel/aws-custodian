@@ -6,6 +6,7 @@ import Header from '@/sections/dashboard/components/header/header';
 import { ThemeProvider } from '@/sections/dashboard/components/header/theme-provider';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { DIContextProvider } from '@/context/di-context';
+import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -35,6 +36,7 @@ export default function RootLayout({ children }: Readonly<RootLayoutProps>) {
                   {children}
                 </main>
               </div>
+              <Toaster />
             </DIContextProvider>
           </TooltipProvider>
         </ThemeProvider>

@@ -51,6 +51,7 @@ import { useReactTable } from '@tanstack/react-table';
 import { DataTablePagination } from '@/components/ui/data-table-pagination';
 import ProfileActionsButton from '@/sections/profiles/components/profile-actions-button';
 import { useProfileForm } from '@/sections/profiles/hooks/use-profile-form';
+import { toast } from '@/components/ui/use-toast';
 
 const RowAction: React.FC<{ row: Row<Profile> }> = ({ row }) => {
   const profile = row.original;
@@ -61,10 +62,18 @@ const RowAction: React.FC<{ row: Row<Profile> }> = ({ row }) => {
 
   async function onDelete() {
     deleteProfile(profile.name)
-      .then(() => {
-        mutate('get_profiles');
+      .then((result) => {
+        if (result.isOk()) {
+          mutate('get_profiles');
+        } else {
+          const backendError = result.unwrapErr();
+          toast({
+            variant: 'destructive',
+            title: `Deleting profile ${profile.name} failed!`,
+            description: `${backendError.code}: ${backendError.message}`,
+          });
+        }
       })
-      .catch((reason) => console.error(reason))
       .finally(() => setShowDeleteDialog(false));
   }
 
