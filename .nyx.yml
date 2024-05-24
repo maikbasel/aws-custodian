@@ -10,14 +10,5 @@ releaseTypes:
       collapsedVersionQualifier: rc
 substitutions:
   enabled:
-    - npm
-    - rust
-  items:
-    npm:
-      files: 'package.json'
-      match: "\"version\"(\\s)*:(\\s)*\"(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?\""
-      replace: '"version": ""'
-    rust:
-      files: 'src-tauri/Cargo.toml'
-      match: "version(\\s)*=(\\s)*(\"|')(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?(\"|')"
-      replace: 'version = ""'
+    - node_version
+    - cargo_version
