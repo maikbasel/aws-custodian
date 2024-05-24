@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import { ThemeToggle } from '@/sections/dashboard/components/header/theme-toggle';
 import { MobileSidebar } from '@/sections/dashboard/components/header/mobile-sidebar';
 import { ProfileNav } from '@/sections/dashboard/components/header/profile-nav';
+import Image from 'next/image';
+import cloudCustodianIcon from './icons/cloud-custodian.svg';
 
 export default function Header() {
   return (
@@ -15,6 +17,11 @@ export default function Header() {
           href={'/'}
           className='hidden items-center justify-between gap-2 md:flex'
         >
+          <Image
+            src={cloudCustodianIcon}
+            alt='Cloud Custodian Icon'
+            className='h-14 w-14'
+          />
           <h1 className='text-lg font-semibold' data-testid='app-header-label'>
             AWS Custodian
           </h1>
