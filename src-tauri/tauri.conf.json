@@ -16,7 +16,7 @@
     "bundle": {
       "active": true,
       "category": "DeveloperTool",
-      "copyright": "",
+      "copyright": "MIT",
       "deb": {
         "depends": []
       },
@@ -28,8 +28,8 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "com.maikbasel.custodian",
-      "longDescription": "",
+      "identifier": "com.maikbasel.aws-custodian",
+      "longDescription": "AWS Custodian is a Tauri-based desktop app for efficiently managing AWS tasks. Build for developers and DevOps pros, it streamlines navigation across multiple AWS accounts, the handling of AWS profiles, and the control of SSM parameters and Secrets Manager secrets, reducing the complexity of using the AWS web console or CLI.",
       "macOS": {
         "entitlements": null,
         "exceptionDomain": "",
