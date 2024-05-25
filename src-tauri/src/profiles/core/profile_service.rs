@@ -1,9 +1,9 @@
 use async_trait::async_trait;
 
-use crate::profile::core::api::ProfileDataAPI;
-use crate::profile::core::domain::{Profile, ProfileSet};
-use crate::profile::core::error::ProfileError;
-use crate::profile::core::spi::ProfileDataSPI;
+use crate::profiles::core::api::ProfileDataAPI;
+use crate::profiles::core::domain::{Profile, ProfileSet};
+use crate::profiles::core::error::ProfileError;
+use crate::profiles::core::spi::ProfileDataSPI;
 
 #[allow(dead_code)]
 pub struct ProfileService {
@@ -46,8 +46,8 @@ impl ProfileDataAPI for ProfileService {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::profile::core::domain::{Config, Credentials};
-    use crate::profile::core::spi::MockProfileDataSPI;
+    use crate::profiles::core::domain::{Config, Credentials};
+    use crate::profiles::core::spi::MockProfileDataSPI;
     use mockall::predicate::eq;
     use spectral::prelude::*;
 

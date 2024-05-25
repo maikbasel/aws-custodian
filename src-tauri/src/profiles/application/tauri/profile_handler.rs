@@ -1,8 +1,8 @@
-use crate::profile::core::api::ProfileDataAPI;
+use crate::profiles::core::api::ProfileDataAPI;
 use std::sync::Arc;
 
-use crate::profile::core::domain::{Profile, ProfileSet};
-use crate::profile::core::error::ProfileError;
+use crate::profiles::core::domain::{Profile, ProfileSet};
+use crate::profiles::core::error::ProfileError;
 
 #[tauri::command]
 #[cfg(not(tarpaulin_include))]

@@ -3,8 +3,8 @@ use error_stack::Result;
 #[cfg(test)]
 use mockall::automock;
 
-use crate::profile::core::domain::{Profile, ProfileSet};
-use crate::profile::core::error::ProfileError;
+use crate::profiles::core::domain::{Profile, ProfileSet};
+use crate::profiles::core::error::ProfileError;
 
 #[cfg_attr(test, automock)]
 #[async_trait]

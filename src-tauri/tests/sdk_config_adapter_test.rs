@@ -10,9 +10,9 @@ mod tests {
     use tempfile::{tempdir, TempDir};
     use test_context::{test_context, AsyncTestContext};
 
-    use backend::profile::core::domain::{Config, Credentials, Profile};
-    use backend::profile::core::spi::ProfileDataSPI;
-    use backend::profile::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
+    use backend::profiles::core::domain::{Config, Credentials, Profile};
+    use backend::profiles::core::spi::ProfileDataSPI;
+    use backend::profiles::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
 
     struct ValidContext {
         _test_dir: TempDir,

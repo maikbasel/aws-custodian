@@ -7,9 +7,9 @@ use error_stack::{Report, ResultExt};
 use ini::Ini;
 use secstr::SecStr;
 
-use crate::profile::core::domain::{Config, Credentials, Profile as DomainProfile, ProfileSet};
-use crate::profile::core::error::ProfileError;
-use crate::profile::core::spi::ProfileDataSPI;
+use crate::profiles::core::domain::{Config, Credentials, Profile as DomainProfile, ProfileSet};
+use crate::profiles::core::error::ProfileError;
+use crate::profiles::core::spi::ProfileDataSPI;
 
 pub struct SdkConfigAdapter;
 

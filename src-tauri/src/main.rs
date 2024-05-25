@@ -15,12 +15,12 @@ use backend::credentials::application::tauri::credentials_handler::validate_cred
 use backend::credentials::core::api::CredentialsDataAPI;
 use backend::credentials::core::credentials_service::CredentialsService;
 use backend::credentials::infrastructure::aws::sts::sts_adapter::STSAdapter;
-use backend::profile::application::tauri::profile_handler::{
+use backend::profiles::application::tauri::profile_handler::{
     create_profile, delete_profile, delete_profiles, edit_profile, get_profiles,
 };
-use backend::profile::core::api::ProfileDataAPI;
-use backend::profile::core::profile_service::ProfileService;
-use backend::profile::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
+use backend::profiles::core::api::ProfileDataAPI;
+use backend::profiles::core::profile_service::ProfileService;
+use backend::profiles::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
 
 #[cfg(not(tarpaulin_include))]
 fn main() {
