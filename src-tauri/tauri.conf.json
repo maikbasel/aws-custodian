@@ -38,7 +38,7 @@
         "signingIdentity": null
       },
       "resources": [],
-      "shortDescription": "",
+      "shortDescription": "AWS Custodian is a Tauri-based desktop app for efficiently managing AWS tasks.",
       "targets": "all",
       "windows": {
         "certificateThumbprint": null,
