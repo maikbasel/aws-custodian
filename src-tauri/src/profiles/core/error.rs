@@ -5,7 +5,7 @@ use serde_json::json;
 use std::fmt::{Debug, Display, Formatter};
 
 #[derive(Debug, Eq, PartialEq, Clone)]
-pub enum ProfileError {
+pub enum ProfileDataError {
     InvalidProfileNameError,
     ProfileDataLoadError,
     ProfileNotFoundError,
@@ -15,65 +15,67 @@ pub enum ProfileError {
     CredentialsFileWriteError,
 }
 
-impl Display for ProfileError {
+impl Display for ProfileDataError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
-            ProfileError::InvalidProfileNameError => write!(f, "invalid profile name"),
-            ProfileError::ProfileDataLoadError => write!(f, "failed to load profiles"),
-            ProfileError::ProfileNotFoundError => write!(f, "profile not found"),
-            ProfileError::ConfigFileLoadError => write!(f, "failed to load config file"),
-            ProfileError::ConfigFileWriteError => write!(f, "failed to write config file"),
-            ProfileError::CredentialsFileLoadError => write!(f, "failed to load credentials file"),
-            ProfileError::CredentialsFileWriteError => {
+            ProfileDataError::InvalidProfileNameError => write!(f, "invalid profile name"),
+            ProfileDataError::ProfileDataLoadError => write!(f, "failed to load profiles"),
+            ProfileDataError::ProfileNotFoundError => write!(f, "profile not found"),
+            ProfileDataError::ConfigFileLoadError => write!(f, "failed to load config file"),
+            ProfileDataError::ConfigFileWriteError => write!(f, "failed to write config file"),
+            ProfileDataError::CredentialsFileLoadError => {
+                write!(f, "failed to load credentials file")
+            }
+            ProfileDataError::CredentialsFileWriteError => {
                 write!(f, "failed to write credentials file")
             }
         }
     }
 }
 
-impl Context for ProfileError {}
+impl Context for ProfileDataError {}
 
-impl From<Report<ProfileError>> for ProfileError {
-    fn from(value: Report<ProfileError>) -> Self {
+impl From<Report<ProfileDataError>> for ProfileDataError {
+    fn from(value: Report<ProfileDataError>) -> Self {
         let context = value.current_context();
         context.clone()
     }
 }
 
-impl Serialize for ProfileError {
+impl Serialize for ProfileDataError {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        let mut state = serializer.serialize_struct("ProfileError", 1)?;
+        let mut state = serializer.serialize_struct("ProfileDataError", 1)?;
         let (code, message) = match self {
-            ProfileError::InvalidProfileNameError => (
+            ProfileDataError::InvalidProfileNameError => (
                 "InvalidProfileNameError",
-                ProfileError::InvalidProfileNameError.to_string(),
+                ProfileDataError::InvalidProfileNameError.to_string(),
             ),
-            ProfileError::ProfileDataLoadError => (
+            ProfileDataError::ProfileDataLoadError => (
                 "ProfileDataLoadError",
-                ProfileError::ProfileDataLoadError.to_string(),
+                ProfileDataError::ProfileDataLoadError.to_string(),
             ),
-            ProfileError::ProfileNotFoundError => (
+            ProfileDataError::ProfileNotFoundError => (
                 "ProfileNotFoundError",
-                ProfileError::ProfileNotFoundError.to_string(),
+                ProfileDataError::ProfileNotFoundError.to_string(),
             ),
-            ProfileError::ConfigFileLoadError => (
+            ProfileDataError::ConfigFileLoadError => (
                 "ConfigFileLoadError",
-                ProfileError::ConfigFileLoadError.to_string(),
+                ProfileDataError::ConfigFileLoadError.to_string(),
             ),
-            ProfileError::ConfigFileWriteError => (
+            ProfileDataError::ConfigFileWriteError => (
                 "ConfigFileWriteError",
-                ProfileError::ConfigFileWriteError.to_string(),
+                ProfileDataError::ConfigFileWriteError.to_string(),
             ),
-            ProfileError::CredentialsFileLoadError => (
+            ProfileDataError::CredentialsFileLoadError => (
                 "CredentialsFileLoadError",
-                ProfileError::CredentialsFileLoadError.to_string(),
+                ProfileDataError::CredentialsFileLoadError.to_string(),
             ),
-            ProfileError::CredentialsFileWriteError => (
+            ProfileDataError::CredentialsFileWriteError => (
                 "CredentialsFileWriteError",
-                ProfileError::CredentialsFileWriteError.to_string(),
+                ProfileDataError::CredentialsFileWriteError.to_string(),
             ),
         };
         state.serialize_field("error", &json!({ "code": code, "message": message }))?;
@@ -89,10 +91,10 @@ mod tests {
     #[test]
     fn should_return_profile_data_load_error_when_calling_from_on_report_with_context_profile_data_load_error(
     ) {
-        let error = ProfileError::ProfileDataLoadError;
+        let error = ProfileDataError::ProfileDataLoadError;
         let report = Report::new(error.clone());
 
-        let result: ProfileError = report.into();
+        let result: ProfileDataError = report.into();
 
         assert_eq!(error, result);
     }
@@ -100,18 +102,18 @@ mod tests {
     #[test]
     fn should_return_invalid_profile_name_error_when_calling_from_on_report_with_context_invalid_profile_name_error(
     ) {
-        let error = ProfileError::InvalidProfileNameError;
+        let error = ProfileDataError::InvalidProfileNameError;
         let report = Report::new(error.clone());
 
-        let result: ProfileError = report.into();
+        let result: ProfileDataError = report.into();
 
         assert_eq!(error, result);
     }
 
     #[test]
     fn serialize_invalid_profile_name_error_to_json() {
-        let error = ProfileError::InvalidProfileNameError;
-        let expected = json!({ "error": {"code": "InvalidProfileNameError", "message": ProfileError::InvalidProfileNameError.to_string(),} }).to_string();
+        let error = ProfileDataError::InvalidProfileNameError;
+        let expected = json!({ "error": {"code": "InvalidProfileNameError", "message": ProfileDataError::InvalidProfileNameError.to_string(),} }).to_string();
 
         let serialized = serde_json::to_string(&error).unwrap();
 
@@ -120,8 +122,8 @@ mod tests {
 
     #[test]
     fn serialize_profile_data_load_error_to_json() {
-        let error = ProfileError::ProfileDataLoadError;
-        let expected = json!({ "error": {"code": "ProfileDataLoadError", "message": ProfileError::ProfileDataLoadError.to_string(),} }).to_string();
+        let error = ProfileDataError::ProfileDataLoadError;
+        let expected = json!({ "error": {"code": "ProfileDataLoadError", "message": ProfileDataError::ProfileDataLoadError.to_string(),} }).to_string();
 
         let serialized = serde_json::to_string(&error).unwrap();
 
@@ -130,8 +132,8 @@ mod tests {
 
     #[test]
     fn serialize_profile_not_found_error_to_json() {
-        let error = ProfileError::ProfileNotFoundError;
-        let expected = json!({ "error": {"code": "ProfileNotFoundError", "message": ProfileError::ProfileNotFoundError.to_string(),} }).to_string();
+        let error = ProfileDataError::ProfileNotFoundError;
+        let expected = json!({ "error": {"code": "ProfileNotFoundError", "message": ProfileDataError::ProfileNotFoundError.to_string(),} }).to_string();
 
         let serialized = serde_json::to_string(&error).unwrap();
 

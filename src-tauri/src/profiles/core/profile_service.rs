@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 use crate::profiles::core::api::ProfileDataAPI;
 use crate::profiles::core::domain::{Profile, ProfileSet};
-use crate::profiles::core::error::ProfileError;
+use crate::profiles::core::error::ProfileDataError;
 use crate::profiles::core::spi::ProfileDataSPI;
 
 #[allow(dead_code)]
@@ -18,7 +18,7 @@ impl ProfileService {
 
 #[async_trait]
 impl ProfileDataAPI for ProfileService {
-    async fn get_profiles(&self) -> error_stack::Result<ProfileSet, ProfileError> {
+    async fn get_profiles(&self) -> error_stack::Result<ProfileSet, ProfileDataError> {
         let mut profile_set = self.profile_data_spi.load_profile_data().await?;
 
         profile_set.sort_profiles_asc();
@@ -26,19 +26,22 @@ impl ProfileDataAPI for ProfileService {
         Ok(profile_set)
     }
 
-    fn create_profile(&self, profile: &Profile) -> error_stack::Result<(), ProfileError> {
+    fn create_profile(&self, profile: &Profile) -> error_stack::Result<(), ProfileDataError> {
         self.profile_data_spi.save_profile_data(profile)
     }
 
-    fn edit_profile(&self, profile: &Profile) -> error_stack::Result<(), ProfileError> {
+    fn edit_profile(&self, profile: &Profile) -> error_stack::Result<(), ProfileDataError> {
         self.profile_data_spi.update_profile_data(profile)
     }
 
-    fn delete_profile(&self, profile_name: &str) -> error_stack::Result<(), ProfileError> {
+    fn delete_profile(&self, profile_name: &str) -> error_stack::Result<(), ProfileDataError> {
         self.profile_data_spi.remove_profile_data(profile_name)
     }
 
-    fn delete_profiles(&self, profile_names: &[String]) -> error_stack::Result<(), ProfileError> {
+    fn delete_profiles(
+        &self,
+        profile_names: &[String],
+    ) -> error_stack::Result<(), ProfileDataError> {
         self.profile_data_spi.remove_profiles_data(profile_names)
     }
 }
