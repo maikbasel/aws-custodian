@@ -8,8 +8,9 @@ mod tests {
     use spectral::prelude::*;
     use tempfile::{tempdir, TempDir};
     use test_context::{test_context, AsyncTestContext};
+    use testcontainers::runners::AsyncRunner;
     use testcontainers::RunnableImage;
-    use testcontainers_modules::{localstack::LocalStack, testcontainers::clients::Cli};
+    use testcontainers_modules::localstack::LocalStack;
 
     use backend::credentials::core::spi::CredentialsDataSPI;
     use backend::credentials::infrastructure::aws::sts::sts_adapter::STSAdapter;
@@ -89,12 +90,11 @@ mod tests {
     #[tokio::test]
     #[serial]
     async fn should_successfully_validate_credentials(ctx: &mut TestContext) {
-        let docker = Cli::default();
-        let localstack_image: RunnableImage<LocalStack> = LocalStack::default().into();
-        let localstack_image = localstack_image.with_env_var(("SERVICES", "iam,sts"));
-        let localstack_container = docker.run(localstack_image);
-        localstack_container.start();
-        let host_port = localstack_container.get_host_port_ipv4(4566);
+        let localstack: RunnableImage<LocalStack> = LocalStack::default().into();
+        let localstack = localstack.with_env_var(("SERVICES", "iam,sts"));
+        let localstack_container = localstack.start().await;
+
+        let host_port = localstack_container.get_host_port_ipv4(4566).await;
         let endpoint_url = format!("http://127.0.0.1:{host_port}");
         env::set_var("LOCALSTACK_ENDPOINT", endpoint_url);
         let cut: Box<dyn CredentialsDataSPI> = Box::new(STSAdapter);
