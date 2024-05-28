@@ -33,7 +33,9 @@ rust-ini = "0.20.0"
 directories = "5.0.1"
 aws-sdk-sts = "1.15.0"
 log = "0.4.20"
-page-turner = "1.0.0"
+aws-sdk-ssm = "1.30.0"
+test-log = "0.2.16"
+env_logger = "0.11.2"
 
 [features]
 # this feature is used for production builds or when `devPath` points to the filesystem and the built-in dev server is disabled.

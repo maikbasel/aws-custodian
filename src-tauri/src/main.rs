@@ -24,6 +24,8 @@ use backend::profiles::infrastructure::aws::sdk_config::sdk_config_adapter::SdkC
 
 #[cfg(not(tarpaulin_include))]
 fn main() {
+    env_logger::init();
+
     let profile_data_spi = SdkConfigAdapter;
     let profile_data_api = ProfileService::new(Box::new(profile_data_spi));
     let credentials_data_api = CredentialsService::new(Box::new(STSAdapter));
