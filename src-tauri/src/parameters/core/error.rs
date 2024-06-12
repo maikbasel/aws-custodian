@@ -1,9 +1,14 @@
 use std::fmt::{Display, Formatter};
+
 use error_stack::Context;
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum ParameterDataError {
-    ParameterMetaDataLoadError
+    ParameterMetaDataLoadError,
+    ParameterDataLoadError,
+    InvalidParameter(String),
+    UnsupportedParameterType(String),
+    UnknownParameterType,
 }
 
 impl Context for ParameterDataError {}

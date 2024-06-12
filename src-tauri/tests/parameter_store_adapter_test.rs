@@ -1,6 +1,5 @@
 #[cfg(test)]
 mod tests {
-    use std::time::Duration;
     use std::{env, fs};
 
     use directories::UserDirs;
@@ -9,12 +8,12 @@ mod tests {
     use spectral::prelude::*;
     use tempfile::{tempdir, TempDir};
     use test_context::{test_context, AsyncTestContext};
-    use testcontainers::core::{CmdWaitFor, ExecCommand, WaitFor};
+    use testcontainers::core::{ExecCommand, WaitFor};
     use testcontainers::runners::AsyncRunner;
     use testcontainers::RunnableImage;
     use testcontainers_modules::localstack::LocalStack;
-    use tokio::time::sleep;
 
+    use backend::parameters::core::domain::ParameterValue;
     use backend::parameters::core::spi::ParameterDataSPI;
     use backend::parameters::infrastructure::aws::ssm::parameter_store_adapter::ParameterStoreAdapter;
 
@@ -93,7 +92,7 @@ mod tests {
     #[tokio::test]
     #[serial]
     async fn should_load_available_parameter_names(ctx: &mut TestContext) {
-        let localstack: RunnableImage<LocalStack> = LocalStack::default().into();
+        let localstack: RunnableImage<LocalStack> = LocalStack.into();
         let localstack = localstack.with_env_var(("SERVICES", "ssm"));
         let localstack_container = localstack.start().await;
         localstack_container
@@ -139,5 +138,70 @@ mod tests {
         let actual_names = actual.unwrap();
         assert_that!(actual_names).contains("key1".to_string());
         assert_that!(actual_names).contains("key2".to_string());
+    }
+
+    #[test_context(TestContext)]
+    #[tokio::test]
+    #[serial]
+    async fn should_load_available_parameters(ctx: &mut TestContext) {
+        let localstack: RunnableImage<LocalStack> = LocalStack.into();
+        let localstack = localstack.with_env_var(("SERVICES", "ssm"));
+        let localstack_container = localstack.start().await;
+        localstack_container
+            .exec(
+                ExecCommand::new(vec![
+                    "awslocal",
+                    "ssm",
+                    "put-parameter",
+                    "--name",
+                    "key1",
+                    "--value",
+                    "val1",
+                    "--type",
+                    "String",
+                ])
+                .with_cmd_ready_condition(WaitFor::Healthcheck),
+            )
+            .await;
+        localstack_container
+            .exec(
+                ExecCommand::new(vec![
+                    "awslocal",
+                    "ssm",
+                    "put-parameter",
+                    "--name",
+                    "key2",
+                    "--value",
+                    "val2",
+                    "--type",
+                    "String",
+                ])
+                .with_cmd_ready_condition(WaitFor::Healthcheck),
+            )
+            .await;
+        let host_port = localstack_container.get_host_port_ipv4(4566).await;
+        let endpoint_url = format!("http://127.0.0.1:{host_port}");
+        env::set_var("LOCALSTACK_ENDPOINT", endpoint_url);
+        let cut: Box<dyn ParameterDataSPI> = Box::new(ParameterStoreAdapter);
+
+        let actual = cut
+            .load_parameters(&ctx.profile, vec!["key1".to_string(), "key2".to_string()])
+            .await;
+
+        assert_that!(actual).is_ok();
+        let actual_parameters = actual.unwrap();
+        assert_that!(actual_parameters).has_length(2);
+        assert_that!(actual_parameters[0]).is_ok();
+        assert_that!(actual_parameters[1]).is_ok();
+        let value1 = actual_parameters[0].as_ref().unwrap();
+        let value2 = actual_parameters[1].as_ref().unwrap();
+
+        // TODO: Should probably not depend on correct order.
+        assert_that!(value1.name).is_equal_to("key2".to_string());
+        assert_that!(value1.value.as_ref().expect("should have value"))
+            .is_equal_to(&ParameterValue::String("val2".to_string()));
+        assert_that!(value2.name).is_equal_to("key1".to_string());
+        assert_that!(value2.value.as_ref().expect("should have value"))
+            .is_equal_to(&ParameterValue::String("val1".to_string()));
     }
 }

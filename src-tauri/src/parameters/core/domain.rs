@@ -5,13 +5,14 @@ use secstr::SecStr;
 pub enum ParameterValue {
     String(String),
     StringList(Vec<String>),
-    SecureString(SecStr)
+    SecureString(SecStr),
 }
 
+#[derive(Debug, Clone, PartialEq)]
 pub struct Parameter {
-    name: String,
-    value: ParameterValue,
-    version: i64,
-    last_modified_date: Option<DateTime>,
-    identifier: Option<String>,
+    pub name: String,
+    pub value: Option<ParameterValue>,
+    pub version: i64,
+    pub last_modified_date: Option<DateTime>,
+    pub identifier: Option<String>,
 }

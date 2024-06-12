@@ -1,8 +1,9 @@
-use crate::parameters::core::domain::Parameter;
-use crate::parameters::core::error::ParameterDataError;
 use async_trait::async_trait;
 #[cfg(test)]
 use mockall::automock;
+
+use crate::parameters::core::domain::Parameter;
+use crate::parameters::core::error::ParameterDataError;
 
 #[cfg_attr(test, automock)]
 #[async_trait]
@@ -16,6 +17,9 @@ pub trait ParameterDataSPI: Send + Sync {
     async fn load_parameters(
         &self,
         profile_name: &str,
-        page_size: u32,
-    ) -> error_stack::Result<Vec<Parameter>, ParameterDataError>;
+        parameter_names: Vec<String>,
+    ) -> error_stack::Result<
+        Vec<error_stack::Result<Parameter, ParameterDataError>>,
+        ParameterDataError,
+    >;
 }
