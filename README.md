@@ -3,6 +3,8 @@
 <h1>AWS Custodian</h1>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Frontend QA](https://img.shields.io/github/actions/workflow/status/maikbasel/aws-custodian/frontend_qa.yml?label=Frontend%20QA)](https://github.com/maikbasel/aws-custodian/actions/workflows/frontend_qa.yml)
+[![Backend QA](https://img.shields.io/github/actions/workflow/status/maikbasel/aws-custodian/backend_qa.yml?label=Backend%20QA)](https://github.com/maikbasel/aws-custodian/actions/workflows/backend_qa.yml)
 
 <p>
 AWS Custodian is a Tauri-based desktop application that enables software developers and DevOps professionals to manage 
