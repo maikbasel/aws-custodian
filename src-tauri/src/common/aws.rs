@@ -1,8 +1,8 @@
 use aws_config::{BehaviorVersion, ConfigLoader};
-use aws_sdk_sts::Client as StsClient;
-use aws_sdk_sts::config::Builder as StsBuilder;
-use aws_sdk_ssm::Client as SsmClient;
 use aws_sdk_ssm::config::Builder as SsmBuilder;
+use aws_sdk_ssm::Client as SsmClient;
+use aws_sdk_sts::config::Builder as StsBuilder;
+use aws_sdk_sts::Client as StsClient;
 
 pub fn localstack_endpoint() -> Option<String> {
     match std::env::var("LOCALSTACK_ENDPOINT") {
