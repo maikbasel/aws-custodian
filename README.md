@@ -2,10 +2,10 @@
 
 <h1>AWS Custodian</h1>
 
-[![](https://img.shields.io/badge/powered%20by-Nyx-blue)](https://github.com/mooltiverse/nyx)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 <p>
-Custodian is a Tauri-based desktop application that enables software developers and DevOps professionals to manage 
+AWS Custodian is a Tauri-based desktop application that enables software developers and DevOps professionals to manage 
 and navigate through multiple AWS accounts from a convenient central interface. Built with a backend powered by Rust 
 and a responsive Next.js frontend, the application simplifies AWS tasks that can often become complex or cumbersome, 
 particularly the handling of credentials, configurational files, and the management of SSM parameters and Secret 
@@ -21,17 +21,31 @@ developers or DevOps professionals working extensively with the AWS Cloud platfo
 # :notebook_with_decorative_cover: Table of Contents
 
 - [About the Project](#star2-about-the-project)
+    - [Features](#dart-features)
+    - [Tech Stack](#space_invader-tech-stack)
 - [Roadmap](#compass-roadmap)
+- [Getting Started](#toolbox-getting-started)
+    - [Prerequisites](#bangbang-prerequisites)
+    - [Running Tests](#test_tube-running-tests)
+    - [Run Locally](#running-run-locally)
+    - [Deployment](#triangular_flag_on_post-deployment)
 - [License](#warning-license)
-- [Contact](#handshake-contact)
 
 ## :star2: About the Project
+
+Welcome to AWS Custodian! This software is a personal endeavor to deepen my understanding of Next.js and Rust.
+While I am excited to share my progress, please note that this project is a work in progress and not intended for
+commercial use.
+
+Feel free to explore, provide feedback, and contribute if you'd like. Your understanding and support as I navigate
+through this learning journey are greatly appreciated.
+
+Thank you for stopping by!
 
 ### :space_invader: Tech Stack
 
 <details> <summary>Client</summary> <ul>
 <li><a href="https://nextjs.org/">Next.JS</a></li>
-<li><a href="https://tauri.app/v1/guides/getting-started/setup/next-js/">Tauri</a></li>
 </ul> </details>
 <details> <summary>Server</summary> <ul>
 <li><a href="https://www.rust-lang.org/">Rust</a></li>
@@ -41,8 +55,16 @@ developers or DevOps professionals working extensively with the AWS Cloud platfo
 ### :dart: Features
 
 - CRUD operations for your AWS credentials & configuration files by profile. :white_check_mark:
-- Efficient creation, reading, updating, deletion of SSM parameters and Secret Manager Secrets. :white_square:
-- Managing and downloading of images/packages from ECR and CodeArtifact repositories. :white_square:
+- Efficient creation, reading, updating, deletion of SSM parameters and Secret Manager Secrets. :white_medium_square:
+- Managing and downloading of images/packages from ECR and CodeArtifact repositories. :white_medium_square:
+
+## :compass: Roadmap
+
+- [x] Implement AWS Credentials & Configuration management.
+- [ ] Implement AWS SSM Parameter Store management.
+- [ ] Implement AWS Secret Manager management.
+- [ ] Implement AWS ECR Repository management.
+- [ ] Implement AWS CodeArtifact Repository management.
 
 ## :toolbox: Getting Started
 
@@ -99,20 +121,6 @@ Build the app for production
 npm run tauri build
 ```
 
-## :compass: Roadmap
-
-- [x] AWS Credentials & Configuration management.
-- [ ] AWS SSM Parameter Store management.
-- [ ] AWS Secret Manager management.
-- [ ] AWS ECR Repository management.
-- [ ] AWS CodeArtifact Repository management.
-
 ## :warning: License
 
 Distributed under the MIT License. See LICENSE.md for more information.
-
-## :handshake: Contact
-
-Maik Basel - - to be added
-
-Project Link: [https://github.com/maikbasel/aws-custodian.git](https://github.com/maikbasel/aws-custodian.git).
