@@ -191,17 +191,14 @@ mod tests {
         assert_that!(actual).is_ok();
         let actual_parameters = actual.unwrap();
         assert_that!(actual_parameters).has_length(2);
-        assert_that!(actual_parameters[0]).is_ok();
-        assert_that!(actual_parameters[1]).is_ok();
-        let value1 = actual_parameters[0].as_ref().unwrap();
-        let value2 = actual_parameters[1].as_ref().unwrap();
+
+        let value1 = actual_parameters[0].clone();
+        let value2 = actual_parameters[1].clone();
 
         // TODO: Should probably not depend on correct order.
         assert_that!(value1.name).is_equal_to("key2".to_string());
-        assert_that!(value1.value.as_ref().expect("should have value"))
-            .is_equal_to(&ParameterValue::String("val2".to_string()));
+        assert_that!(value1.value).is_equal_to(&ParameterValue::String("val2".to_string()));
         assert_that!(value2.name).is_equal_to("key1".to_string());
-        assert_that!(value2.value.as_ref().expect("should have value"))
-            .is_equal_to(&ParameterValue::String("val1".to_string()));
+        assert_that!(value2.value).is_equal_to(&ParameterValue::String("val1".to_string()));
     }
 }

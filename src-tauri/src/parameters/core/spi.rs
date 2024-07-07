@@ -18,8 +18,5 @@ pub trait ParameterDataSPI: Send + Sync {
         &self,
         profile_name: &str,
         parameter_names: Vec<String>,
-    ) -> error_stack::Result<
-        Vec<error_stack::Result<Parameter, ParameterDataError>>,
-        ParameterDataError,
-    >;
+    ) -> error_stack::Result<Vec<Parameter>, ParameterDataError>;
 }

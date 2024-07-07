@@ -58,10 +58,7 @@ impl ParameterDataSPI for ParameterStoreAdapter {
         &self,
         profile_name: &str,
         parameter_names: Vec<String>,
-    ) -> error_stack::Result<
-        Vec<error_stack::Result<Parameter, ParameterDataError>>,
-        ParameterDataError,
-    > {
+    ) -> error_stack::Result<Vec<Parameter>, ParameterDataError> {
         let client = Self::get_ssm_client(profile_name).await;
 
         let result = client
@@ -71,15 +68,11 @@ impl ParameterDataSPI for ParameterStoreAdapter {
             .await;
 
         match result {
-            Ok(response) => {
-                let parameters = response
-                    .parameters()
-                    .iter()
-                    .map(|ssm_parameter| Self::parse_ssm_parameter(ssm_parameter)?)
-                    .collect();
-
-                Ok(parameters)
-            }
+            Ok(response) => Ok(response
+                .parameters()
+                .iter()
+                .flat_map(Self::parse_ssm_parameter)
+                .collect()),
             Err(err) => {
                 Err(Report::from(err).change_context(ParameterDataError::ParameterDataLoadError))
             }
@@ -102,9 +95,7 @@ impl ParameterStoreAdapter {
         ssm_client(&shared_config)
     }
 
-    fn parse_ssm_parameter(
-        ssm_parameter: &SSMParameter,
-    ) -> Result<Result<Parameter, Report<ParameterDataError>>, Report<ParameterDataError>> {
+    fn parse_ssm_parameter(ssm_parameter: &SSMParameter) -> Result<Parameter, ParameterDataError> {
         let name = ssm_parameter
             .name
             .clone()
@@ -116,54 +107,48 @@ impl ParameterStoreAdapter {
             .ok_or(ParameterDataError::InvalidParameter(
                 "parameters should have a type".to_string(),
             ))?;
-        let ssm_parameter_value = Self::parse_ssm_parameter_value(ssm_parameter, parameter_type);
+        let value = Self::parse_ssm_parameter_value(ssm_parameter, parameter_type)?;
 
         let version = ssm_parameter.version;
         let last_modified_date = ssm_parameter.last_modified_date;
         let identifier = ssm_parameter.arn.clone();
-        Ok(match ssm_parameter_value {
-            None => Ok(Parameter {
-                name,
-                value: None,
-                version,
-                last_modified_date,
-                identifier,
-            }),
-            Some(value) => Ok(Parameter {
-                name,
-                value: Some(value?),
-                version,
-                last_modified_date,
-                identifier,
-            }),
+
+        Ok(Parameter {
+            name,
+            value,
+            version,
+            last_modified_date,
+            identifier,
         })
     }
 
     fn parse_ssm_parameter_value(
         ssm_parameter: &SSMParameter,
         parameter_type: &SSMParamterType,
-    ) -> Option<Result<ParameterValue, ParameterDataError>> {
+    ) -> Result<ParameterValue, ParameterDataError> {
         match ssm_parameter.value.clone() {
             Some(ssm_parameter_value) => match parameter_type {
-                SSMParamterType::SecureString => Some(Ok(ParameterValue::SecureString(
-                    SecStr::from(ssm_parameter_value),
+                SSMParamterType::SecureString => Ok(ParameterValue::SecureString(SecStr::from(
+                    ssm_parameter_value,
                 ))),
                 SSMParamterType::String => {
-                    Some(Ok(ParameterValue::String(ssm_parameter_value.to_string())))
+                    Ok(ParameterValue::String(ssm_parameter_value.to_string()))
                 }
                 SSMParamterType::StringList => {
                     let string_values = ssm_parameter_value
                         .split(',')
                         .map(|item| item.to_string())
                         .collect();
-                    Some(Ok(ParameterValue::StringList(string_values)))
+                    Ok(ParameterValue::StringList(string_values))
                 }
-                other if other.as_str() == "NewFeature" => Some(Err(
+                other if other.as_str() == "NewFeature" => Err(
                     ParameterDataError::UnsupportedParameterType(other.as_str().to_string()),
-                )),
-                _ => Some(Err(ParameterDataError::UnknownParameterType)),
+                ),
+                _ => Err(ParameterDataError::UnknownParameterType),
             },
-            None => None,
+            None => Err(ParameterDataError::InvalidParameter(
+                "parameters should have a value".to_string(),
+            )),
         }
     }
 }

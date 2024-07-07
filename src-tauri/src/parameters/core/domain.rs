@@ -11,7 +11,7 @@ pub enum ParameterValue {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Parameter {
     pub name: String,
-    pub value: Option<ParameterValue>,
+    pub value: ParameterValue,
     pub version: i64,
     pub last_modified_date: Option<DateTime>,
     pub identifier: Option<String>,
