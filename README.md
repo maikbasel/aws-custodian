@@ -1,6 +1,6 @@
 <div align='center'>
 
-<h1>AWS Custodian</h1>
+# AWS Custodian <img src="src-tauri/icons/128x128@2x.png" align="right" />
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Frontend QA](https://img.shields.io/github/actions/workflow/status/maikbasel/aws-custodian/frontend_qa.yml?label=Frontend%20QA)](https://github.com/maikbasel/aws-custodian/actions/workflows/frontend_qa.yml)
