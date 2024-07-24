@@ -189,10 +189,10 @@ mod tests {
 
         assert_that!(actual).is_ok();
         let actual_parameters = actual.unwrap();
-        assert_that!(actual_parameters).has_length(2);
+        assert_that(actual_parameters.values()).has_length(2);
 
-        let contains_value_1 = actual_parameters.iter().any(|p| p.name == "key1");
-        let contains_value_2 = actual_parameters.iter().any(|p| p.name == "key2");
+        let contains_value_1 = actual_parameters.values().iter().any(|p| p.name == "key1");
+        let contains_value_2 = actual_parameters.values().iter().any(|p| p.name == "key2");
         assert_that!(contains_value_1).is_equal_to(true);
         assert_that!(contains_value_2).is_equal_to(true);
     }

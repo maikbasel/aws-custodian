@@ -72,8 +72,6 @@ mod tests {
     use error_stack::Report;
     use serde_json::json;
 
-    use crate::profiles::core::error::ProfileDataError;
-
     use super::*;
 
     #[test]
