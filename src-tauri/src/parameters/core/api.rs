@@ -2,7 +2,7 @@ use async_trait::async_trait;
 #[cfg(test)]
 use mockall::automock;
 
-use crate::parameters::core::domain::Parameters;
+use crate::parameters::core::domain::ParameterSet;
 use crate::parameters::core::error::ParameterDataError;
 
 #[cfg_attr(test, automock)]
@@ -12,5 +12,5 @@ pub trait ParameterDataAPI: Send + Sync {
         &self,
         profile_name: &str,
         page_size: u32,
-    ) -> error_stack::Result<Parameters, ParameterDataError>;
+    ) -> error_stack::Result<ParameterSet, ParameterDataError>;
 }

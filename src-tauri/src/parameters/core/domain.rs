@@ -40,12 +40,12 @@ impl Parameter {
 }
 
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
-pub struct Parameters {
+pub struct ParameterSet {
     #[serde(rename = "parameters")]
     values: Vec<Parameter>,
 }
 
-impl Parameters {
+impl ParameterSet {
     pub fn new() -> Self {
         Self { values: Vec::new() }
     }
@@ -73,20 +73,20 @@ mod tests {
     use fake::Fake;
     use spectral::prelude::*;
 
-    use crate::parameters::core::domain::{Parameter, ParameterValue, Parameters};
+    use crate::parameters::core::domain::{Parameter, ParameterSet, ParameterValue};
 
     #[test]
     fn should_create_empty_parameters() {
-        let expected = Parameters::new();
+        let expected = ParameterSet::new();
 
-        let actual = Parameters::default();
+        let actual = ParameterSet::default();
 
         assert_that(&actual).is_equal_to(expected)
     }
 
     #[test]
     fn should_add_parameter() {
-        let mut cut: Parameters = Parameters::new();
+        let mut cut: ParameterSet = ParameterSet::new();
         let input_parameter_name: String = Word().fake();
         let input_parameter: Parameter = Parameter::new(
             input_parameter_name.clone(),
@@ -107,7 +107,7 @@ mod tests {
 
     #[test]
     fn should_add_all_parameters() {
-        let mut cut: Parameters = Parameters::new();
+        let mut cut: ParameterSet = ParameterSet::new();
         let input_parameter_name: String = Word().fake();
         let input_parameter_1: Parameter = Parameter::new(
             input_parameter_name.clone(),
@@ -133,7 +133,7 @@ mod tests {
 
     #[test]
     fn should_return_parameters() {
-        let mut cut: Parameters = Parameters::new();
+        let mut cut: ParameterSet = ParameterSet::new();
         let input_parameter_name: String = Word().fake();
         let input_parameter: Parameter = Parameter::new(
             input_parameter_name.clone(),
@@ -151,7 +151,7 @@ mod tests {
 
     #[test]
     fn should_sort_parameters_asc() {
-        let mut cut: Parameters = Parameters::new();
+        let mut cut: ParameterSet = ParameterSet::new();
         let input_parameter_1: Parameter = Parameter::new(
             "c".to_string(),
             ParameterValue::String("c".to_string()),

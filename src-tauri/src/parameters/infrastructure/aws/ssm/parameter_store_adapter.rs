@@ -8,7 +8,7 @@ use error_stack::Report;
 
 use crate::common::aws::{localstack_endpoint, shared_config_loader, ssm_client};
 use crate::common::secure_string::SecureString;
-use crate::parameters::core::domain::{Parameter, ParameterValue, Parameters};
+use crate::parameters::core::domain::{Parameter, ParameterSet, ParameterValue};
 use crate::parameters::core::error::ParameterDataError;
 use crate::parameters::core::spi::ParameterDataSPI;
 
@@ -59,7 +59,7 @@ impl ParameterDataSPI for ParameterStoreAdapter {
         &self,
         profile_name: &str,
         parameter_names: Vec<String>,
-    ) -> error_stack::Result<Parameters, ParameterDataError> {
+    ) -> error_stack::Result<ParameterSet, ParameterDataError> {
         let client = Self::get_ssm_client(profile_name).await;
 
         let result = client
@@ -70,7 +70,7 @@ impl ParameterDataSPI for ParameterStoreAdapter {
 
         match result {
             Ok(response) => {
-                let mut parameters = Parameters::new();
+                let mut parameters = ParameterSet::new();
                 parameters.add_all_parameters(
                     response
                         .parameters()

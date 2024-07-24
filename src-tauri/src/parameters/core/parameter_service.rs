@@ -4,7 +4,7 @@ use mockall::predicate::*;
 
 use crate::parameters::core::api::ParameterDataAPI;
 #[allow(unused_imports)] // false-positive
-use crate::parameters::core::domain::{Parameter, Parameters};
+use crate::parameters::core::domain::{Parameter, ParameterSet};
 use crate::parameters::core::error::ParameterDataError;
 use crate::parameters::core::spi::ParameterDataSPI;
 
@@ -24,7 +24,7 @@ impl ParameterDataAPI for ParameterService {
         &self,
         profile_name: &str,
         page_size: u32,
-    ) -> error_stack::Result<Parameters, ParameterDataError> {
+    ) -> error_stack::Result<ParameterSet, ParameterDataError> {
         let parameter_names = self
             .parameter_data_spi
             .load_available_parameter_names(profile_name, page_size)
@@ -69,7 +69,7 @@ mod tests {
                 eq(vec![output_param_name.to_string()]),
             )
             .returning(move |_, _| {
-                let mut parameters = Parameters::new();
+                let mut parameters = ParameterSet::new();
                 parameters.add_all_parameters(vec![output_param.clone()]);
                 Ok(parameters)
             });
