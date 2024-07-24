@@ -4,12 +4,12 @@ mod tests {
 
     use directories::UserDirs;
     use ini::Ini;
-    use secstr::SecStr;
     use serial_test::serial;
     use spectral::prelude::*;
     use tempfile::{tempdir, TempDir};
     use test_context::{test_context, AsyncTestContext};
 
+    use backend::common::secure_string::SecureString;
     use backend::profiles::core::domain::{Config, Credentials, Profile};
     use backend::profiles::core::spi::ProfileDataSPI;
     use backend::profiles::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
@@ -106,7 +106,7 @@ mod tests {
             "dev".to_string(),
             Credentials::new(
                 Some("devAccessKeyID"),
-                Some(SecStr::from("devSecretAccessKey")),
+                Some(SecureString::from("devSecretAccessKey")),
             ),
             Config::new(Some("eu-west-1"), Some("json")),
         );
@@ -129,7 +129,7 @@ mod tests {
             "new".to_string(),
             Credentials::new(
                 Some("newAccessKeyID"),
-                Some(SecStr::from("newSecretAccessKey")),
+                Some(SecureString::from("newSecretAccessKey")),
             ),
             Config::new(Some("eu-west-1"), Some("json")),
         );
@@ -158,7 +158,7 @@ mod tests {
             "new".to_string(),
             Credentials::new(
                 Some("newAccessKeyID"),
-                Some(SecStr::from("newSecretAccessKey")),
+                Some(SecureString::from("newSecretAccessKey")),
             ),
             Config::new(Some("eu-west-1"), Some("json")),
         );
@@ -253,7 +253,7 @@ mod tests {
             "dev".to_string(),
             Credentials::new(
                 Some("newAccessKeyID"),
-                Some(SecStr::from("newSecretAccessKey")),
+                Some(SecureString::from("newSecretAccessKey")),
             ),
             Config::new(Some("eu-east-1"), Some("table")),
         );
@@ -281,7 +281,7 @@ mod tests {
             "dev".to_string(),
             Credentials::new(
                 Some("newAccessKeyID"),
-                Some(SecStr::from("newSecretAccessKey")),
+                Some(SecureString::from("newSecretAccessKey")),
             ),
             Config::new(Some("eu-east-1"), Some("table")),
         );

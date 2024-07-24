@@ -5,8 +5,8 @@ use aws_config::profile::Profile;
 use directories::UserDirs;
 use error_stack::{Report, ResultExt};
 use ini::Ini;
-use secstr::SecStr;
 
+use crate::common::secure_string::SecureString;
 use crate::profiles::core::domain::{Config, Credentials, Profile as DomainProfile, ProfileSet};
 use crate::profiles::core::error::ProfileDataError;
 use crate::profiles::core::spi::ProfileDataSPI;
@@ -201,11 +201,9 @@ impl SdkConfigAdapter {
             &profile.credentials.access_key_id,
             &profile.credentials.secret_access_key,
         ) {
-            profile_section.set("aws_access_key_id", access_key_id).set(
-                "aws_secret_access_key",
-                std::str::from_utf8(secret_access_key.unsecure())
-                    .expect("secret access key should be serializable to be UTF-8 string"),
-            );
+            profile_section
+                .set("aws_access_key_id", access_key_id)
+                .set("aws_secret_access_key", secret_access_key.as_str());
 
             credentials_file
                 .write_to_file(credentials_file_location.as_str())
@@ -224,7 +222,7 @@ impl SdkConfigAdapter {
 
     fn extract_credentials(profile: &Profile) -> Credentials {
         let access_key_id = profile.get("aws_access_key_id");
-        let secret_access_key = profile.get("aws_secret_access_key").map(SecStr::from);
+        let secret_access_key = profile.get("aws_secret_access_key").map(SecureString::from);
 
         Credentials::new(access_key_id, secret_access_key)
     }
@@ -276,11 +274,7 @@ impl SdkConfigAdapter {
             &profile.credentials.secret_access_key,
         ) {
             properties.insert("aws_access_key_id", access_key_id);
-            properties.insert(
-                "aws_secret_access_key",
-                std::str::from_utf8(secret_access_key.unsecure())
-                    .expect("secret access key should be serializable to be UTF-8 string"),
-            );
+            properties.insert("aws_secret_access_key", secret_access_key.as_str());
 
             credentials_file
                 .write_to_file(credentials_file_location.as_str())

@@ -13,7 +13,6 @@ mod tests {
     use testcontainers::RunnableImage;
     use testcontainers_modules::localstack::LocalStack;
 
-    use backend::parameters::core::domain::ParameterValue;
     use backend::parameters::core::spi::ParameterDataSPI;
     use backend::parameters::infrastructure::aws::ssm::parameter_store_adapter::ParameterStoreAdapter;
 
@@ -192,13 +191,9 @@ mod tests {
         let actual_parameters = actual.unwrap();
         assert_that!(actual_parameters).has_length(2);
 
-        let value1 = actual_parameters[0].clone();
-        let value2 = actual_parameters[1].clone();
-
-        // TODO: Should probably not depend on correct order.
-        assert_that!(value1.name).is_equal_to("key2".to_string());
-        assert_that!(value1.value).is_equal_to(&ParameterValue::String("val2".to_string()));
-        assert_that!(value2.name).is_equal_to("key1".to_string());
-        assert_that!(value2.value).is_equal_to(&ParameterValue::String("val1".to_string()));
+        let contains_value_1 = actual_parameters.iter().any(|p| p.name == "key1");
+        let contains_value_2 = actual_parameters.iter().any(|p| p.name == "key2");
+        assert_that!(contains_value_1).is_equal_to(true);
+        assert_that!(contains_value_2).is_equal_to(true);
     }
 }

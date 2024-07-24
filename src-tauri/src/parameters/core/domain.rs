@@ -1,18 +1,21 @@
-use aws_sdk_sts::primitives::DateTime;
-use secstr::SecStr;
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Clone, PartialEq)]
+use crate::common::secure_string::SecureString;
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub enum ParameterValue {
     String(String),
     StringList(Vec<String>),
-    SecureString(SecStr),
+    SecureString(SecureString),
 }
 
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Parameter {
     pub name: String,
     pub value: ParameterValue,
     pub version: i64,
-    pub last_modified_date: Option<DateTime>,
+    // #[serde(with = "ts_milliseconds_option")]
+    pub last_modified_date: Option<DateTime<Utc>>,
     pub identifier: Option<String>,
 }

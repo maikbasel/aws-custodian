@@ -1,113 +1,16 @@
-use std::fmt::Formatter;
-
 use derivative::Derivative;
-use secstr::SecStr;
-use serde::de::{MapAccess, SeqAccess, Visitor};
-use serde::ser::SerializeStruct;
-use serde::{Deserializer, Serializer};
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Eq, PartialEq, Clone, Default)]
+use crate::common::secure_string::SecureString;
+
+#[derive(Debug, Eq, PartialEq, Clone, Default, Serialize, Deserialize)]
 pub struct Credentials {
     pub access_key_id: Option<String>,
-    pub secret_access_key: Option<SecStr>,
-}
-
-impl serde::Serialize for Credentials {
-    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let mut state = serializer.serialize_struct("Credentials", 2)?;
-
-        state.serialize_field("access_key_id", &self.access_key_id)?;
-        let secret_access_key = &self
-            .secret_access_key
-            .as_ref()
-            .map(|sec_str| sec_str.unsecure())
-            .map(std::str::from_utf8)
-            .map(|result| match result {
-                Ok(sec_str) => sec_str,
-                Err(e) => panic!("failed to serialize credentials: {}", e),
-            });
-        state.serialize_field("secret_access_key", secret_access_key)?;
-
-        state.end()
-    }
-}
-
-const FIELDS: &[&str] = &["access_key_id", "secret_access_key"];
-
-struct CredentialsVisitor;
-
-impl<'de> Visitor<'de> for CredentialsVisitor {
-    type Value = Credentials;
-
-    fn expecting(&self, formatter: &mut Formatter) -> std::fmt::Result {
-        formatter.write_str("struct Credentials")
-    }
-
-    fn visit_seq<A>(self, mut seq: A) -> std::result::Result<Self::Value, A::Error>
-    where
-        A: SeqAccess<'de>,
-    {
-        let access_key_id = seq
-            .next_element()?
-            .ok_or_else(|| serde::de::Error::invalid_length(0, &self))?;
-        let secret_access_key = seq.next_element::<String>()?.map(SecStr::from);
-
-        Ok(Credentials {
-            access_key_id,
-            secret_access_key,
-        })
-    }
-
-    fn visit_map<A>(self, mut map: A) -> std::result::Result<Self::Value, A::Error>
-    where
-        A: MapAccess<'de>,
-    {
-        let mut access_key_id = None;
-        let mut secret_access_key = None;
-
-        while let Some(key) = map.next_key()? {
-            match key {
-                "access_key_id" => {
-                    if access_key_id.is_some() {
-                        return Err(serde::de::Error::duplicate_field("access_key_id"));
-                    }
-                    access_key_id = map.next_value()?;
-                }
-                "secret_access_key" => {
-                    if secret_access_key.is_some() {
-                        return Err(serde::de::Error::duplicate_field("secret_access_key"));
-                    }
-                    let sec_str: String = map.next_value()?;
-                    secret_access_key = Some(SecStr::from(sec_str));
-                }
-                _ => return Err(serde::de::Error::unknown_field(key, FIELDS)),
-            }
-        }
-
-        let access_key_id =
-            access_key_id.ok_or_else(|| serde::de::Error::missing_field("access_key_id"))?;
-
-        Ok(Credentials {
-            access_key_id,
-            secret_access_key,
-        })
-    }
-}
-
-impl<'de> serde::Deserialize<'de> for Credentials {
-    fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        deserializer.deserialize_struct("Credentials", FIELDS, CredentialsVisitor)
-    }
+    pub secret_access_key: Option<SecureString>,
 }
 
 impl Credentials {
-    pub fn new(access_key_id: Option<&str>, secret_access_key: Option<SecStr>) -> Self {
+    pub fn new(access_key_id: Option<&str>, secret_access_key: Option<SecureString>) -> Self {
         let access_key_id_str = access_key_id.map(|r| r.to_string());
 
         Self {
@@ -239,9 +142,10 @@ mod tests {
     #[test]
     fn should_serialize_credentials() {
         let expected = r#"{"access_key_id":"my_access_key","secret_access_key":"my_secret_key"}"#;
+        let secure_string = SecureString::from("my_secret_key");
         let credentials = Credentials {
             access_key_id: Some("my_access_key".to_string()),
-            secret_access_key: Some(SecStr::from("my_secret_key")),
+            secret_access_key: Some(secure_string),
         };
 
         let serialized = serde_json::to_string(&credentials).unwrap();
@@ -250,10 +154,10 @@ mod tests {
     }
 
     #[test]
-    #[should_panic(expected = "failed to serialize credentials")]
+    #[should_panic(expected = "should serialize to utf8 string")]
     fn should_panic_when_failing_to_serialize_credentials() {
         let bad_data = vec![0, 159, 146, 150]; // Non UTF-8 bytes
-        let bad_sec_str = SecStr::new(bad_data);
+        let bad_sec_str = SecureString::from(bad_data);
 
         let cred = Credentials {
             access_key_id: Some("my_access_key".to_string()),
@@ -268,7 +172,7 @@ mod tests {
         let mut profile_set = ProfileSet::new();
         let credentials = Credentials::new(
             Some("my_access_key_id"),
-            Some(SecStr::from("my_secret_access_key")),
+            Some(SecureString::from("my_secret_access_key")),
         );
         let config = Config::new(Some("eu-west-1"), Some("json"));
         let profile = Profile::new("my_profile".to_string(), credentials, config);
@@ -308,10 +212,8 @@ mod tests {
 
         // Test the deserialized data
         assert_eq!(deserialized.access_key_id, Some("myAccessKey".to_string()));
-        let secret_access_key =
-            std::str::from_utf8(deserialized.secret_access_key.as_ref().unwrap().unsecure())
-                .expect("secret access key should be serializable to be UTF-8 string");
-        assert_eq!(secret_access_key, "mySecretKey".to_string());
+        let secret_access_key = deserialized.secret_access_key.unwrap();
+        assert_eq!(secret_access_key.as_str(), "mySecretKey");
     }
 
     #[test]

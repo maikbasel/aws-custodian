@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use error_stack::Context;
+use error_stack::{Context, Report};
 use serde::ser::SerializeStruct;
 use serde::{Serialize, Serializer};
 use serde_json::json;
@@ -15,6 +15,13 @@ pub enum ParameterDataError {
 }
 
 impl Context for ParameterDataError {}
+
+impl From<Report<ParameterDataError>> for ParameterDataError {
+    fn from(value: Report<ParameterDataError>) -> Self {
+        let context = value.current_context();
+        context.clone()
+    }
+}
 
 impl Display for ParameterDataError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
@@ -62,9 +69,23 @@ impl Serialize for ParameterDataError {
 
 #[cfg(test)]
 mod tests {
+    use error_stack::Report;
     use serde_json::json;
 
+    use crate::profiles::core::error::ProfileDataError;
+
     use super::*;
+
+    #[test]
+    fn should_return_parameter_data_load_error_when_calling_from_on_report_with_context_parameter_data_load_error(
+    ) {
+        let error = ParameterDataError::ParameterDataLoadError;
+        let report = Report::new(error.clone());
+
+        let result: ParameterDataError = report.into();
+
+        assert_eq!(error, result);
+    }
 
     #[test]
     fn should_serialize_parameter_metadata_load_error() {

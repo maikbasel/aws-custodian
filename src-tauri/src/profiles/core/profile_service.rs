@@ -5,7 +5,6 @@ use crate::profiles::core::domain::{Profile, ProfileSet};
 use crate::profiles::core::error::ProfileDataError;
 use crate::profiles::core::spi::ProfileDataSPI;
 
-#[allow(dead_code)]
 pub struct ProfileService {
     profile_data_spi: Box<dyn ProfileDataSPI>,
 }
@@ -48,11 +47,13 @@ impl ProfileDataAPI for ProfileService {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use crate::profiles::core::domain::{Config, Credentials};
-    use crate::profiles::core::spi::MockProfileDataSPI;
     use mockall::predicate::eq;
     use spectral::prelude::*;
+
+    use crate::profiles::core::domain::{Config, Credentials};
+    use crate::profiles::core::spi::MockProfileDataSPI;
+
+    use super::*;
 
     #[tokio::test]
     async fn should_sort_profiles_asc_by_name() {

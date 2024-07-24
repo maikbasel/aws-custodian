@@ -3,10 +3,11 @@ use aws_sdk_ssm::types::{
     Parameter as SSMParameter, ParameterMetadata as SSMParamterMetadata,
     ParameterType as SSMParamterType,
 };
+use chrono::DateTime;
 use error_stack::Report;
-use secstr::SecStr;
 
 use crate::common::aws::{localstack_endpoint, shared_config_loader, ssm_client};
+use crate::common::secure_string::SecureString;
 use crate::parameters::core::domain::{Parameter, ParameterValue};
 use crate::parameters::core::error::ParameterDataError;
 use crate::parameters::core::spi::ParameterDataSPI;
@@ -110,7 +111,12 @@ impl ParameterStoreAdapter {
         let value = Self::parse_ssm_parameter_value(ssm_parameter, parameter_type)?;
 
         let version = ssm_parameter.version;
-        let last_modified_date = ssm_parameter.last_modified_date;
+        let last_modified_date = ssm_parameter.last_modified_date.map(|date_time| {
+            let nanos = date_time.as_nanos();
+            let millis = (nanos / 1_000_000) as i64;
+
+            DateTime::from_timestamp_millis(millis).expect("should be valid date time")
+        });
         let identifier = ssm_parameter.arn.clone();
 
         Ok(Parameter {
@@ -128,9 +134,9 @@ impl ParameterStoreAdapter {
     ) -> Result<ParameterValue, ParameterDataError> {
         match ssm_parameter.value.clone() {
             Some(ssm_parameter_value) => match parameter_type {
-                SSMParamterType::SecureString => Ok(ParameterValue::SecureString(SecStr::from(
-                    ssm_parameter_value,
-                ))),
+                SSMParamterType::SecureString => Ok(ParameterValue::SecureString(
+                    SecureString::from(ssm_parameter_value),
+                )),
                 SSMParamterType::String => {
                     Ok(ParameterValue::String(ssm_parameter_value.to_string()))
                 }
