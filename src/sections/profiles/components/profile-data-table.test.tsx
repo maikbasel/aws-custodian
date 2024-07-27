@@ -5,13 +5,13 @@ import { ProfileDataTable } from '@/sections/profiles/components/profile-data-ta
 import userEvent from '@testing-library/user-event';
 import { SWRConfig } from 'swr';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { validateCredentials } from '@/modules/credentials/application/validateCredentials';
+import { validateCredentials } from '@/modules/credentials/application/validate-credentials';
 import { Ok } from 'oxide.ts';
 import { DIContextProvider } from '@/context/di-context';
 
-jest.mock('@/modules/credentials/application/validateCredentials', () => ({
+jest.mock('@/modules/credentials/application/validate-credentials', () => ({
   ...jest.requireActual(
-    '@/modules/credentials/application/validateCredentials'
+    '@/modules/credentials/application/validate-credentials'
   ),
   validateCredentials: jest.fn(),
 }));

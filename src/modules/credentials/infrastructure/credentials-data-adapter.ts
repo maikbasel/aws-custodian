@@ -4,7 +4,7 @@ import { invoke } from '@tauri-apps/api/tauri';
 import {
   BackendError,
   backendErrorResponseSchema,
-} from '@/modules/common/error';
+} from '@/modules/error/error';
 
 export function createCredentialsDataAdapter(): CredentialsDataSPI {
   return {

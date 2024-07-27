@@ -7,7 +7,7 @@ import { createProfile } from '@/modules/profiles/application/create-profile';
 import { deleteProfile } from '@/modules/profiles/application/delete-profile';
 import { deleteProfiles } from '@/modules/profiles/application/delete-profiles';
 import { editProfile } from '@/modules/profiles/application/edit-profile';
-import { validateCredentials } from '@/modules/credentials/application/validateCredentials';
+import { validateCredentials } from '@/modules/credentials/application/validate-credentials';
 
 export const useProfileForm = () => {
   const context = useContext(DIContext);

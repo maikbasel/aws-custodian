@@ -281,6 +281,8 @@ export function ProfileDataTable({ data }: Readonly<ProfileDataTableProps>) {
     .getSelectedRowModel()
     .rows.map(({ original }) => original);
 
+  const [showCreateDialog, setShowCreateDialog] = React.useState(false);
+
   return (
     <div className='space-y-4'>
       <DataTableToolbar
@@ -288,6 +290,19 @@ export function ProfileDataTable({ data }: Readonly<ProfileDataTableProps>) {
         searchInputFilter={searchInputFilter}
         table={table}
       >
+        <Button
+          variant='outline'
+          size='sm'
+          className='ml-auto hidden h-8 border-dashed lg:flex'
+          onClick={() => setShowCreateDialog(true)}
+        >
+          Create Profile
+        </Button>
+        <ProfileFormDialog
+          open={showCreateDialog}
+          setOpen={setShowCreateDialog}
+        />
+
         <ProfileActionsButton selectedRows={selectedRows} />
       </DataTableToolbar>
 

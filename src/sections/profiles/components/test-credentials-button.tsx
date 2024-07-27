@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/tooltip';
 import { useProfileForm } from '@/sections/profiles/hooks/use-profile-form';
 import { useToast } from '@/components/ui/use-toast';
-import { BackendError } from '@/modules/common/error';
+import { BackendError } from '@/modules/error/error';
 
 type TestCredentialsButtonProps = {
   profile: string;

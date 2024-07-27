@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DataTableViewOptions } from '@/components/ui/data-table-view-options';
 import { type LucideIcon } from 'lucide-react';
-import ProfileFormDialog from '@/sections/profiles/components/profile-form-dialog';
 
 interface FilterOption {
   value: string;
@@ -31,7 +30,7 @@ export interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   searchInputFilter: SearchInputFilter;
   filterableColumns: FilterableColumn[];
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export function DataTableToolbar<TData>({
@@ -41,8 +40,6 @@ export function DataTableToolbar<TData>({
   children,
 }: Readonly<DataTableToolbarProps<TData>>) {
   const isFiltered = table.getState().columnFilters.length > 0;
-
-  const [showCreateDialog, setShowCreateDialog] = React.useState(false);
 
   return (
     <div className='flex items-center justify-between'>
@@ -86,19 +83,6 @@ export function DataTableToolbar<TData>({
         )}
       </div>
       <div className='flex flex-1 items-center space-x-2'>
-        <Button
-          variant='outline'
-          size='sm'
-          className='ml-auto hidden h-8 border-dashed lg:flex'
-          onClick={() => setShowCreateDialog(true)}
-        >
-          Create Profile
-        </Button>
-        <ProfileFormDialog
-          open={showCreateDialog}
-          setOpen={setShowCreateDialog}
-        />
-
         {children}
 
         <DataTableViewOptions table={table} />

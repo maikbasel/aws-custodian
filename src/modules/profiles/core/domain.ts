@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { Result } from 'oxide.ts';
-import { BackendError } from '@/modules/common/error';
+import { BackendError } from '@/modules/error/error';
 
 export const regions = [
   'af-south-1',
