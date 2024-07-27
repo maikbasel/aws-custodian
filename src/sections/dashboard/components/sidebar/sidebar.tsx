@@ -5,7 +5,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, KeyRoundIcon } from 'lucide-react';
+import { ChevronRight, FileCog, KeyRoundIcon } from 'lucide-react';
 import { useSidebarStore } from '@/stores/use-sidebar-store';
 import {
   NavItem,
@@ -17,6 +17,11 @@ export const NavItems: NavItem[] = [
     title: 'Profiles',
     icon: KeyRoundIcon,
     href: '/',
+  },
+  {
+    title: 'Parameters',
+    icon: FileCog,
+    href: '/parameters',
   },
 ];
 
