@@ -1,6 +1,6 @@
 services:
   localstack:
-    image: localstack/localstack:2.2.0
+    image: localstack/localstack:3.6
     container_name: localstack
     ports:
       - '4566:4566' # LocalStack API Gateway
@@ -8,14 +8,9 @@ services:
     environment:
       - SERVICES=ssm,secretsmanager,iam,sts
       - DEBUG=1
-      - DATA_DIR=/tmp/localstack/data
-      - LAMBDA_EXECUTOR=docker-reuse
-      - DEFAULT_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=test
-      - AWS_SECRET_ACCESS_KEY=test
-      - HOSTNAME=localhost
-      - USE_SSL=true
+      - PERSISTENCE=1
+      - LS_LOG=info
     volumes:
-      - '${TMPDIR:-/tmp/localstack}:/tmp/localstack'
+      - '${TMPDIR:-/tmp/localstack}:/var/lib/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
-      - "./init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"  # ready hook
+      - './init-aws.py:/etc/localstack/init/ready.d/init-aws.py'  # ready hook
