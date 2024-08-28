@@ -31,30 +31,6 @@ export default function TestCredentialsButton({
   const { toast } = useToast();
   const { validateCredentials } = useProfileForm();
 
-  useEffect(() => {
-    setBusy(true);
-
-    validateCredentials(profile)
-      .then((value) => {
-        if (value.isOk()) {
-          setValid(value.unwrap());
-          setValidated(true);
-        } else {
-          const backendError = value.unwrapErr();
-          toast({
-            variant: 'destructive',
-            title: `Credentials validation failed! There is something wrong with profile ${profile}.`,
-            description: `${backendError.code}: ${backendError.message}`,
-          });
-          setFailed(true);
-        }
-      })
-      .finally(() => {
-        setBusy(false);
-        setValidated(true);
-      });
-  }, [profile]);
-
   const toastError = (backendError: BackendError) => {
     toast({
       variant: 'destructive',
@@ -68,15 +44,20 @@ export default function TestCredentialsButton({
 
     validateCredentials(profile)
       .then((value) => {
-        const backendError = value.unwrapErr();
         if (value.isOk()) {
           setValid(value.unwrap());
         } else {
+          const backendError = value.unwrapErr();
+
           toastError(backendError);
+          setValid(false);
           setFailed(true);
         }
       })
-      .finally(() => setBusy(false));
+      .finally(() => {
+        setBusy(false);
+        setValidated(true);
+      });
   };
 
   const renderIcon = (validated: boolean, valid: boolean, busy: boolean) => {
