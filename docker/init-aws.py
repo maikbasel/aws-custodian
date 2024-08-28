@@ -1,6 +1,6 @@
 import logging
-import os
 import threading
+
 import boto3  # Use the standard boto3 client
 
 # Configure logging
@@ -20,7 +20,6 @@ def create_user_and_access_key(user_name, access_key_id):
 
 
 def create_ssm_parameters(access_key_id, secret_access_key, prefix, count):
-    threads = []
     ssm_client = boto3.client(
         "ssm",
         aws_access_key_id=access_key_id,
@@ -36,6 +35,7 @@ def create_ssm_parameters(access_key_id, secret_access_key, prefix, count):
             Type="String"
         )
 
+    threads = []
     for i in range(count):
         param_name = f"{prefix}/param{i}"
         thread = threading.Thread(target=put_parameter, args=(param_name, f"value{i}"))
