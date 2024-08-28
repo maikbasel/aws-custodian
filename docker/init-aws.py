@@ -53,7 +53,7 @@ access_key_qa = create_user_and_access_key('qaUser', '000000000002')  # Correcte
 logging.info(f"Dev access key: {access_key_dev}")
 logging.info(f"Qa access key: {access_key_qa}")
 
-create_ssm_parameters(access_key_dev['AccessKeyId'], access_key_dev['SecretAccessKey'], '/config/dev', 20)
-create_ssm_parameters(access_key_qa['AccessKeyId'], access_key_qa['SecretAccessKey'], '/config/qa', 20)
+create_ssm_parameters(access_key_dev['AccessKeyId'], access_key_dev['SecretAccessKey'], '/config/dev', 100)
+create_ssm_parameters(access_key_qa['AccessKeyId'], access_key_qa['SecretAccessKey'], '/config/qa', 100)
 
 logging.info("...finished LocalStack setup")
