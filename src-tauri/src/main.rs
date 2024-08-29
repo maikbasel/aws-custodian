@@ -2,7 +2,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use std::sync::Arc;
-
 use backend::__cmd__create_profile;
 use backend::__cmd__delete_profile;
 use backend::__cmd__delete_profiles;
@@ -30,23 +29,27 @@ use backend::profiles::infrastructure::aws::sdk_config::sdk_config_adapter::SdkC
 fn main() {
     let mut builder = tauri::Builder::default();
 
-    #[cfg(debug_assertions)]
+    // #[cfg(debug_assertions)]
+    // {
+    //     let devtools = devtools::init();
+    //
+    //     builder = builder.plugin(devtools);
+    // }
+    //
+    // #[cfg(not(debug_assertions))]
     {
-        let devtools = devtools::init();
-
-        builder = builder.plugin(devtools);
-    }
-
-    #[cfg(not(debug_assertions))]
-    {
-        use tauri_plugin_log::{Builder, Target, TargetKind};
+        use tauri_plugin_log::{Builder, LogTarget};
 
         let log_plugin = Builder::default()
             .targets([
-                Target::new(TargetKind::Stdout),
-                Target::new(TargetKind::LogDir { file_name: None }),
-                Target::new(TargetKind::Webview),
+                LogTarget::LogDir,
+                LogTarget::Stdout,
+                LogTarget::Webview,
             ])
+            .level_for("tracing", log::LevelFilter::Error)
+            .level_for("tauri", log::LevelFilter::Error)
+            .level_for("aws_config", log::LevelFilter::Error)
+            .level(log::LevelFilter::Info)
             .build();
 
         builder = builder.plugin(log_plugin);
@@ -58,7 +61,7 @@ fn main() {
     let parameter_data_spi = ParameterStoreAdapter;
     let parameter_data_api = ParameterService::new(Box::new(parameter_data_spi));
 
-    tauri::Builder::default()
+    builder
         .manage(Arc::new(profile_data_api) as Arc<dyn ProfileDataAPI>)
         .manage(Arc::new(credentials_data_api) as Arc<dyn CredentialsDataAPI>)
         .manage(Arc::new(parameter_data_api) as Arc<dyn ParameterDataAPI>)
