@@ -1,8 +1,10 @@
 use async_trait::async_trait;
+use aws_sdk_ssm::error::ProvideErrorMetadata;
 use aws_sdk_ssm::types::{
     Parameter as SSMParameter, ParameterMetadata as SSMParamterMetadata,
     ParameterType as SSMParamterType,
 };
+use aws_sdk_ssm::Client;
 use chrono::DateTime;
 use error_stack::Report;
 
@@ -49,6 +51,11 @@ impl ParameterDataSPI for ParameterStoreAdapter {
                 Ok(parameter_names)
             }
             Err(err) => {
+                let error_meta = err.meta();
+                let error_code = error_meta.code();
+
+                tracing::error!("Error: {:?}", error_code);
+
                 Err(Report::from(err)
                     .change_context(ParameterDataError::ParameterMetaDataLoadError))
             }
@@ -60,30 +67,19 @@ impl ParameterDataSPI for ParameterStoreAdapter {
         profile_name: &str,
         parameter_names: Vec<String>,
     ) -> error_stack::Result<ParameterSet, ParameterDataError> {
+        let name_chunks = parameter_names.chunks(10);
         let client = Self::get_ssm_client(profile_name).await;
+        let mut parameters = vec![];
 
-        let result = client
-            .get_parameters()
-            .set_names(Some(parameter_names))
-            .send()
-            .await;
-
-        match result {
-            Ok(response) => {
-                let mut parameters = ParameterSet::new();
-                parameters.add_all_parameters(
-                    response
-                        .parameters()
-                        .iter()
-                        .flat_map(Self::parse_ssm_parameter)
-                        .collect(),
-                );
-                Ok(parameters)
-            }
-            Err(err) => {
-                Err(Report::from(err).change_context(ParameterDataError::ParameterDataLoadError))
-            }
+        for name_chunk in name_chunks {
+            let parameters_chunk = Self::load_parameter_chunk(name_chunk.to_vec(), &client).await?;
+            parameters.extend(parameters_chunk);
         }
+
+        let mut parameter_set = ParameterSet::new();
+        parameter_set.add_all_parameters(parameters);
+
+        Ok(parameter_set)
     }
 }
 
@@ -161,6 +157,38 @@ impl ParameterStoreAdapter {
             None => Err(ParameterDataError::InvalidParameter(
                 "parameters should have a value".to_string(),
             )),
+        }
+    }
+
+    async fn load_parameter_chunk(
+        parameter_names: Vec<String>,
+        client: &Client,
+    ) -> error_stack::Result<Vec<Parameter>, ParameterDataError> {
+        let result = client
+            .get_parameters()
+            .set_names(Some(parameter_names))
+            .with_decryption(true)
+            .send()
+            .await;
+
+        match result {
+            Ok(response) => {
+                let parameters: Vec<Parameter> = response
+                    .parameters()
+                    .iter()
+                    .flat_map(Self::parse_ssm_parameter)
+                    .collect();
+
+                Ok(parameters)
+            }
+            Err(err) => {
+                let error_meta = err.meta();
+                let error_code = error_meta.code();
+
+                tracing::error!("Error: {:?}", error_code);
+
+                Err(Report::from(err).change_context(ParameterDataError::ParameterDataLoadError))
+            }
         }
     }
 }
