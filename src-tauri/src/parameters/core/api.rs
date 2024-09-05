@@ -11,6 +11,11 @@ pub trait ParameterDataAPI: Send + Sync {
     async fn get_parameters(
         &self,
         profile_name: &str,
-        page_size: u32,
+        parameter_names: Vec<String>
     ) -> error_stack::Result<ParameterSet, ParameterDataError>;
+
+    async fn get_available_parameters(
+        &self,
+        profile_name: &str,
+    ) -> error_stack::Result<Vec<String>, ParameterDataError>;
 }

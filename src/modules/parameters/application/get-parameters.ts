@@ -8,7 +8,7 @@ import { BackendError } from '@/modules/error/error';
 export async function getParameters(
   parameterDataSPI: ParameterDataSPI,
   profileName: string,
-  pageSize: number
+  parameterNames: string[]
 ): Promise<Result<ParameterSet, BackendError>> {
-  return parameterDataSPI.getParameters(profileName, pageSize);
+  return parameterDataSPI.getParameters(profileName, parameterNames);
 }

@@ -6,6 +6,7 @@ use backend::__cmd__create_profile;
 use backend::__cmd__delete_profile;
 use backend::__cmd__delete_profiles;
 use backend::__cmd__edit_profile;
+use backend::__cmd__get_available_parameters;
 use backend::__cmd__get_parameters;
 use backend::__cmd__get_profiles;
 use backend::__cmd__validate_credentials;
@@ -13,6 +14,7 @@ use backend::credentials::application::tauri::credentials_handler::validate_cred
 use backend::credentials::core::api::CredentialsDataAPI;
 use backend::credentials::core::credentials_service::CredentialsService;
 use backend::credentials::infrastructure::aws::sts::sts_adapter::STSAdapter;
+use backend::parameters::application::tauri::parameters_handler::get_available_parameters;
 use backend::parameters::application::tauri::parameters_handler::get_parameters;
 use backend::parameters::core::api::ParameterDataAPI;
 use backend::parameters::core::parameter_service::ParameterService;
@@ -72,6 +74,7 @@ fn main() {
             delete_profile,
             validate_credentials,
             delete_profiles,
+            get_available_parameters,
             get_parameters,
         ])
         .run(tauri::generate_context!())

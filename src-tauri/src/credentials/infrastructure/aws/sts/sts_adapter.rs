@@ -32,6 +32,9 @@ impl CredentialsDataSPI for STSAdapter {
             Err(sdk_error) => {
                 let error_meta = sdk_error.meta();
                 let error_code = error_meta.code();
+
+                tracing::error!("Error: {:?}", error_meta);
+
                 match error_code {
                     Some("InvalidClientTokenId") => {
                         Err(Report::new(CredentialsError::InvalidCredentialsError))

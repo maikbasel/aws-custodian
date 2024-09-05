@@ -21,13 +21,11 @@ impl ParameterDataSPI for ParameterStoreAdapter {
     async fn load_available_parameter_names(
         &self,
         profile_name: &str,
-        page_size: u32,
     ) -> error_stack::Result<Vec<String>, ParameterDataError> {
         let client = Self::get_ssm_client(profile_name).await;
 
         let result: Result<Vec<_>, _> = client
             .describe_parameters()
-            .max_results(page_size as i32)
             .into_paginator()
             .send()
             .collect()

@@ -2,6 +2,12 @@ import { z } from 'zod';
 import { Result } from 'oxide.ts';
 import { BackendError } from '@/modules/error/error';
 
+export const availableParameterSchema = z.object({
+  names: z.string().array(),
+});
+
+export type AvailableParameter = z.infer<typeof availableParameterSchema>;
+
 const parameterSchema = z.object({
   name: z.string(),
   value: z.string(),
@@ -19,8 +25,12 @@ export type Parameter = z.infer<typeof parameterSchema>;
 export type ParameterSet = z.infer<typeof parameterSetSchema>;
 
 export interface ParameterDataSPI {
+  getAvailableParameters(
+    profileName: string
+  ): Promise<Result<AvailableParameter, BackendError>>;
+
   getParameters(
     profileName: string,
-    pageSize: number
+    parameterNames: string[]
   ): Promise<Result<ParameterSet, BackendError>>;
 }

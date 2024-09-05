@@ -26,7 +26,7 @@ describe('<Profiles />', () => {
     jest.resetAllMocks();
   });
 
-  test('should render loading state', async () => {
+  test('should render isLoading state', async () => {
     render(
       <DIContextProvider>
         <Profiles />
@@ -34,7 +34,7 @@ describe('<Profiles />', () => {
     );
 
     await waitFor(() => {
-      const loadingElement = screen.getByText(/loading/i);
+      const loadingElement = screen.getByText(/isLoading/i);
       expect(loadingElement).toBeInTheDocument();
     });
   });

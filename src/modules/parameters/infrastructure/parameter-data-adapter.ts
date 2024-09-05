@@ -1,4 +1,6 @@
 import {
+  AvailableParameter,
+  availableParameterSchema,
   ParameterDataSPI,
   ParameterSet,
   parameterSetSchema,
@@ -12,20 +14,36 @@ import { invoke } from '@tauri-apps/api/tauri';
 
 export function createParameterDataAdapter(): ParameterDataSPI {
   return {
+    getAvailableParameters,
     getParameters,
   };
 }
 
 async function getParameters(
   profileName: string,
-  pageSize: number
+  parameterNames: string[]
 ): Promise<Result<ParameterSet, BackendError>> {
   return invoke<Record<string, never>>('get_parameters', {
     profileName: profileName,
-    pageSize: pageSize,
+    parameterNames: parameterNames,
   })
     .then((data) => Ok(parameterSetSchema.parse(data)))
     .catch((reason) => {
+      console.error(reason);
+      const errorResponse = backendErrorResponseSchema.parse(reason);
+      return Err(errorResponse.error);
+    });
+}
+
+async function getAvailableParameters(
+  profileName: string
+): Promise<Result<AvailableParameter, BackendError>> {
+  return invoke<Record<string, never>>('get_available_parameters', {
+    profileName: profileName,
+  })
+    .then((data) => Ok(availableParameterSchema.parse(data)))
+    .catch((reason) => {
+      console.error(reason);
       const errorResponse = backendErrorResponseSchema.parse(reason);
       return Err(errorResponse.error);
     });

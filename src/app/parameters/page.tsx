@@ -7,18 +7,18 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
 } from '@/components/ui/breadcrumb';
+import { useParameters } from '@/sections/parameters/hooks/use-parameters';
 import ParametersDataTable from '@/sections/parameters/components/parameters-data-table';
-import { useParameterSet } from '@/sections/parameters/hooks/use-parameter-set';
 
 export default function Parameters() {
-  const { parameterSet, error, isLoading } = useParameterSet();
+  const { parameters, isLoading, error } = useParameters();
 
   if (isLoading) {
     return <div>Loading...</div>; // FIXME: Make more visually appealing
   }
 
   if (error) {
-    throw new Error(error.message);
+    throw error;
   }
 
   return (
@@ -31,7 +31,7 @@ export default function Parameters() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <ParametersDataTable data={parameterSet!} />
+      <ParametersDataTable data={parameters} />
     </div>
   );
 }

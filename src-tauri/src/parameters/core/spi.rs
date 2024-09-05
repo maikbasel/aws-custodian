@@ -11,7 +11,6 @@ pub trait ParameterDataSPI: Send + Sync {
     async fn load_available_parameter_names(
         &self,
         profile_name: &str,
-        page_size: u32,
     ) -> error_stack::Result<Vec<String>, ParameterDataError>;
 
     async fn load_parameters(

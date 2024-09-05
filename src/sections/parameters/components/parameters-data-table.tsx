@@ -5,7 +5,7 @@ import {
 import { DataTable } from '@/components/ui/data-table';
 import { DataTablePagination } from '@/components/ui/data-table-pagination';
 import React from 'react';
-import { Parameter, ParameterSet } from '@/modules/parameters/core/domain';
+import { Parameter } from '@/modules/parameters/core/domain';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -81,14 +81,12 @@ const parameterColumns: ColumnDef<Parameter>[] = [
 ];
 
 type ParameterDataTableProps = {
-  data: ParameterSet;
+  data: Parameter[];
 };
 
 export default function ParametersDataTable({
   data,
 }: Readonly<ParameterDataTableProps>) {
-  const parameters: Parameter[] = data.parameters;
-
   const searchInputFilter: SearchInputFilter = {
     columnName: 'name',
     placeholder: 'Filter parameters',
@@ -103,7 +101,7 @@ export default function ParametersDataTable({
   const [sorting, setSorting] = React.useState<SortingState>([]);
 
   const table = useReactTable({
-    data: parameters,
+    data,
     columns: parameterColumns,
     state: {
       sorting,
