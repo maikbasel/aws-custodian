@@ -7,7 +7,7 @@ import {
   ShieldX,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Tooltip,
   TooltipContent,
