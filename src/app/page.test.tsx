@@ -34,7 +34,7 @@ describe('<Profiles />', () => {
     );
 
     await waitFor(() => {
-      const loadingElement = screen.getByText(/isLoading/i);
+      const loadingElement = screen.getByText(/Loading/i);
       expect(loadingElement).toBeInTheDocument();
     });
   });
