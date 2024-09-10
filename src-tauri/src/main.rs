@@ -31,14 +31,14 @@ use std::sync::Arc;
 fn main() {
     let mut builder = tauri::Builder::default();
 
-    // #[cfg(debug_assertions)]
-    // {
-    //     let devtools = devtools::init();
-    //
-    //     builder = builder.plugin(devtools);
-    // }
-    //
-    // #[cfg(not(debug_assertions))]
+    #[cfg(debug_assertions)]
+    {
+        let devtools = devtools::init();
+
+        builder = builder.plugin(devtools);
+    }
+
+    #[cfg(not(debug_assertions))]
     {
         use tauri_plugin_log::{Builder, LogTarget};
 
