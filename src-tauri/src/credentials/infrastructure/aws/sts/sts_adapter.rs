@@ -14,7 +14,7 @@ impl CredentialsDataSPI for STSAdapter {
         &self,
         profile_name: &str,
     ) -> error_stack::Result<(), CredentialsError> {
-        let mut shared_config_loader = shared_config_loader(profile_name);
+        let mut shared_config_loader = shared_config_loader(profile_name).await;
 
         if let Some(localstack_endpoint) = localstack_endpoint() {
             shared_config_loader = shared_config_loader
@@ -32,8 +32,9 @@ impl CredentialsDataSPI for STSAdapter {
             Err(sdk_error) => {
                 let error_meta = sdk_error.meta();
                 let error_code = error_meta.code();
+                let error_message = error_meta.message();
 
-                tracing::error!("Error: {:?}", error_meta);
+                tracing::error!("Error: [{:?}] {:?}", error_meta, error_message);
 
                 match error_code {
                     Some("InvalidClientTokenId") => {

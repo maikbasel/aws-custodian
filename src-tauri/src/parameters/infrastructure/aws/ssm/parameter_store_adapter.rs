@@ -51,8 +51,9 @@ impl ParameterDataSPI for ParameterStoreAdapter {
             Err(err) => {
                 let error_meta = err.meta();
                 let error_code = error_meta.code();
+                let error_message = error_meta.message();
 
-                tracing::error!("Error: {:?}", error_code);
+                tracing::error!("Error: [{:?}] {:?}", error_code, error_message);
 
                 Err(Report::from(err)
                     .change_context(ParameterDataError::ParameterMetaDataLoadError))
@@ -82,8 +83,8 @@ impl ParameterDataSPI for ParameterStoreAdapter {
 }
 
 impl ParameterStoreAdapter {
-    async fn get_ssm_client(profile_name: &str) -> aws_sdk_ssm::Client {
-        let mut shared_config_loader = shared_config_loader(profile_name);
+    async fn get_ssm_client(profile_name: &str) -> Client {
+        let mut shared_config_loader = shared_config_loader(profile_name).await;
 
         if let Some(localstack_endpoint) = localstack_endpoint() {
             shared_config_loader = shared_config_loader
@@ -182,8 +183,9 @@ impl ParameterStoreAdapter {
             Err(err) => {
                 let error_meta = err.meta();
                 let error_code = error_meta.code();
+                let error_message = error_meta.message();
 
-                tracing::error!("Error: {:?}", error_code);
+                tracing::error!("Error: [{:?}] {:?}", error_code, error_message);
 
                 Err(Report::from(err).change_context(ParameterDataError::ParameterDataLoadError))
             }

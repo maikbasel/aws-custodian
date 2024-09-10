@@ -1,10 +1,11 @@
-use std::time::Duration;
+use aws_config::default_provider::region::DefaultRegionChain;
 use aws_config::{BehaviorVersion, ConfigLoader};
+use aws_sdk_ssm::config::retry::RetryConfig;
 use aws_sdk_ssm::config::Builder as SsmBuilder;
 use aws_sdk_ssm::Client as SsmClient;
-use aws_sdk_ssm::config::retry::RetryConfig;
 use aws_sdk_sts::config::Builder as StsBuilder;
 use aws_sdk_sts::Client as StsClient;
+use std::time::Duration;
 
 pub fn localstack_endpoint() -> Option<String> {
     match std::env::var("LOCALSTACK_ENDPOINT") {
@@ -13,12 +14,20 @@ pub fn localstack_endpoint() -> Option<String> {
     }
 }
 
-pub fn shared_config_loader(profile_name: &str) -> ConfigLoader {
-    aws_config::defaults(BehaviorVersion::latest()).credentials_provider(
-        aws_config::profile::ProfileFileCredentialsProvider::builder()
-            .profile_name(profile_name)
-            .build(),
-    )
+pub async fn shared_config_loader(profile_name: &str) -> ConfigLoader {
+    let credentials_provider = aws_config::profile::ProfileFileCredentialsProvider::builder()
+        .profile_name(profile_name)
+        .build();
+
+    let region_chain = DefaultRegionChain::builder()
+        .profile_name(profile_name)
+        .build();
+
+    let region = region_chain.region().await;
+
+    aws_config::defaults(BehaviorVersion::latest())
+        .credentials_provider(credentials_provider)
+        .region(region)
 }
 
 pub fn sts_client(config: &aws_config::SdkConfig) -> StsClient {

@@ -1,7 +1,6 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use std::sync::Arc;
 use backend::__cmd__create_profile;
 use backend::__cmd__delete_profile;
 use backend::__cmd__delete_profiles;
@@ -25,6 +24,7 @@ use backend::profiles::application::tauri::profile_handler::{
 use backend::profiles::core::api::ProfileDataAPI;
 use backend::profiles::core::profile_service::ProfileService;
 use backend::profiles::infrastructure::aws::sdk_config::sdk_config_adapter::SdkConfigAdapter;
+use std::sync::Arc;
 
 #[allow(unused_assignments)]
 #[cfg(not(tarpaulin_include))]
@@ -43,11 +43,7 @@ fn main() {
         use tauri_plugin_log::{Builder, LogTarget};
 
         let log_plugin = Builder::default()
-            .targets([
-                LogTarget::LogDir,
-                LogTarget::Stdout,
-                LogTarget::Webview,
-            ])
+            .targets([LogTarget::LogDir, LogTarget::Stdout, LogTarget::Webview])
             .level_for("tracing", log::LevelFilter::Error)
             .level_for("tauri", log::LevelFilter::Error)
             .level_for("aws_config", log::LevelFilter::Error)
