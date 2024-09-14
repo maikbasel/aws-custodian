@@ -34,7 +34,7 @@ impl CredentialsDataSPI for STSAdapter {
                 let error_code = error_meta.code();
                 let error_message = error_meta.message();
 
-                tracing::error!("Error: [{:?}] {:?}", error_meta, error_message);
+                tracing::error!("Error: [{:?}] {:?}", error_code, error_message);
 
                 match error_code {
                     Some("InvalidClientTokenId") => {
