@@ -11,7 +11,7 @@ export type AvailableParameter = z.infer<typeof availableParameterSchema>;
 const parameterSchema = z.object({
   name: z.string(),
   value: z.string(),
-  version: z.number(),
+  version: z.number().nullish(),
   last_modified_date: z.string().datetime().nullish(),
   identifier: z.string().nullish(),
 });

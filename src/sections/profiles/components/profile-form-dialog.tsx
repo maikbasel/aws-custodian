@@ -503,11 +503,13 @@ export default function ProfileFormDialog({
     },
   ];
 
+  const isCreate = !profile;
+
   return (
     <Dialog open={open} onOpenChange={(openState) => onOpenChange(openState)}>
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle>Create profile</DialogTitle>
+          <DialogTitle>{isCreate ? 'Create' : 'Edit'} profile</DialogTitle>
           <DialogDescription>
             Provide your AWS credentials, configuration and a name for the new
             profile here. Click save when you&apos;re done.

@@ -17,7 +17,7 @@ import {
 } from '@tanstack/table-core';
 import { Profile, ProfileSet } from '@/modules/profiles/core/domain';
 import { DataTable } from '@/components/ui/data-table';
-import { FileType, Globe2Icon, MoreHorizontal } from 'lucide-react';
+import { FileType, Globe2Icon } from 'lucide-react';
 import { DataTableColumnHeader } from '@/components/ui/data-table-column-header';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -26,32 +26,15 @@ import {
   SearchInputFilter,
 } from '@/components/ui/data-table-toolbar';
 import TestCredentialsButton from '@/sections/profiles/components/test-credentials-button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useSWRConfig } from 'swr';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import ProfileFormDialog from '@/sections/profiles/components/profile-form-dialog';
 import { useReactTable } from '@tanstack/react-table';
 import { DataTablePagination } from '@/components/ui/data-table-pagination';
 import ProfileActionsButton from '@/sections/profiles/components/profile-actions-button';
 import { useProfileForm } from '@/sections/profiles/hooks/use-profile-form';
 import { toast } from '@/components/ui/use-toast';
+import DataTableRowAction from '@/sections/shared/data-table-row-action';
 
 const RowAction: React.FC<{ row: Row<Profile> }> = ({ row }) => {
   const profile = row.original;
@@ -77,48 +60,32 @@ const RowAction: React.FC<{ row: Row<Profile> }> = ({ row }) => {
       .finally(() => setShowDeleteDialog(false));
   }
 
+  const editAction = {
+    description: `Edit ${profile.name} profile`,
+    onOpenDialog: setShowUpdateDialog,
+  };
+  const deleteAction = {
+    description: `Delete ${profile.name} profile`,
+    text: (
+      <>
+        This action cannot be undone. This will permanently delete the{' '}
+        <strong>{profile.name}</strong> profile along with its configuration
+        settings and credentials.
+      </>
+    ),
+    handler: onDelete,
+    onOpenDialog: setShowDeleteDialog,
+    isOpen: showDeleteDialog,
+  };
+
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant='ghost' className='h-8 w-8 p-0'>
-            <span className='sr-only'>Open menu</span>
-            <MoreHorizontal className='h-4 w-4' />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align='end'>
-          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onSelect={() => setShowUpdateDialog(true)}>
-            Edit {profile.name} profile
-          </DropdownMenuItem>
-          <DropdownMenuItem onSelect={() => setShowDeleteDialog(true)}>
-            Delete {profile.name} profile
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+    <DataTableRowAction editAction={editAction} deleteAction={deleteAction}>
       <ProfileFormDialog
         profile={profile}
         open={showUpdateDialog}
         setOpen={setShowUpdateDialog}
       />
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the{' '}
-              <strong>&nbsp;{profile.name}</strong> profile as well as it&apos;s{' '}
-              corresponding configuration settings and credentials.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={onDelete}>Continue</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </>
+    </DataTableRowAction>
   );
 };
 
