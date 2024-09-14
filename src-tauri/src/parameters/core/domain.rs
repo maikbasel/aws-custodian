@@ -15,7 +15,7 @@ pub enum ParameterValue {
 pub struct Parameter {
     pub name: String,
     pub value: ParameterValue,
-    pub version: i64,
+    pub version: Option<i64>,
     // #[serde(with = "ts_milliseconds_option")]
     pub last_modified_date: Option<DateTime<Utc>>,
     pub identifier: Option<String>,
@@ -25,7 +25,7 @@ impl Parameter {
     pub fn new(
         name: String,
         value: ParameterValue,
-        version: i64,
+        version: Option<i64>,
         last_modified_date: Option<DateTime<Utc>>,
         identifier: Option<String>,
     ) -> Self {
@@ -35,6 +35,18 @@ impl Parameter {
             version,
             last_modified_date,
             identifier,
+        }
+    }
+}
+
+impl From<(String, ParameterValue)> for Parameter {
+    fn from((name, value): (String, ParameterValue)) -> Self {
+        Parameter {
+            name,
+            value,
+            version: None,
+            last_modified_date: None,
+            identifier: None,
         }
     }
 }
@@ -91,7 +103,7 @@ mod tests {
         let input_parameter: Parameter = Parameter::new(
             input_parameter_name.clone(),
             ParameterValue::String("param".to_string()),
-            1,
+            Some(1),
             None,
             None,
         );
@@ -112,14 +124,14 @@ mod tests {
         let input_parameter_1: Parameter = Parameter::new(
             input_parameter_name.clone(),
             ParameterValue::String("param1".to_string()),
-            1,
+            Some(1),
             None,
             None,
         );
         let input_parameter_2: Parameter = Parameter::new(
             input_parameter_name.clone(),
             ParameterValue::String("param2".to_string()),
-            1,
+            Some(1),
             None,
             None,
         );
@@ -138,7 +150,7 @@ mod tests {
         let input_parameter: Parameter = Parameter::new(
             input_parameter_name.clone(),
             ParameterValue::String("param".to_string()),
-            1,
+            Some(1),
             None,
             None,
         );
@@ -155,21 +167,21 @@ mod tests {
         let input_parameter_1: Parameter = Parameter::new(
             "c".to_string(),
             ParameterValue::String("c".to_string()),
-            1,
+            Some(1),
             None,
             None,
         );
         let input_parameter_2: Parameter = Parameter::new(
             "b".to_string(),
             ParameterValue::String("b".to_string()),
-            1,
+            Some(1),
             None,
             None,
         );
         let input_parameter_3: Parameter = Parameter::new(
             "a".to_string(),
             ParameterValue::String("a".to_string()),
-            1,
+            Some(1),
             None,
             None,
         );
@@ -186,5 +198,20 @@ mod tests {
         assert_that!(&sorted_profiles[0].name).is_equal_to("a".to_string());
         assert_that!(&sorted_profiles[1].name).is_equal_to("b".to_string());
         assert_that!(&sorted_profiles[2].name).is_equal_to("c".to_string());
+    }
+
+    #[test]
+    fn should_create_parameter_from_tuple() {
+        let param_name = "example_name".to_string();
+        let param_value = ParameterValue::String("example_value".to_string());
+
+        let param: Parameter = (param_name.clone(), param_value.clone()).into();
+
+        assert_eq!(param.name, param_name);
+        assert_eq!(param.value, param_value);
+
+        assert_eq!(param.version, None);
+        assert_eq!(param.last_modified_date, None);
+        assert_eq!(param.identifier, None);
     }
 }

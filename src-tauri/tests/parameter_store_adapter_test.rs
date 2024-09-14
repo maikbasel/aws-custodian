@@ -2,8 +2,12 @@
 mod tests {
     use std::{env, fs};
 
+    use backend::parameters::core::domain::ParameterValue;
+    use backend::parameters::core::spi::ParameterDataSPI;
+    use backend::parameters::infrastructure::aws::ssm::parameter_store_adapter::ParameterStoreAdapter;
     use directories::UserDirs;
     use ini::Ini;
+    use mockall::Any;
     use serial_test::serial;
     use spectral::prelude::*;
     use tempfile::{tempdir, TempDir};
@@ -12,9 +16,6 @@ mod tests {
     use testcontainers::runners::AsyncRunner;
     use testcontainers::RunnableImage;
     use testcontainers_modules::localstack::LocalStack;
-
-    use backend::parameters::core::spi::ParameterDataSPI;
-    use backend::parameters::infrastructure::aws::ssm::parameter_store_adapter::ParameterStoreAdapter;
 
     struct TestContext {
         _test_dir: TempDir,
@@ -195,5 +196,32 @@ mod tests {
         let contains_value_2 = actual_parameters.values().iter().any(|p| p.name == "key2");
         assert_that!(contains_value_1).is_equal_to(true);
         assert_that!(contains_value_2).is_equal_to(true);
+    }
+
+    #[test_context(TestContext)]
+    #[tokio::test]
+    #[serial]
+    async fn should_put_string_parameter(ctx: &mut TestContext) {
+        let localstack: RunnableImage<LocalStack> = LocalStack.into();
+        let localstack = localstack.with_env_var(("SERVICES", "ssm"));
+        let localstack_container = localstack.start().await;
+        let host_port = localstack_container.get_host_port_ipv4(4566).await;
+        let endpoint_url = format!("http://127.0.0.1:{host_port}");
+        env::set_var("LOCALSTACK_ENDPOINT", endpoint_url);
+        let input_profile_name = "dev";
+        let parameter_value = "value1";
+        let parameter_name = "param1";
+        let cut: Box<dyn ParameterDataSPI> = Box::new(ParameterStoreAdapter);
+
+        let result = cut
+            .upsert_parameter(
+                input_profile_name,
+                (
+                    parameter_name.clone(),
+                    ParameterValue::String(parameter_value.clone().to_string()),
+                )
+                    .into(),
+            )
+            .await;
     }
 }

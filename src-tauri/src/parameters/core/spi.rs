@@ -2,7 +2,7 @@ use async_trait::async_trait;
 #[cfg(test)]
 use mockall::automock;
 
-use crate::parameters::core::domain::ParameterSet;
+use crate::parameters::core::domain::{Parameter, ParameterSet};
 use crate::parameters::core::error::ParameterDataError;
 
 #[cfg_attr(test, automock)]
@@ -18,4 +18,10 @@ pub trait ParameterDataSPI: Send + Sync {
         profile_name: &str,
         parameter_names: Vec<String>,
     ) -> error_stack::Result<ParameterSet, ParameterDataError>;
+
+    async fn upsert_parameter(
+        &self,
+        profile_name: &str,
+        parameter: Parameter,
+    ) -> error_stack::Result<(), ParameterDataError>;
 }

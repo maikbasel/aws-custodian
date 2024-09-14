@@ -80,6 +80,21 @@ impl ParameterDataSPI for ParameterStoreAdapter {
 
         Ok(parameter_set)
     }
+
+    async fn upsert_parameter(
+        &self,
+        profile_name: &str,
+        parameter: Parameter,
+    ) -> error_stack::Result<(), ParameterDataError> {
+        let client = Self::get_ssm_client(profile_name).await;
+
+        match parameter.value {
+            ParameterValue::String(value) => client
+                .put_parameter()
+                .name(parameter.name)
+                .value(parameter.value),
+        }
+    }
 }
 
 impl ParameterStoreAdapter {
@@ -111,7 +126,7 @@ impl ParameterStoreAdapter {
             ))?;
         let value = Self::parse_ssm_parameter_value(ssm_parameter, parameter_type)?;
 
-        let version = ssm_parameter.version;
+        let version = Some(ssm_parameter.version);
         let last_modified_date = ssm_parameter.last_modified_date.map(|date_time| {
             let nanos = date_time.as_nanos();
             let millis = (nanos / 1_000_000) as i64;
