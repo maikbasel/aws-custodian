@@ -8,13 +8,15 @@ use backend::__cmd__edit_profile;
 use backend::__cmd__get_available_parameters;
 use backend::__cmd__get_parameters;
 use backend::__cmd__get_profiles;
+use backend::__cmd__set_parameter;
 use backend::__cmd__validate_credentials;
 use backend::credentials::application::tauri::credentials_handler::validate_credentials;
 use backend::credentials::core::api::CredentialsDataAPI;
 use backend::credentials::core::credentials_service::CredentialsService;
 use backend::credentials::infrastructure::aws::sts::sts_adapter::STSAdapter;
-use backend::parameters::application::tauri::parameters_handler::get_available_parameters;
-use backend::parameters::application::tauri::parameters_handler::get_parameters;
+use backend::parameters::application::tauri::parameters_handler::{
+    get_available_parameters, get_parameters, set_parameter,
+};
 use backend::parameters::core::api::ParameterDataAPI;
 use backend::parameters::core::parameter_service::ParameterService;
 use backend::parameters::infrastructure::aws::ssm::parameter_store_adapter::ParameterStoreAdapter;
@@ -72,6 +74,7 @@ fn main() {
             delete_profiles,
             get_available_parameters,
             get_parameters,
+            set_parameter,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
