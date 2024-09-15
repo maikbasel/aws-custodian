@@ -12,6 +12,7 @@ pub enum ParameterDataError {
     InvalidParameter(String),
     UnsupportedParameterType(String),
     UnknownParameterType,
+    ParameterDataWriteError(String),
 }
 
 impl Context for ParameterDataError {}
@@ -39,6 +40,9 @@ impl Display for ParameterDataError {
                 write!(f, "unsupported parameter type: {}", param_type)
             }
             ParameterDataError::UnknownParameterType => write!(f, "unknown parameter type"),
+            ParameterDataError::ParameterDataWriteError(reason) => {
+                write!(f, "failed to write parameter data: {}", reason)
+            }
         }
     }
 }
@@ -61,6 +65,7 @@ impl Serialize for ParameterDataError {
                 ("UnsupportedParameterType", self.to_string())
             }
             ParameterDataError::UnknownParameterType => ("UnknownParameterType", self.to_string()),
+            ParameterDataError::ParameterDataWriteError(reason) => ("ParameterDataWriteError", reason.to_string()),
         };
         state.serialize_field("error", &json!({ "code": code, "message": message }))?;
         state.end()

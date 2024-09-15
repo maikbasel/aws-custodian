@@ -1,12 +1,14 @@
 use async_trait::async_trait;
-use aws_sdk_ssm::error::ProvideErrorMetadata;
+use aws_sdk_ssm::config::http::HttpResponse;
+use aws_sdk_ssm::error::{ProvideErrorMetadata, SdkError};
+use aws_sdk_ssm::operation::put_parameter::PutParameterError;
 use aws_sdk_ssm::types::{
     Parameter as SSMParameter, ParameterMetadata as SSMParamterMetadata,
-    ParameterType as SSMParamterType,
+    ParameterType as SSMParamterType, ParameterType,
 };
 use aws_sdk_ssm::Client;
 use chrono::DateTime;
-use error_stack::Report;
+use error_stack::{Report, ResultExt};
 
 use crate::common::aws::{localstack_endpoint, shared_config_loader, ssm_client};
 use crate::common::secure_string::SecureString;
@@ -88,12 +90,53 @@ impl ParameterDataSPI for ParameterStoreAdapter {
     ) -> error_stack::Result<(), ParameterDataError> {
         let client = Self::get_ssm_client(profile_name).await;
 
-        match parameter.value {
-            ParameterValue::String(value) => client
-                .put_parameter()
-                .name(parameter.name)
-                .value(parameter.value),
-        }
+        let handle_error = |err: SdkError<PutParameterError, HttpResponse>| {
+            let error_meta = err.meta();
+            let error_code = error_meta.code();
+            let error_message = error_meta.message();
+
+            tracing::error!("Error: [{:?}] {:?}", error_code, error_message);
+
+            ParameterDataError::ParameterDataWriteError(
+                error_message
+                    .unwrap_or("unknown parameter error")
+                    .to_string(),
+            )
+        };
+
+        let result = match parameter.value {
+            ParameterValue::String(value) => {
+                client
+                    .put_parameter()
+                    .name(parameter.name)
+                    .value(value)
+                    .r#type(ParameterType::String)
+                    .send()
+                    .await
+            }
+            ParameterValue::SecureString(value) => {
+                client
+                    .put_parameter()
+                    .name(parameter.name)
+                    .value(value.as_str())
+                    .r#type(ParameterType::SecureString)
+                    .send()
+                    .await
+            }
+            ParameterValue::StringList(list) => {
+                client
+                    .put_parameter()
+                    .name(parameter.name)
+                    .value(list.join(","))
+                    .r#type(ParameterType::StringList)
+                    .send()
+                    .await
+            }
+        };
+
+        result
+            .map(|_| ())
+            .map_err(|err| Report::from(handle_error(err)))
     }
 }
 

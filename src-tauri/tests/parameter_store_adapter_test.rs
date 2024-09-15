@@ -16,6 +16,7 @@ mod tests {
     use testcontainers::runners::AsyncRunner;
     use testcontainers::RunnableImage;
     use testcontainers_modules::localstack::LocalStack;
+    use backend::common::aws::{localstack_endpoint, shared_config_loader, ssm_client};
 
     struct TestContext {
         _test_dir: TempDir,
@@ -207,21 +208,37 @@ mod tests {
         let localstack_container = localstack.start().await;
         let host_port = localstack_container.get_host_port_ipv4(4566).await;
         let endpoint_url = format!("http://127.0.0.1:{host_port}");
-        env::set_var("LOCALSTACK_ENDPOINT", endpoint_url);
-        let input_profile_name = "dev";
+        env::set_var("LOCALSTACK_ENDPOINT", &endpoint_url);
         let parameter_value = "value1";
         let parameter_name = "param1";
         let cut: Box<dyn ParameterDataSPI> = Box::new(ParameterStoreAdapter);
+        let mut shared_config_loader = shared_config_loader(&ctx.profile).await;
+        shared_config_loader = shared_config_loader
+            .region("us-east-1")
+            .endpoint_url(endpoint_url);
+        let shared_config = shared_config_loader.load().await;
+        let client = ssm_client(&shared_config);
 
         let result = cut
             .upsert_parameter(
-                input_profile_name,
+                &ctx.profile,
                 (
-                    parameter_name.clone(),
-                    ParameterValue::String(parameter_value.clone().to_string()),
+                    parameter_name.to_string(),
+                    ParameterValue::String(parameter_value.to_string()),
                 )
                     .into(),
             )
             .await;
+        let actual = client.get_parameter()
+            .name(parameter_name.clone())
+            .send().await;
+
+        assert_that!(result).is_ok();
+        assert_that!(actual).is_ok();
+        let actual_parameter = actual.unwrap().parameter;
+        assert_that!(actual_parameter).is_some();
+        let actual_value = actual_parameter.unwrap().value;
+        assert_that!(actual_value).is_some();
+        assert_that!(actual_value).contains("value1".to_string());
     }
 }
